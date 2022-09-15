@@ -9,7 +9,7 @@ services:
     ports:
       - "3306:3306"
   fastshop:
-    image: fastshop
+    build: .
     tty: true
     ports: 
       - "8080:8080"
