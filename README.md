@@ -32,4 +32,4 @@ docker build -t fastshop
 docker run -it fastshop
 ```
 
-You can use VSCode-remote-plugin to connect to docker container to develope project.
+You can use VSCode-remote-plugin to connect docker-container to develope project.
