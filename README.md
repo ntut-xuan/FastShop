@@ -28,8 +28,7 @@ The repository use docker to setup environment.
 Please use following command to build the enviromnent.
 
 ```
-docker build -t fastshop
-docker run -it fastshop
+docker compose up
 ```
 
 You can use VSCode-remote-plugin to connect docker-container to develope project.

@@ -1,0 +1,15 @@
+version: '0.0.1'
+
+services:
+  mariadb:
+    image: mariadb
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: '@fastshop2022'
+    ports:
+      - "3306:3306"
+  fastshop:
+    image: fastshop
+    tty: true
+    ports: 
+      - "8080:8080"
