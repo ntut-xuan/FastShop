@@ -10,7 +10,7 @@ If you're in the `backend/` directory, the following command starts the applicat
 flask run --host 0.0.0.0 --port 8080
 ```
 
-If in the `fastshop/` directory or anywhere else, specifing the path of factory function (`create_app`) will do the work.
+If in the `fastshop/` directory or anywhere else, specifying the path of factory function (`create_app`) will do the work.
 
 ```
 flask --app backend/app:create_app run --host 0.0.0.0 --port 8080
@@ -24,4 +24,3 @@ Make sure you're in the `backend/` directory, then run the following command.
 ```
 python -m pytest
 ```
-
