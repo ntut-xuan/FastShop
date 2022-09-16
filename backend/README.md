@@ -16,6 +16,8 @@ If in the `fastshop/` directory or anywhere else, specifying the path of factory
 flask --app backend/app:create_app run --host 0.0.0.0 --port 8080
 ```
 
+To run the application in debug mode, add `--debug` flag to `flask`. \
+*warn: do not enable debug mode when deploying in production.*
 
 ## How to test
 
