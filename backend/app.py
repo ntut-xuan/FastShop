@@ -1,4 +1,5 @@
 from pathlib import Path
+from secrets import token_hex
 from typing import Any, Mapping
 
 from flask import Flask
@@ -11,7 +12,7 @@ def create_app(test_config: Mapping[str, Any] = None) -> Flask:
         instance_relative_config=True,
     )
     app.config.from_mapping(
-        SECRET_KEY="dev",
+        SECRET_KEY=token_hex(),
     )
     if test_config is None:
         app.config.from_pyfile("config.py", silent=True)
