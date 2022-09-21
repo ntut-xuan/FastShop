@@ -20,4 +20,4 @@ RUN npm install babel-cli@6 babel-preset-react-app@3
 # install pyhton package from pip
 RUN pip3 install -r requirements.txt
 EXPOSE 8080
-CMD flask --app backend/app:create_app run --host 0.0.0.0 --port 8080
+CMD flask --debug --app backend/app:create_app run --host 0.0.0.0 --port 8080
