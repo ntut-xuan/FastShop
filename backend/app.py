@@ -2,7 +2,8 @@ from pathlib import Path
 from secrets import token_hex
 from typing import Any, Mapping
 from flask import Flask
-from database.database_util import connect_database
+from database.util import connect_database
+
 
 def create_app(test_config: Mapping[str, Any] = None) -> Flask:
     app = Flask(
