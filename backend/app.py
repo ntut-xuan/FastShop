@@ -1,9 +1,8 @@
 from pathlib import Path
 from secrets import token_hex
 from typing import Any, Mapping
-
 from flask import Flask
-
+from database.database_util import connect_database
 
 def create_app(test_config: Mapping[str, Any] = None) -> Flask:
     app = Flask(
@@ -24,6 +23,11 @@ def create_app(test_config: Mapping[str, Any] = None) -> Flask:
     @app.route("/", methods=["GET"])
     def index():
         return "Hello World"
+
+    # Test for database connect successfully, otherwise it will shutdown.
+    # Temporary place code here, it'll remove at some point.
+    conn = connect_database()
+    conn.close()
 
     return app
 

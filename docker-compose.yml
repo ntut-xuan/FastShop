@@ -15,5 +15,7 @@ services:
   fastshop:
     build: .
     tty: true
+    depends_on:
+      - "mariadb"
     ports: 
       - "8080:8080"
