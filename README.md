@@ -27,13 +27,13 @@ FastShop，一款以 React.js + Python 為開發工具的輕量購物網站，�
 
 The repository use docker to setup environment.
 
-Please use following command to build the enviromnent.
+Please use the following command to build the enviromnent.
 
 ```
 docker compose up
 ```
 
-You can use following command to force-rebuild the environment if it happen any issues.
+You can use the following command to force-rebuild the environment if any changes on Dockerfile are made.
 
 But it will setup more slowly.
 
