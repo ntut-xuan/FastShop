@@ -4,7 +4,6 @@ about: 建議點子或功能至專案
 title: ''
 labels: enhancement
 assignees: ''
-
 ---
 
 ### 期望
@@ -14,7 +13,7 @@ assignees: ''
 ### 實作
 
 - [ ] 烤個蘋果派
- - [ ] 摘蘋果
- - [ ] 買麵粉
+    - [ ] 摘蘋果
+    - [ ] 買麵粉
 - [ ] 拿個 FoodPanda 
 - [ ] 騎腳踏車到北科上學
