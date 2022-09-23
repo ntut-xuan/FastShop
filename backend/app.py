@@ -1,7 +1,9 @@
 from pathlib import Path
 from secrets import token_hex
 from typing import Any, Mapping
+
 from flask import Flask
+
 from database.util import connect_database
 
 
