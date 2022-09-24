@@ -4,6 +4,8 @@ from typing import Any, Mapping
 
 from flask import Flask
 
+from database.util import connect_database_for_app
+
 
 def create_app(test_config: Mapping[str, Any] = None) -> Flask:
     app = Flask(
@@ -24,6 +26,8 @@ def create_app(test_config: Mapping[str, Any] = None) -> Flask:
     @app.route("/", methods=["GET"])
     def index():
         return "Hello World"
+
+    connect_database_for_app(app)
 
     return app
 
