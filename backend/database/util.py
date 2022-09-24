@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from flask import Flask
 
 
-def init_database_of_app(app: Flask) -> None:
+def connect_database_for_app(app: Flask) -> None:
     with app.app_context():
         connect_database()
     app.teardown_appcontext(close_db)
@@ -24,12 +24,6 @@ def get_database() -> pymysql.Connection:
     )  # we know the type should be `Connection` while inferred to `Any`
 
 
-def close_db(error: BaseException | None = None) -> None:
-    if _is_connected():
-        db = g.pop("db")
-        db.close()
-
-
 def connect_database() -> None:
     g.db = pymysql.connect(
         host="fastshop-mariadb-1",
@@ -37,6 +31,12 @@ def connect_database() -> None:
         password="@fsa2022",
         database="fastshop",
     )
+
+
+def close_db(error: BaseException | None = None) -> None:
+    if _is_connected():
+        db = g.pop("db")
+        db.close()
 
 
 def _is_connected() -> bool:
