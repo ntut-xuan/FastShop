@@ -5,8 +5,8 @@ from typing import Any, Mapping
 from flask import Flask, send_from_directory
 
 
-def page_fetch(page_name: str) -> str:
-    with open("/etc/fastshop/html/%s.html" % page_name) as page:
+def fetch_page(page_name: str) -> str:
+    with open(f"/etc/fastshop/html/{page_name}.html") as page:
         return page.read()
 
 
@@ -28,12 +28,12 @@ def create_app(test_config: Mapping[str, Any] = None) -> Flask:
     _create_path_if_not_exist(app.instance_path)
 
     @app.route("/static/<path:path>", methods=["GET"])
-    def returnStaticFile(path):
+    def return_static_file(path):
         return send_from_directory("/etc/fastshop/static", path)
 
     @app.route("/", methods=["GET"])
     def index():
-        return page_fetch("index")
+        return fetch_page("index")
 
     return app
 
