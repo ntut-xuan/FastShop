@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 import pymysql
 
@@ -18,7 +18,9 @@ def init_database_of_app(app: Flask) -> None:
 def get_database() -> pymysql.Connection:
     if not _is_connected():
         connect_database()
-    return g.db
+    return cast(
+        pymysql.Connection, g.db
+    )  # we know the type should be `Connection` while inferred to `Any`
 
 
 def close_db(error: BaseException | None = None) -> None:
