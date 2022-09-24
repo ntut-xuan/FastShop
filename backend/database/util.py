@@ -1,11 +1,40 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
 import pymysql
 
+from flask import g
 
-def connect_database() -> pymysql.Connection:
-    conn = pymysql.connect(
+if TYPE_CHECKING:
+    from flask import Flask
+
+
+def init_database_of_app(app: Flask) -> None:
+    with app.app_context():
+        connect_database()
+    app.teardown_appcontext(close_db)
+
+
+def get_database() -> pymysql.Connection:
+    if not _is_connected():
+        connect_database()
+    return g.db
+
+
+def close_db(error: BaseException | None = None) -> None:
+    if _is_connected():
+        db = g.pop("db")
+        db.close()
+
+
+def connect_database() -> None:
+    g.db = pymysql.connect(
         host="fastshop-mariadb-1",
         user="fsa",
         password="@fsa2022",
         database="fastshop",
     )
-    return conn
+
+
+def _is_connected() -> bool:
+    return "db" in g

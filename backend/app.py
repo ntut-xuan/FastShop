@@ -4,7 +4,7 @@ from typing import Any, Mapping
 
 from flask import Flask
 
-from database.util import connect_database
+from database.util import init_database_of_app
 
 
 def create_app(test_config: Mapping[str, Any] = None) -> Flask:
@@ -27,10 +27,7 @@ def create_app(test_config: Mapping[str, Any] = None) -> Flask:
     def index():
         return "Hello World"
 
-    # Test for database connect successfully, otherwise it will shutdown.
-    # Temporary place code here, it'll remove at some point.
-    conn = connect_database()
-    conn.close()
+    init_database_of_app(app)
 
     return app
 
