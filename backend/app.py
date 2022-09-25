@@ -2,14 +2,14 @@ from pathlib import Path
 from secrets import token_hex
 from typing import Any, Mapping
 
-from flask import Flask, send_from_directory
+from flask import Flask, current_app, send_from_directory
+
+from database.util import connect_database_for_app
 
 
 def fetch_page(page_name: str) -> str:
-    with open(f"/etc/fastshop/html/{page_name}.html") as page:
+    with current_app.open_resource(f"../html/{page_name}.html") as page:
         return page.read()
-
-from database.util import connect_database_for_app
 
 
 def create_app(test_config: Mapping[str, Any] = None) -> Flask:
@@ -31,7 +31,7 @@ def create_app(test_config: Mapping[str, Any] = None) -> Flask:
 
     @app.route("/static/<path:path>", methods=["GET"])
     def return_static_file(path):
-        return send_from_directory("/etc/fastshop/static", path)
+        return send_from_directory("../static", path)
 
     @app.route("/", methods=["GET"])
     def index():
