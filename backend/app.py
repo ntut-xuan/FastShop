@@ -2,7 +2,7 @@ from pathlib import Path
 from secrets import token_hex
 from typing import Any, Mapping
 
-from flask import Flask, current_app, send_from_directory
+from flask import Flask, current_app
 
 from database.util import connect_database_for_app
 
@@ -17,7 +17,7 @@ def create_app(test_config: Mapping[str, Any] = None) -> Flask:
         __name__,
         instance_path=str(Path(__file__).parent / "instance"),
         instance_relative_config=True,
-        static_url_path="",
+        static_folder=(Path(__file__).parents[1] / "static"),
     )
     app.config.from_mapping(
         SECRET_KEY=token_hex(),
@@ -28,10 +28,6 @@ def create_app(test_config: Mapping[str, Any] = None) -> Flask:
         app.config.from_mapping(test_config)
 
     _create_path_if_not_exist(app.instance_path)
-
-    @app.route("/static/<path:path>", methods=["GET"])
-    def return_static_file(path):
-        return send_from_directory("../static", path)
 
     @app.route("/", methods=["GET"])
     def index():
