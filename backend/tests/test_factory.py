@@ -15,4 +15,4 @@ def test_config() -> None:
 
 def test_index(client: FlaskClient) -> None:
     response: TestResponse = client.get("/")
-    assert response.data == b"Hello World"
+    assert b"index.html (a marker for API test)" in response.data
