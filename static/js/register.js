@@ -27,7 +27,6 @@ var RegisterPlatform = function (_React$Component) {
                     React.createElement(
                         "div",
                         { id: "title", className: "pb-10" },
-                        React.createElement("img", { className: "w-24 h-auto mx-auto my-2 rounded-full", src: "https://ntut-xuan.github.io/src/image/fastshop.png" }),
                         React.createElement(
                             "p",
                             { className: "text-center text-2xl" },

@@ -23,11 +23,10 @@ var LoginPlatform = function (_React$Component) {
                 { className: "bg-orange-100 w-screen h-screen" },
                 React.createElement(
                     "div",
-                    { className: "w-[600px] h-fit bg-white p-10 rounded-lg absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] shadow-lg" },
+                    { className: "w-[600px] max-h-[74vh] bg-white p-10 rounded-lg absolute left-[50%] top-[65%] translate-x-[-50%] translate-y-[-65%] shadow-lg overflow-y-auto" },
                     React.createElement(
                         "div",
                         { id: "title", className: "pb-10" },
-                        React.createElement("img", { className: "w-24 h-auto mx-auto my-2 rounded-full", src: "https://ntut-xuan.github.io/src/image/fastshop.png" }),
                         React.createElement(
                             "p",
                             { className: "text-center text-2xl" },

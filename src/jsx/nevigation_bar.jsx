@@ -17,35 +17,32 @@ class NevigationBar extends React.Component {
         return [
             <div className="w-full fixed top-0 left-0 z-20 bg-white">
                 <div className="w-[90%] mx-auto h-20 flex flex-row relative left-0 top-0">
-                    <div className="w-full h-full gap-5 flex-row flex justify-start text-xs text-center">
+                    <div className="w-full h-full gap-5 flex-row flex justify-start text-sm text-center">
                         <img className="h-full w-auto py-5" src="/static/image/fastshop.svg"></img>
                         <div className={clickable_text}>
-                            <p className="relative w-12 top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">首頁</p>
+                            <p className="relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">首頁</p>
                         </div>
                         <div className={clickable_text} onMouseOver={this.nav_extend_on} onMouseOut={this.nav_extend_off}>
-                            <p className="relative w-12 top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">所有商品</p>
+                            <p className="relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">所有商品</p>
                         </div>
                         <div className={clickable_text}>
-                            <p className="relative w-12 top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">最新消息</p>
+                            <p className="relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">最新消息</p>
                         </div>
                         <div className={clickable_text}>
-                            <p className="relative w-12 top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">聯繫我們</p>
-                        </div>
-                        <div className={clickable_text}>
-                            <p className="relative w-12 top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">開發者們</p>
+                            <p className="relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">聯繫我們</p>
                         </div>
                     </div>
-                    <div className="w-full h-full mx-auto gap-5 flex-row flex justify-end text-xs text-center">
+                    <div className="w-[50%] h-full mx-auto gap-5 flex-row flex justify-end text-sm text-center">
                         <div className={clickable_text}>
-                            <p className="relative w-12 top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">搜尋</p>
+                            <p className="relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">搜尋</p>
                         </div>
                         <a href="/login">
                             <div className={clickable_text}>
-                                <p className="relative w-12 top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">登入</p>
+                                <p className="relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">登入</p>
                             </div>
                         </a>
                         <div className={clickable_text}>
-                            <p className="relative w-12 top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">購物車</p>
+                            <p className="relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">購物車</p>
                         </div>
                     </div>
                 </div>

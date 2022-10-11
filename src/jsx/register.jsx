@@ -5,7 +5,6 @@ class RegisterPlatform extends React.Component{
             <div className="bg-blue-100 w-screen h-screen">
                 <div className="w-[600px] h-fit bg-white p-10 rounded-lg absolute left-[50%] top-[55%] translate-x-[-50%] translate-y-[-50%] shadow-lg">
                     <div id="title" className="pb-10">
-                        <img className="w-24 h-auto mx-auto my-2 rounded-full" src="https://ntut-xuan.github.io/src/image/fastshop.png"></img>
                         <p className="text-center text-2xl"> 註冊 </p> 
                     </div>
                     <div id="input_group" className="flex flex-col gap-3">

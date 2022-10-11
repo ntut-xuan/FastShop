@@ -3,9 +3,8 @@ class LoginPlatform extends React.Component{
     render(){
         return (
             <div className="bg-orange-100 w-screen h-screen">
-                <div className="w-[600px] h-fit bg-white p-10 rounded-lg absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] shadow-lg">
+                <div className="w-[600px] max-h-[74vh] bg-white p-10 rounded-lg absolute left-[50%] top-[65%] translate-x-[-50%] translate-y-[-65%] shadow-lg overflow-y-auto">
                     <div id="title" className="pb-10">
-                        <img className="w-24 h-auto mx-auto my-2 rounded-full" src="https://ntut-xuan.github.io/src/image/fastshop.png"></img>
                         <p className="text-center text-2xl"> 登入 </p> 
                     </div>
                     <div id="input_group" className="">
