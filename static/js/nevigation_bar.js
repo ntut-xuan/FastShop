@@ -43,15 +43,15 @@ var NevigationBar = function (_React$Component) {
                     { className: "w-[90%] mx-auto h-20 flex flex-row relative left-0 top-0" },
                     React.createElement(
                         "div",
-                        { className: "w-full h-full gap-10 flex-row flex justify-start" },
+                        { className: "w-full h-full gap-5 flex-row flex justify-start text-xs text-center" },
                         React.createElement("img", { className: "h-full w-auto py-5", src: "/static/image/fastshop.svg" }),
                         React.createElement(
                             "div",
                             { className: clickable_text },
                             React.createElement(
                                 "p",
-                                { className: "relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]" },
-                                " \u9996\u9801 "
+                                { className: "relative w-12 top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]" },
+                                "\u9996\u9801"
                             )
                         ),
                         React.createElement(
@@ -59,8 +59,8 @@ var NevigationBar = function (_React$Component) {
                             { className: clickable_text, onMouseOver: this.nav_extend_on, onMouseOut: this.nav_extend_off },
                             React.createElement(
                                 "p",
-                                { className: "relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]" },
-                                " \u6240\u6709\u5546\u54C1 "
+                                { className: "relative w-12 top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]" },
+                                "\u6240\u6709\u5546\u54C1"
                             )
                         ),
                         React.createElement(
@@ -68,8 +68,8 @@ var NevigationBar = function (_React$Component) {
                             { className: clickable_text },
                             React.createElement(
                                 "p",
-                                { className: "relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]" },
-                                " \u6700\u65B0\u6D88\u606F "
+                                { className: "relative w-12 top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]" },
+                                "\u6700\u65B0\u6D88\u606F"
                             )
                         ),
                         React.createElement(
@@ -77,8 +77,8 @@ var NevigationBar = function (_React$Component) {
                             { className: clickable_text },
                             React.createElement(
                                 "p",
-                                { className: "relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]" },
-                                " \u806F\u7E6B\u6211\u5011 "
+                                { className: "relative w-12 top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]" },
+                                "\u806F\u7E6B\u6211\u5011"
                             )
                         ),
                         React.createElement(
@@ -86,32 +86,32 @@ var NevigationBar = function (_React$Component) {
                             { className: clickable_text },
                             React.createElement(
                                 "p",
-                                { className: "relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]" },
-                                " \u95DC\u65BC\u958B\u767C\u8005\u5011 "
+                                { className: "relative w-12 top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]" },
+                                "\u958B\u767C\u8005\u5011"
                             )
                         )
                     ),
                     React.createElement(
                         "div",
-                        { className: "w-full h-full mx-auto gap-10 flex-row flex justify-end" },
+                        { className: "w-full h-full mx-auto gap-5 flex-row flex justify-end text-xs text-center" },
                         React.createElement(
                             "div",
                             { className: clickable_text },
                             React.createElement(
                                 "p",
-                                { className: "relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]" },
-                                " \u641C\u5C0B "
+                                { className: "relative w-12 top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]" },
+                                "\u641C\u5C0B"
                             )
                         ),
                         React.createElement(
-                            "div",
-                            { className: clickable_text },
+                            "a",
+                            { href: "/login" },
                             React.createElement(
-                                "p",
-                                { className: "relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]" },
+                                "div",
+                                { className: clickable_text },
                                 React.createElement(
-                                    "a",
-                                    { href: "/login" },
+                                    "p",
+                                    { className: "relative w-12 top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]" },
                                     "\u767B\u5165"
                                 )
                             )
@@ -121,8 +121,8 @@ var NevigationBar = function (_React$Component) {
                             { className: clickable_text },
                             React.createElement(
                                 "p",
-                                { className: "relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]" },
-                                " \u8CFC\u7269\u8ECA "
+                                { className: "relative w-12 top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]" },
+                                "\u8CFC\u7269\u8ECA"
                             )
                         )
                     )
