@@ -33,6 +33,14 @@ def create_app(test_config: Mapping[str, Any] = None) -> Flask:
     def index():
         return fetch_page("index")
 
+    @app.route("/login", methods=["GET"])
+    def login():
+        return fetch_page("login")
+
+    @app.route("/register", methods=["GET"])
+    def register():
+        return fetch_page("register")
+
     connect_database_for_app(app)
 
     return app
