@@ -153,7 +153,8 @@ var App = function (_React$Component2) {
         key: "componentDidMount",
         value: function componentDidMount() {
             $('[data-toggle="datepicker"]').datepicker({
-                format: 'yyyy-mm-dd'
+                format: 'yyyy-mm-dd',
+                endDate: Date.now()
             });
         }
     }, {

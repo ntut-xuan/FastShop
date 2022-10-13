@@ -48,7 +48,8 @@ class RegisterPlatform extends React.Component{
 class App extends React.Component {
     componentDidMount(){
         $('[data-toggle="datepicker"]').datepicker({
-            format: 'yyyy-mm-dd'
+            format: 'yyyy-mm-dd',
+            endDate: Date.now()
         });
     }
     render(){
