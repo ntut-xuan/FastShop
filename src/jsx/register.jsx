@@ -13,12 +13,12 @@ class RegisterPlatform extends React.Component{
                             <input type="text" className="w-full p-3 border-2 border-gray-400 text-xs outline-none" placeholder="名稱"></input>
                         </div>
                         <div className="flex flex-row gap-3">
-                            <select className="w-full p-3 border-2 border-gray-400 text-xs outline-none">
-                                <option className="w-full text-xs">性別</option>
+                            <select className="w-full p-3 border-2 border-gray-400 text-xs outline-none" defaultValue="性別">
+                                <option className="w-full text-xs" disabled="disabled">性別</option>
                                 <option className="w-full text-xs">男性</option>
                                 <option className="w-full text-xs">女性</option>
                             </select>
-                            <input type="text" className="w-full p-3 border-2 border-gray-400 text-xs outline-none" placeholder="出生日期"></input>
+                            <input type="text" className="w-full p-3 border-2 border-gray-400 text-xs outline-none" placeholder="出生日期" data-toggle="datepicker"></input>
                         </div>
                         <input type="text" className="w-full p-3 border-2 border-gray-400 text-xs outline-none" placeholder="電子郵件地址"></input>
                         <input type="password" className="w-full p-3 border-2 border-gray-400 text-xs outline-none" placeholder="密碼"></input>
@@ -46,6 +46,11 @@ class RegisterPlatform extends React.Component{
 }
 
 class App extends React.Component {
+    componentDidMount(){
+        $('[data-toggle="datepicker"]').datepicker({
+            format: 'yyyy-mm-dd'
+        });
+    }
     render(){
         return (
             <div className="">

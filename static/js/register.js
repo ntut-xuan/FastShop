@@ -47,10 +47,10 @@ var RegisterPlatform = function (_React$Component) {
                             { className: "flex flex-row gap-3" },
                             React.createElement(
                                 "select",
-                                { className: "w-full p-3 border-2 border-gray-400 text-xs outline-none" },
+                                { className: "w-full p-3 border-2 border-gray-400 text-xs outline-none", defaultValue: "\u6027\u5225" },
                                 React.createElement(
                                     "option",
-                                    { className: "w-full text-xs" },
+                                    { className: "w-full text-xs", disabled: "disabled" },
                                     "\u6027\u5225"
                                 ),
                                 React.createElement(
@@ -64,7 +64,7 @@ var RegisterPlatform = function (_React$Component) {
                                     "\u5973\u6027"
                                 )
                             ),
-                            React.createElement("input", { type: "text", className: "w-full p-3 border-2 border-gray-400 text-xs outline-none", placeholder: "\u51FA\u751F\u65E5\u671F" })
+                            React.createElement("input", { type: "text", className: "w-full p-3 border-2 border-gray-400 text-xs outline-none", placeholder: "\u51FA\u751F\u65E5\u671F", "data-toggle": "datepicker" })
                         ),
                         React.createElement("input", { type: "text", className: "w-full p-3 border-2 border-gray-400 text-xs outline-none", placeholder: "\u96FB\u5B50\u90F5\u4EF6\u5730\u5740" }),
                         React.createElement("input", { type: "password", className: "w-full p-3 border-2 border-gray-400 text-xs outline-none", placeholder: "\u5BC6\u78BC" })
@@ -150,6 +150,13 @@ var App = function (_React$Component2) {
     }
 
     _createClass(App, [{
+        key: "componentDidMount",
+        value: function componentDidMount() {
+            $('[data-toggle="datepicker"]').datepicker({
+                format: 'yyyy-mm-dd'
+            });
+        }
+    }, {
         key: "render",
         value: function render() {
             return React.createElement(
