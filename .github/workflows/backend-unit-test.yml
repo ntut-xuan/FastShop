@@ -15,6 +15,9 @@ jobs:
         pip install --upgrade pip
         pip install -r requirements.txt
         pip install pytest
+        pip install pytest-cov
     - name: Unit tests with Pytest
       working-directory: ./backend
-      run: python -m pytest
+      run: python -m pytest --cov=.
+    - name: Upload coverage reports to Codecov with GitHub Action
+      uses: codecov/codecov-action@v3
