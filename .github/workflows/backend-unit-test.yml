@@ -18,6 +18,6 @@ jobs:
         pip install pytest-cov
     - name: Unit tests with Pytest
       working-directory: ./backend
-      run: python -m pytest --cov=. --cov-report=xml
+      run: python -m pytest --cov=./backend --cov-report=xml
     - name: Upload coverage reports to Codecov with GitHub Action
       uses: codecov/codecov-action@v3
