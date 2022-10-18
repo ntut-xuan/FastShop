@@ -7,7 +7,8 @@ import pytest
 from app import create_app
 
 if TYPE_CHECKING:
-    from flask.testing import FlaskClient, TestResponse
+    from flask.testing import FlaskClient
+    from werkzeug.test import TestResponse
 
 
 @pytest.mark.skip("Depends on running database.")
