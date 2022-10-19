@@ -9,7 +9,7 @@ def fetch_page(page_name: str) -> str:
 
 class Status(Enum):
     OK = {"status": "OK"}
-    INVALID_DATA = {"status": "Failed", "message": "Invalid data.", "code": 301}
-    INVALID_EMAIL = {"status": "Failed", "message": "Invalid e-mail.", "code": 302}
-    INVALID_PASSWORD = {"status": "Failed", "message": "Invalid password.", "code": 303}
-    INCORRECT_LOGIN = {"status": "Failed", "message": "Incorrect e-mail or password.", "code": 401}
+    INVALID_DATA = {"status": "Failed", "code": 301}
+    INVALID_EMAIL = {"status": "Failed", "code": 302}
+    INVALID_PASSWORD = {"status": "Failed", "code": 303}
+    INCORRECT_LOGIN = {"status": "Failed", "code": 401}

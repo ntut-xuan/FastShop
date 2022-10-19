@@ -1,3 +1,6 @@
+from database.util import execute_command
+from hashlib import sha512
+
 import re
 
 
@@ -10,7 +13,15 @@ def validate_email(email: str) -> bool:
 
 
 def login(email: str, password: str) -> bool:
+
     if not validate_email(email):
         return False
-    else:
-        return True
+
+    m = sha512()
+    m.update(password.encode("utf-8"))
+    hash = m.hexdigest()
+    user_count = execute_command(
+        "SELECT COUNT(*) FROM `User` WHERE email=%s and password=%s", (email, hash)
+    )[0]["COUNT(*)"]
+
+    return user_count > 0

@@ -33,6 +33,22 @@ def connect_database() -> None:
     )
 
 
+def execute_command(command: str, paramter: tuple) -> dict:
+    conn = get_database()
+    with conn.cursor() as cursor:
+        cursor.execute(command, paramter)
+        conn.commit()
+        if cursor.description != None:
+            field_name = [name[0] for name in cursor.description]
+            result = cursor.fetchall()
+            result_list = []
+            for data in result:
+                result_list.append(dict(zip(field_name, list(data))))
+            return result_list
+        else:
+            return {}
+
+
 def close_db(error: BaseException | None = None) -> None:
     if _is_connected():
         db = g.pop("db")
