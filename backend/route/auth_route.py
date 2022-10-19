@@ -8,7 +8,7 @@ auth = Blueprint("auth", __name__)
 
 
 @auth.route("/login", methods=["GET", "POST"])
-def login():
+def login_route():
     def get():
         return fetch_page("login")
 
@@ -22,5 +22,5 @@ def login():
 
 
 @auth.route("/register", methods=["GET"])
-def register():
+def register_route():
     return fetch_page("register")
