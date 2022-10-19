@@ -1,7 +1,8 @@
-from flask import Flask, current_app, Blueprint, request
+from flask import Flask, current_app, Blueprint, request, Response
+from json import dumps
 
-from route.util import fetch_page
-from auth.util import login
+from route.util import fetch_page, Status
+from auth.util import login, validate_email
 
 
 auth = Blueprint("auth", __name__)
@@ -13,7 +14,21 @@ def login_route():
         return fetch_page("login")
 
     def post():
-        pass
+        data = request.json
+
+        if "e-mail" not in data or "password" not in data:
+            return Response(dumps(Status.INVALID_DATA), status=400)
+
+        email = data["e-mail"]
+        password = data["password"]
+
+        if not validate_email(email):
+            return Response(dumps(Status.INVALID_EMAIL.value), status=422)
+
+        if not login(email, password):
+            return Response(dumps(Status.INCORRECT_LOGIN.value), status=403)
+
+        return Response(dumps(Status.OK.value), status=200)
 
     if request.method == "GET":
         return get()
