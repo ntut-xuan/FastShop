@@ -9,21 +9,62 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var LoginPlatform = function (_React$Component) {
     _inherits(LoginPlatform, _React$Component);
 
-    function LoginPlatform() {
+    function LoginPlatform(props) {
         _classCallCheck(this, LoginPlatform);
 
-        return _possibleConstructorReturn(this, (LoginPlatform.__proto__ || Object.getPrototypeOf(LoginPlatform)).apply(this, arguments));
+        var _this = _possibleConstructorReturn(this, (LoginPlatform.__proto__ || Object.getPrototypeOf(LoginPlatform)).call(this, props));
+
+        _this.state = { email: "", password: "" };
+        _this.handleAccountChange = _this.handleAccountChange.bind(_this);
+        _this.handlePasswordChange = _this.handlePasswordChange.bind(_this);
+        _this.handleSubmit = _this.handleSubmit.bind(_this);
+        return _this;
     }
 
     _createClass(LoginPlatform, [{
+        key: "handleAccountChange",
+        value: function handleAccountChange(event) {
+            this.setState({ email: event.target.value });
+        }
+    }, {
+        key: "handlePasswordChange",
+        value: function handlePasswordChange(event) {
+            this.setState({ password: event.target.value });
+        }
+    }, {
+        key: "handleSubmit",
+        value: function handleSubmit(event) {
+            var _state = this.state,
+                email = _state.email,
+                password = _state.password;
+
+            event.preventDefault();
+            $.ajax({
+                url: "/login",
+                type: "POST",
+                data: JSON.stringify({ "e-mail": email, "password": password }),
+                dataType: "json",
+                contentType: "application/json",
+                success: function success(data, status, xhr) {
+                    success_swal("登入成功").then(function () {
+                        window.location.href = "/";
+                    });
+                },
+                error: function error(xhr, status, _error) {
+                    var data = eval("(" + xhr.responseText + ")");
+                    error_swal("登入失敗", data["code"]);
+                }
+            });
+        }
+    }, {
         key: "render",
         value: function render() {
             return React.createElement(
                 "div",
                 { className: "bg-orange-100 w-screen h-screen" },
                 React.createElement(
-                    "div",
-                    { className: "w-[600px] max-h-[74vh] bg-white p-10 rounded-lg absolute left-[50%] top-[65%] translate-x-[-50%] translate-y-[-65%] shadow-lg overflow-y-auto" },
+                    "form",
+                    { className: "w-[600px] max-h-[74vh] bg-white p-10 rounded-lg absolute left-[50%] top-[65%] translate-x-[-50%] translate-y-[-65%] shadow-lg overflow-y-auto", onSubmit: this.handleSubmit },
                     React.createElement(
                         "div",
                         { id: "title", className: "pb-10" },
@@ -36,8 +77,8 @@ var LoginPlatform = function (_React$Component) {
                     React.createElement(
                         "div",
                         { id: "input_group", className: "" },
-                        React.createElement("input", { type: "text", className: "w-full p-3 border-2 border-gray-400 text-xs mb-4 outline-none", placeholder: "\u96FB\u5B50\u90F5\u4EF6\u5730\u5740" }),
-                        React.createElement("input", { type: "password", className: "w-full p-3 border-2 border-gray-400 text-xs mb-4 outline-none", placeholder: "\u5BC6\u78BC" })
+                        React.createElement("input", { type: "text", className: "w-full p-3 border-2 border-gray-400 text-xs mb-4 outline-none", placeholder: "\u96FB\u5B50\u90F5\u4EF6\u5730\u5740", onChange: this.handleAccountChange }),
+                        React.createElement("input", { type: "password", className: "w-full p-3 border-2 border-gray-400 text-xs mb-4 outline-none", placeholder: "\u5BC6\u78BC", onChange: this.handlePasswordChange })
                     ),
                     React.createElement(
                         "div",
