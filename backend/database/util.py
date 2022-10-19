@@ -33,7 +33,7 @@ def connect_database() -> None:
     )
 
 
-def execute_command(command: str, paramter: tuple) -> dict:
+def execute_command(command: str, paramter: tuple) -> list:
     conn = get_database()
     with conn.cursor() as cursor:
         cursor.execute(command, paramter)
@@ -46,7 +46,7 @@ def execute_command(command: str, paramter: tuple) -> dict:
                 result_list.append(dict(zip(field_name, list(data))))
             return result_list
         else:
-            return {}
+            return []
 
 
 def close_db(error: BaseException | None = None) -> None:
