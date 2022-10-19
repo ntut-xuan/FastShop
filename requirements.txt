@@ -29,3 +29,4 @@ types-PyMySQL==1.0.19
 typing_extensions==4.3.0
 virtualenv==20.16.5
 Werkzeug==2.2.2
+pytest-cov==4.0.0
