@@ -5,11 +5,9 @@ from typing import Any, Mapping
 from flask import Flask, current_app
 
 from database.util import connect_database_for_app
+from route.util import fetch_page
 
-
-def fetch_page(page_name: str) -> str:
-    with current_app.open_resource(f"../html/{page_name}.html", mode="r") as page:
-        return page.read()
+from route.auth_route import auth
 
 
 def create_app(test_config: Mapping[str, Any] = None) -> Flask:
@@ -27,19 +25,12 @@ def create_app(test_config: Mapping[str, Any] = None) -> Flask:
     else:
         app.config.from_mapping(test_config)
 
+    app.register_blueprint(auth)
     _create_path_if_not_exist(app.instance_path)
 
     @app.route("/", methods=["GET"])
     def index():
         return fetch_page("index")
-
-    @app.route("/login", methods=["GET"])
-    def login():
-        return fetch_page("login")
-
-    @app.route("/register", methods=["GET"])
-    def register():
-        return fetch_page("register")
 
     connect_database_for_app(app)
 
