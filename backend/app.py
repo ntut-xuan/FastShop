@@ -7,7 +7,7 @@ from flask import Flask, current_app
 from database.util import connect_database_for_app
 from route.util import fetch_page
 
-from route.auth_route import auth
+from auth.route import auth
 
 
 def create_app(test_config: Mapping[str, Any] = None) -> Flask:
