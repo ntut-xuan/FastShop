@@ -17,7 +17,7 @@ def login_route():
         data = request.json
 
         if "e-mail" not in data or "password" not in data:
-            return Response(dumps(Status.INVALID_DATA), status=400)
+            return Response(dumps(Status.INVALID_DATA.value), status=400)
 
         email = data["e-mail"]
         password = data["password"]
