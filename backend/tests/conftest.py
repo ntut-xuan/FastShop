@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+import sqlite3
+from typing import TYPE_CHECKING, Generator
 
-import pymysql
 import pytest
+from flask import g
 
 from app import create_app
 
@@ -12,11 +13,17 @@ if TYPE_CHECKING:
     from flask.testing import FlaskClient
 
 
-@pytest.fixture
-def app(monkeypatch: pytest.MonkeyPatch):
-    monkeypatch.setattr(pymysql, "connect", FakeConnection.connect)
+@pytest.fixture(autouse=True)
+def monkey_patch_to_use_sqlite_in_test(monkeypatch: pytest.MonkeyPatch) -> None:
+    def connect_sqlite_database() -> None:
+        g.db = sqlite3.connect(":memory:")
 
-    app = create_app({"TESTING": True})
+    monkeypatch.setattr("database.util.connect_database", connect_sqlite_database)
+
+
+@pytest.fixture
+def app() -> Generator[Flask, None, None]:
+    app: Flask = create_app({"TESTING": True})
 
     yield app
 
@@ -24,18 +31,3 @@ def app(monkeypatch: pytest.MonkeyPatch):
 @pytest.fixture
 def client(app: Flask) -> FlaskClient:
     return app.test_client()
-
-
-class FakeConnection:
-    @staticmethod
-    def connect(*args, **kwargs) -> FakeConnection:
-        return FakeConnection()
-
-    def __init__(self) -> None:
-        self._is_closed = False
-
-    def close(self) -> None:
-        self._is_closed = True
-
-    def is_closed(self) -> bool:
-        return self._is_closed
