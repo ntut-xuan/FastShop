@@ -12,6 +12,20 @@ if TYPE_CHECKING:
     from werkzeug.test import TestResponse
 
 
+def test_get_register_should_response_content_of_register_html(
+    client: FlaskClient,
+) -> None:
+    resp: TestResponse = client.get("/register")
+
+    assert b"<!-- register.html (a marker for API test) -->" in resp.data
+
+
+def test_get_login_should_response_content_of_login_html(client: FlaskClient) -> None:
+    resp: TestResponse = client.get("/login")
+
+    assert b"<!-- login.html (a marker for API test) -->" in resp.data
+
+
 def test_invalid_data_on_login_has_status_bad_request(client: FlaskClient) -> None:
     invalid_data: dict[str, str] = {"uriah": "garbage"}
 
