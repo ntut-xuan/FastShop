@@ -44,7 +44,7 @@ def test_post_login_with_invalid_data_should_response_failed_message_in_json(
     resp: TestResponse = client.post("/login", json=invalid_data)
 
     assert resp.is_json
-    assert resp.json["status"] == "Failed"
+    assert resp.json is not None and resp.json["status"] == "Failed"
 
 
 def test_post_login_with_invalid_email_should_have_code_unprocessable_entity(
@@ -67,7 +67,7 @@ def test_post_login_with_invalid_email_should_response_failed_message_in_json(
     resp: TestResponse = client.post("/login", json=data)
 
     assert resp.is_json
-    assert resp.json["status"] == "Failed"
+    assert resp.json is not None and resp.json["status"] == "Failed"
 
 
 some_invalid_emails: list[str] = ["plainaddress", "#@%^%#$@#$@#.com", "@example.com", "Joe Smith <email@example.com>", "email.example.com", "email@example@example.com", ".email@example.com", "email..email@example.com", "email@example.com (Joe Smith)", "email@example", "email@-example.com", "email@111.222.333.44444", "email@example..com", "Abc..123@example.com"]  # fmt: skip
