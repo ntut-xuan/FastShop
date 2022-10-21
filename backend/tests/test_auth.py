@@ -31,6 +31,18 @@ class TestLogin:
 
         assert b"<!-- login.html (a marker for API test) -->" in resp.data
 
+    def test_post_with_existing_email_and_password_should_have_code_OK(
+        self, client: FlaskClient
+    ) -> None:
+        email_and_password: dict[str, str] = {
+            "e-mail": "test@email.com",
+            "password": "test",
+        }
+
+        resp: TestResponse = client.post("/login", json=email_and_password)
+
+        assert resp.status_code == HTTPStatus.OK
+
     def test_post_with_invalid_data_should_have_code_bad_request(
         self,
         client: FlaskClient,
