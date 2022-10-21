@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import sqlite3
+from pathlib import Path
 from typing import TYPE_CHECKING, Generator
 
 import pytest
 from flask import g
 
 from app import create_app
+from database.util import create_database, get_database
 
 if TYPE_CHECKING:
     from flask import Flask
@@ -24,6 +26,9 @@ def monkey_patch_to_use_sqlite_in_test(monkeypatch: pytest.MonkeyPatch) -> None:
 @pytest.fixture
 def app() -> Generator[Flask, None, None]:
     app: Flask = create_app({"TESTING": True})
+    with app.app_context():
+        create_database()
+        insert_test_data()
 
     yield app
 
@@ -31,3 +36,8 @@ def app() -> Generator[Flask, None, None]:
 @pytest.fixture
 def client(app: Flask) -> FlaskClient:
     return app.test_client()
+
+
+def insert_test_data() -> None:
+    data_sql: str = (Path(__file__).parent / "data.sql").read_text("utf-8")
+    get_database().cursor().executescript(data_sql)
