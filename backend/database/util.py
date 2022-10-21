@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, cast
 
 import pymysql
 
-from flask import g
+from flask import current_app, g
 
 if TYPE_CHECKING:
     from flask import Flask
@@ -14,6 +14,13 @@ def connect_database_for_app(app: Flask) -> None:
     with app.app_context():
         connect_database()
     app.teardown_appcontext(close_db)
+
+
+def create_database() -> None:
+    db: pymysql.Connection = get_database()
+    with current_app.open_resource("schema.sql") as f:
+        db.cursor().executescript(f.read().decode("utf-8"))
+        db.commit()
 
 
 def get_database() -> pymysql.Connection:
