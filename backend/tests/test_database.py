@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 @no_type_check
-def test_connection_gotten_during_a_request_is_the_same(app: Flask) -> None:
+def test_connection_gotten_during_a_request_should_be_the_same(app: Flask) -> None:
     with app.app_context():
         db = get_database()
 
@@ -20,7 +20,7 @@ def test_connection_gotten_during_a_request_is_the_same(app: Flask) -> None:
 
 
 @no_type_check
-def test_connection_closed_automatically_at_the_end_of_request(app: Flask) -> None:
+def test_connection_should_close_automatically_at_the_end_of_request(app: Flask) -> None:
     with app.app_context():
         db: sqlite3.Connection = get_database()
 

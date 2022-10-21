@@ -9,11 +9,12 @@ if TYPE_CHECKING:
     from werkzeug.test import TestResponse
 
 
-def test_config() -> None:
+def test_test_config_should_be_loaded() -> None:
     assert not create_app().testing
-    assert create_app({"TESTING": True}).testing
+    assert create_app(test_config={"TESTING": True}).testing
 
 
-def test_index(client: FlaskClient) -> None:
+def test_get_index_should_response_content_of_index_html(client: FlaskClient) -> None:
     response: TestResponse = client.get("/")
+
     assert b"index.html (a marker for API test)" in response.data
