@@ -20,6 +20,17 @@ def test_invalid_data_on_login_has_status_bad_request(client: FlaskClient) -> No
     assert resp.status_code == HTTPStatus.BAD_REQUEST
 
 
+def test_invalid_data_on_login_should_response_failed_message_in_json(
+    client: FlaskClient,
+) -> None:
+    invalid_data: dict[str, str] = {"uriah": "garbage"}
+
+    resp: TestResponse = client.post("/login", json=invalid_data)
+
+    assert resp.is_json
+    assert resp.json["status"] == "Failed"
+
+
 def test_invalid_email_on_login_has_status_unprocessable_entity(
     client: FlaskClient,
 ) -> None:
@@ -29,6 +40,19 @@ def test_invalid_email_on_login_has_status_unprocessable_entity(
     resp: TestResponse = client.post("/login", json=data)
 
     assert resp.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+
+
+def test_invalid_email_on_login_should_response_failed_message_in_json(
+    client: FlaskClient,
+) -> None:
+    invalid_email: str = "t109590031@ntut@org@tw"
+    data: dict[str, str] = {"e-mail": invalid_email, "password": "12345678"}
+
+    resp: TestResponse = client.post("/login", json=data)
+
+    assert resp.is_json
+    message = resp.get_json()
+    assert message["status"] == "Failed"
 
 
 some_invalid_emails: list[str] = ["plainaddress", "#@%^%#$@#$@#.com", "@example.com", "Joe Smith <email@example.com>", "email.example.com", "email@example@example.com", ".email@example.com", "email..email@example.com", "email@example.com (Joe Smith)", "email@example", "email@-example.com", "email@111.222.333.44444", "email@example..com", "Abc..123@example.com"]  # fmt: skip
