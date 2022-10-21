@@ -2,10 +2,10 @@ INSERT INTO user (email, password)
 VALUES (
     'test@email.com',
     -- test
-    'pbkdf2:sha256:50000$TCI4GzcX$0de171a4f4dac32e3364c7ddc7c14f3e2fa61f2d17574483f7ffbb431b4acb2f'
+    'ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27ac185f8a0e1d5f84f88bc887fd67b143732c304cc5fa9ad8e6f57f50028a8ff'
   ),
   (
     'other@email.com',
     -- other
-    'pbkdf2:sha256:50000$kJPKsz6N$d2d4784f1b030a9761f5ccaeeaca413f27f2ecb76d6168407af962ddce849f79'
+    '82a5cfd03cdcb713c8d7dfce41e6f0a92f6dc560e6dda56c11eb1a207aaa7689b07a1de30967fc040f8b0ef0672c1c2ad96fcacb95fb995f52ae5d657c094547'
   );
