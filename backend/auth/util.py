@@ -1,16 +1,16 @@
-from database.util import execute_command
+from database.util import execute_command, get_database
 from hashlib import sha512
 
+import validate_email as ve
 import re
 
 
 def validate_by_regex(data: str, regex: str) -> bool:
-    return bool(re.match(regex, data))
+    return bool(re.fullmatch(regex, data))
 
 
 def validate_email(email: str) -> bool:
-    return validate_by_regex(email, "^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$")
-
+    return validate_by_regex(email, "^[A-Za-z0-9_]+([\.-]?[A-Za-z0-9_]+)*@[A-Za-z0-9_]+([\.-]?[A-Za-z0-9_]+)*(\.[A-Za-z0-9_]{2,3})+$")
 
 def login(email: str, password: str) -> bool:
 
@@ -21,7 +21,7 @@ def login(email: str, password: str) -> bool:
     m.update(password.encode("utf-8"))
     hash = m.hexdigest()
     user_count = execute_command(
-        "SELECT COUNT(*) FROM `User` WHERE email=%s and password=%s", (email, hash)
+        "SELECT COUNT(*) FROM `user` WHERE email=? and password=?", (email, hash)
     )[0]["COUNT(*)"]
 
     return user_count > 0

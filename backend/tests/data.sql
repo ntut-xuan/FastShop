@@ -1,4 +1,4 @@
-INSERT INTO user (email, password)
+INSERT INTO `user` (email, password)
 VALUES (
     'test@email.com',
     -- test
