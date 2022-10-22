@@ -41,6 +41,10 @@ def create_app(test_config: Mapping[str, Any] = None) -> Flask:
     def register():
         return fetch_page("register")
 
+    @app.route("/items", methods=["GET"])
+    def items():
+        return fetch_page("item_list")
+
     connect_database_for_app(app)
 
     return app
