@@ -1,4 +1,4 @@
-from database.util import execute_command, get_database
+from database.util import execute_command
 from hashlib import sha512
 
 import re
