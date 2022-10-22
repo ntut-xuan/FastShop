@@ -1,7 +1,6 @@
 from database.util import execute_command, get_database
 from hashlib import sha512
 
-import validate_email as ve
 import re
 
 
