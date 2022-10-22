@@ -23,7 +23,7 @@ var MainPlatform = function (_React$Component) {
                 { className: "mt-20 fixed w-full" },
                 React.createElement(
                     "div",
-                    { className: "w-[80%] h-screen mx-auto flex flex-row gap-5 my-10" },
+                    { className: "w-[90%] h-screen mx-auto flex flex-row gap-20 my-10" },
                     React.createElement(
                         "div",
                         { className: "w-[30%]" },
@@ -141,13 +141,13 @@ var MainPlatform = function (_React$Component) {
                         React.createElement("hr", null),
                         React.createElement(
                             "div",
-                            { className: "w-full overflow-y-auto h-[75vh] grid grid-cols-3 p-10 gap-10" },
+                            { className: "w-full overflow-y-auto h-[75vh] grid grid-cols-3 p-10" },
                             React.createElement(
                                 "div",
                                 { className: "p-5 w-fit h-fit" },
                                 React.createElement(
                                     "div",
-                                    { id: "items_image", className: "w-72 h-72 bg-slate-400 mx-auto" },
+                                    { id: "items_image", className: "w-64 h-64 bg-slate-400 mx-auto" },
                                     React.createElement("img", { className: "w-full h-full object-scale-down", src: "https://jamesclear.com/wp-content/uploads/2017/06/entropy.jpg" })
                                 ),
                                 React.createElement(
@@ -183,7 +183,7 @@ var MainPlatform = function (_React$Component) {
                                 { className: "p-5 w-fit h-fit" },
                                 React.createElement(
                                     "div",
-                                    { id: "items_image", className: "w-72 h-72 bg-slate-400 mx-auto" },
+                                    { id: "items_image", className: "w-64 h-64 bg-slate-400 mx-auto" },
                                     React.createElement("img", { className: "w-full h-full object-scale-down", src: "https://jamesclear.com/wp-content/uploads/2017/06/entropy.jpg" })
                                 ),
                                 React.createElement(
@@ -219,7 +219,7 @@ var MainPlatform = function (_React$Component) {
                                 { className: "p-5 w-fit h-fit" },
                                 React.createElement(
                                     "div",
-                                    { id: "items_image", className: "w-72 h-72 bg-slate-400 mx-auto" },
+                                    { id: "items_image", className: "w-64 h-64 bg-slate-400 mx-auto" },
                                     React.createElement("img", { className: "w-full h-full object-scale-down", src: "https://jamesclear.com/wp-content/uploads/2017/06/entropy.jpg" })
                                 ),
                                 React.createElement(

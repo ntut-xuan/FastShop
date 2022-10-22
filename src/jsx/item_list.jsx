@@ -2,7 +2,7 @@ class MainPlatform extends React.Component {
     render(){
         return (
             <div className="mt-20 fixed w-full">
-                <div className="w-[80%] h-screen mx-auto flex flex-row gap-5 my-10">
+                <div className="w-[90%] h-screen mx-auto flex flex-row gap-20 my-10">
                     <div className="w-[30%]">
                         <p className="w-full text-center p-5 text-2xl"> 選項 </p>
                         <hr />
@@ -32,31 +32,34 @@ class MainPlatform extends React.Component {
                     <div className="w-[70%]">
                         <p className="w-full text-center p-5 text-2xl"> 所有商品 </p>
                         <hr />
-                        <div className="w-full overflow-y-auto h-[75vh] grid grid-cols-3 p-10 gap-10">
+                        <div className="w-full overflow-y-auto h-[75vh] grid grid-cols-3 p-10">
                             <div className="p-5 w-fit h-fit">
-                                <div id="items_image" className="w-72 h-72 bg-slate-400 mx-auto">
+                                <div id="items_image" className="w-64 h-64 bg-slate-400 mx-auto">
                                     <img className="w-full h-full object-scale-down" src="https://jamesclear.com/wp-content/uploads/2017/06/entropy.jpg"></img>
                                 </div>
                                 <p className="text-center p-2"> Entropy </p>
                                 <p className="text-center"> 4.87 MC </p>
                                 <p className="text-center text-sm"> <span className="line-through">5 MC</span> <span className="font-bold">-2.6%</span> </p>
                             </div>
+                            
                             <div className="p-5 w-fit h-fit">
-                                <div id="items_image" className="w-72 h-72 bg-slate-400 mx-auto">
+                                <div id="items_image" className="w-64 h-64 bg-slate-400 mx-auto">
                                     <img className="w-full h-full object-scale-down" src="https://jamesclear.com/wp-content/uploads/2017/06/entropy.jpg"></img>
                                 </div>
                                 <p className="text-center p-2"> Entropy </p>
                                 <p className="text-center"> 4.87 MC </p>
                                 <p className="text-center text-sm"> <span className="line-through">5 MC</span> <span className="font-bold">-2.6%</span> </p>
                             </div>
+                            
                             <div className="p-5 w-fit h-fit">
-                                <div id="items_image" className="w-72 h-72 bg-slate-400 mx-auto">
+                                <div id="items_image" className="w-64 h-64 bg-slate-400 mx-auto">
                                     <img className="w-full h-full object-scale-down" src="https://jamesclear.com/wp-content/uploads/2017/06/entropy.jpg"></img>
                                 </div>
                                 <p className="text-center p-2"> Entropy </p>
                                 <p className="text-center"> 4.87 MC </p>
                                 <p className="text-center text-sm"> <span className="line-through">5 MC</span> <span className="font-bold">-2.6%</span> </p>
                             </div>
+                            
                             
                         </div>
                     </div>

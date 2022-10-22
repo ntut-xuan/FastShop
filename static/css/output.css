@@ -730,6 +730,18 @@ video {
   height: 18rem;
 }
 
+.h-\[30\%\] {
+  height: 30%;
+}
+
+.h-auto {
+  height: auto;
+}
+
+.h-64 {
+  height: 16rem;
+}
+
 .max-h-\[74vh\] {
   max-height: 74vh;
 }
@@ -806,6 +818,30 @@ video {
 
 .w-\[100\%\] {
   width: 100%;
+}
+
+.w-\[85\%\] {
+  width: 85%;
+}
+
+.w-64 {
+  width: 16rem;
+}
+
+.w-\[10\%\] {
+  width: 10%;
+}
+
+.w-\[25\%\] {
+  width: 25%;
+}
+
+.w-\[75\%\] {
+  width: 75%;
+}
+
+.w-\[20\%\] {
+  width: 20%;
 }
 
 .translate-x-\[-50\%\] {
