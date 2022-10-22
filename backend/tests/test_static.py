@@ -6,7 +6,8 @@ from typing import TYPE_CHECKING
 from app import fetch_page
 
 if TYPE_CHECKING:
-    from flask.testing import FlaskClient, TestResponse
+    from flask.testing import FlaskClient
+    from werkzeug.test import TestResponse
 
 
 def test_fetch_page(client: FlaskClient) -> None:

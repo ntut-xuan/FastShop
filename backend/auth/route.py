@@ -1,4 +1,5 @@
-from flask import Blueprint, request, Response
+from flask import Blueprint, request
+from flask.wrappers import Response
 from json import dumps
 
 from route.util import fetch_page, Status
