@@ -31,7 +31,7 @@ class TestLogin:
 
         assert b"<!-- login.html (a marker for API test) -->" in resp.data
 
-    def test_post_with_existing_email_and_password_should_have_code_OK(
+    def test_post_with_existing_email_and_password_should_have_code_ok(
         self, client: FlaskClient
     ) -> None:
         email_and_password: dict[str, str] = {

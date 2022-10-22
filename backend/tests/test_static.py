@@ -17,7 +17,7 @@ def test_fetch_page(client: FlaskClient) -> None:
     assert "index.html (a marker for API test)" in page_content
 
 
-def test_get_static_file_should_have_code_OK(client: FlaskClient) -> None:
+def test_get_static_file_should_have_code_ok(client: FlaskClient) -> None:
     response: TestResponse = client.get("/static/js/index.js")
 
     assert response.status_code == HTTPStatus.OK
