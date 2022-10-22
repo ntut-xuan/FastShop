@@ -45,7 +45,7 @@ def login_route():
 
     if request.method == "GET":
         return get()
-    elif request.method == "POST":
+    else:  # POST
         return post()
 
 
