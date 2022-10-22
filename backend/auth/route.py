@@ -17,7 +17,7 @@ def login_route():
     def post():
         data = request.json
 
-        if "e-mail" not in data or "password" not in data:
+        if data is None or "e-mail" not in data or "password" not in data:
             return Response(
                 dumps(Status.INVALID_DATA.value),
                 mimetype="application/json",
