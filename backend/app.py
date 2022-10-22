@@ -2,7 +2,7 @@ from pathlib import Path
 from secrets import token_hex
 from typing import Any, Mapping
 
-from flask import Flask, current_app
+from flask import Flask
 
 from database.util import connect_database_for_app
 from route.util import fetch_page
