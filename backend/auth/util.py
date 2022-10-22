@@ -1,7 +1,7 @@
-from database.util import execute_command
+import re
 from hashlib import sha512
 
-import re
+from database.util import execute_command
 
 
 def validate_by_regex(data: str, regex: str) -> bool:

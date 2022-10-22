@@ -1,5 +1,6 @@
-from flask import current_app
 from enum import Enum
+
+from flask import current_app
 
 
 def fetch_page(page_name: str) -> str:

@@ -1,10 +1,10 @@
-from flask import Blueprint, request
-from flask.wrappers import Response
 from json import dumps
 
-from route.util import fetch_page, Status
-from auth.util import login, validate_email
+from flask import Blueprint, request
+from flask.wrappers import Response
 
+from auth.util import login, validate_email
+from route.util import Status, fetch_page
 
 auth = Blueprint("auth", __name__)
 

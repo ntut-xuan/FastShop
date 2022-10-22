@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, cast
 
 import pymysql
-
 from flask import current_app, g
 
 if TYPE_CHECKING:
