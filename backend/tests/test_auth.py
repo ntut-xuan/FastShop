@@ -43,6 +43,31 @@ class TestLogin:
 
         assert resp.status_code == HTTPStatus.OK
 
+    def test_post_with_wrong_password_should_have_code_forbidden(
+        self, client: FlaskClient
+    ) -> None:
+        email_and_password: dict[str, str] = {
+            "e-mail": "test@email.com",
+            "password": "should_be_test",
+        }
+
+        resp: TestResponse = client.post("/login", json=email_and_password)
+
+        assert resp.status_code == HTTPStatus.FORBIDDEN
+
+    def test_post_with_wrong_password_should_response_failed_message_in_json(
+        self, client: FlaskClient
+    ) -> None:
+        email_and_password: dict[str, str] = {
+            "e-mail": "test@email.com",
+            "password": "should_be_test",
+        }
+
+        resp: TestResponse = client.post("/login", json=email_and_password)
+
+        assert resp.is_json
+        assert resp.json is not None and resp.json["status"] == "Failed"
+
     def test_post_with_invalid_data_should_have_code_bad_request(
         self,
         client: FlaskClient,
