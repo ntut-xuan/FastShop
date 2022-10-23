@@ -3,8 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, cast
 
 import pymysql
-
-from flask import g
+from flask import current_app, g
 
 if TYPE_CHECKING:
     from flask import Flask
@@ -14,6 +13,13 @@ def connect_database_for_app(app: Flask) -> None:
     with app.app_context():
         connect_database()
     app.teardown_appcontext(close_db)
+
+
+def create_database() -> None:
+    db: pymysql.Connection = get_database()
+    with current_app.open_resource("schema.sql") as f:
+        db.cursor().executescript(f.read().decode("utf-8"))  # type: ignore # f.read() is "bytes", not "str"
+        db.commit()
 
 
 def get_database() -> pymysql.Connection:
@@ -31,6 +37,24 @@ def connect_database() -> None:
         password="@fsa2022",
         database="fastshop",
     )
+
+
+def execute_command(command: str, paramter: tuple) -> list:
+    conn = get_database()
+    cursor = conn.cursor()
+    cursor.execute(command, paramter)
+    conn.commit()
+    if cursor.description != None:
+        field_name = [name[0] for name in cursor.description]
+        result = cursor.fetchall()
+        result_list = []
+        for data in result:
+            result_list.append(dict(zip(field_name, list(data))))
+        cursor.close()
+        return result_list
+    else:
+        cursor.close()
+        return []
 
 
 def close_db(error: BaseException | None = None) -> None:

@@ -2,17 +2,15 @@ from pathlib import Path
 from secrets import token_hex
 from typing import Any, Mapping
 
-from flask import Flask, current_app
+from flask import Flask
 
 from database.util import connect_database_for_app
+from route.util import fetch_page
+
+from auth.route import auth
 
 
-def fetch_page(page_name: str) -> str:
-    with current_app.open_resource(f"../html/{page_name}.html", mode="r") as page:
-        return page.read()
-
-
-def create_app(test_config: Mapping[str, Any] = None) -> Flask:
+def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     app = Flask(
         __name__,
         instance_path=str(Path(__file__).parent / "instance"),
@@ -27,6 +25,7 @@ def create_app(test_config: Mapping[str, Any] = None) -> Flask:
     else:
         app.config.from_mapping(test_config)
 
+    app.register_blueprint(auth)
     _create_path_if_not_exist(app.instance_path)
 
     @app.route("/", methods=["GET"])
