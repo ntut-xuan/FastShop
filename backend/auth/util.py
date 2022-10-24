@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 from hashlib import sha512
 
 from database.util import execute_command
@@ -15,6 +16,12 @@ def validate_email(email: str) -> bool:
     )
 
 
+def validate_birthday_format(birthday: str) -> bool:
+    format_string = "%Y-%m-%d"
+    datetime.strptime(birthday, format_string)
+    return True
+
+
 def login(email: str, password: str) -> bool:
 
     if not validate_email(email):
@@ -28,3 +35,33 @@ def login(email: str, password: str) -> bool:
     )[0]["COUNT(*)"]
 
     return user_count > 0
+
+
+def register(email: str, password: str, profile: dict) -> bool:
+
+    if not validate_email(email):
+        return False
+
+    m = sha512()
+    m.update(password.encode("utf-8"))
+    hash = m.hexdigest()
+    user_count = execute_command(
+        "SELECT COUNT(*) FROM `user` WHERE email=%s and password=%s", (email, hash)
+    )[0]["COUNT(*)"]
+
+    if user_count > 0:
+        return False
+
+    execute_command(
+        "INSERT `user`(email, password, firstname, lastname, sex, birthday) VALUE(%s, %s, %s, %s, %s, %s)",
+        (
+            email,
+            hash,
+            profile["firstname"],
+            profile["lastname"],
+            profile["sex"],
+            profile["birthday"],
+        ),
+    )
+
+    return True
