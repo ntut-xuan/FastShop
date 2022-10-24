@@ -87,7 +87,7 @@ class TestRegister:
             "firstname": "Huang",
             "lastname": "Han-Xuan",
             "sex": "0",
-            "birthday": "2002/06/25",
+            "birthday": "2002-06-25",
         }
 
         resp: TestResponse = client.post("/register", json=data)
