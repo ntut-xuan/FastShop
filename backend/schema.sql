@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS `user` (
-  `uid` INT NOT NULL,
+  `uid` INTEGER PRIMARY KEY AUTOINCREMENT,
   `email` TEXT NOT NULL,
   `password` TEXT NOT NULL,
   `firstname` TEXT NOT NULL,
