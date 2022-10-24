@@ -1,4 +1,5 @@
 import re
+from dataclasses import dataclass
 from datetime import datetime
 from hashlib import sha512
 
@@ -37,7 +38,15 @@ def login(email: str, password: str) -> bool:
     return user_count > 0
 
 
-def register(email: str, password: str, profile: dict) -> bool:
+@dataclass
+class Profile:
+    firstname: str
+    lastname: str
+    sex: int
+    birthday: int
+
+
+def register(email: str, password: str, profile: Profile) -> bool:
 
     m = sha512()
     m.update(password.encode("utf-8"))
@@ -54,10 +63,10 @@ def register(email: str, password: str, profile: dict) -> bool:
         (
             email,
             hash,
-            profile["firstname"],
-            profile["lastname"],
-            profile["sex"],
-            profile["birthday"],
+            profile.firstname,
+            profile.lastname,
+            profile.sex,
+            profile.birthday,
         ),
     )
 

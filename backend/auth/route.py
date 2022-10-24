@@ -5,7 +5,7 @@ from typing import cast
 from flask import Blueprint, request
 from flask.wrappers import Response
 
-from auth.util import login, register, validate_birthday_format, validate_email
+from auth.util import Profile, login, register, validate_birthday_format, validate_email
 from route.util import Status, fetch_page
 
 auth = Blueprint("auth", __name__)
@@ -82,24 +82,14 @@ def register_route():
         # Build the parameter variable
         email = data["e-mail"]
         password = data["password"]
-        profile = {
-            "firstname": data["firstname"],
-            "lastname": data["lastname"],
-            "sex": data["sex"],
-            "birthday": data["birthday"],
-        }
 
         # Validate the data
-        if not validate_birthday_format(profile["birthday"]):
+        if not validate_birthday_format(data["birthday"]):
             return Response(
                 dumps(Status.INVALID_DATA.value),
                 mimetype="application/json",
                 status=422,
             )
-        else:
-            profile["birthday"] = datetime.strptime(
-                profile["birthday"], "%Y-%m-%d"
-            ).timestamp()
 
         if not validate_email(email):
             return Response(
@@ -107,6 +97,13 @@ def register_route():
                 mimetype="application/json",
                 status=422,
             )
+
+        profile = Profile(
+            firstname=data["firstname"],
+            lastname=data["lastname"],
+            sex=data["sex"],
+            birthday=int(datetime.strptime(data["birthday"], "%Y-%m-%d").timestamp()),
+        )
 
         # Register data
         if not register(email, password, profile):
