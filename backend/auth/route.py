@@ -1,5 +1,6 @@
 from datetime import datetime
 from json import dumps
+from typing import cast
 
 from flask import Blueprint, request
 from flask.wrappers import Response
@@ -56,8 +57,11 @@ def register_route():
         return fetch_page("register")
 
     def post():
-        data = request.json
-        require_column = [
+        # 400 Bad Request error will automatically be raised
+        # if the content-type is not "application/json", so
+        # it's safe to cast it manually for type warning supression.
+        data = cast(dict, request.json)
+        require_column: list[str] = [
             "firstname",
             "lastname",
             "sex",
