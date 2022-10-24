@@ -21,6 +21,22 @@ class TestRegister:
 
         assert b"<!-- register.html (a marker for API test) -->" in resp.data
 
+    def test_post_with_correct_data_should_have_code_ok(
+        self, client: FlaskClient
+    ) -> None:
+        data: dict[str, str] = {
+            "e-mail": "abc@gmail.com",
+            "password": "test",
+            "firstname": "Huang",
+            "lastname": "Han-Xuan",
+            "sex": 0,
+            "birthday": "2002-06-25",
+        }
+
+        resp: TestResponse = client.post("/register", json=data)
+
+        assert resp.status_code == HTTPStatus.OK
+
 
 class TestLogin:
     def test_get_should_response_content_of_login_html(
