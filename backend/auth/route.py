@@ -1,14 +1,10 @@
-import time
-
 from datetime import datetime
 from json import dumps
-
-from pkg_resources import require
 
 from flask import Blueprint, request
 from flask.wrappers import Response
 
-from auth.util import login, validate_email, register, validate_birthday_format
+from auth.util import login, register, validate_birthday_format, validate_email
 from route.util import Status, fetch_page
 
 auth = Blueprint("auth", __name__)
