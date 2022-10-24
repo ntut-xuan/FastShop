@@ -27,9 +27,6 @@ def validate_birthday_format(birthday: str) -> bool:
 
 def login(email: str, password: str) -> bool:
 
-    if not validate_email(email):
-        return False
-
     m = sha512()
     m.update(password.encode("utf-8"))
     hash = m.hexdigest()
@@ -41,9 +38,6 @@ def login(email: str, password: str) -> bool:
 
 
 def register(email: str, password: str, profile: dict) -> bool:
-
-    if not validate_email(email):
-        return False
 
     m = sha512()
     m.update(password.encode("utf-8"))
