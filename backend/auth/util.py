@@ -1,6 +1,7 @@
 import re
 from dataclasses import dataclass
 from datetime import datetime
+from enum import IntEnum
 from hashlib import sha512
 
 from database.util import execute_command
@@ -39,10 +40,16 @@ def login(email: str, password: str) -> bool:
 
 
 @dataclass
+class Sex(IntEnum):
+    MALE = 0
+    FEMALE = 1
+
+
+@dataclass
 class Profile:
     firstname: str
     lastname: str
-    sex: int
+    sex: Sex
     birthday: int
 
 
