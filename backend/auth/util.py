@@ -17,8 +17,11 @@ def validate_email(email: str) -> bool:
 
 
 def validate_birthday_format(birthday: str) -> bool:
-    format_string = "%Y-%m-%d"
-    datetime.strptime(birthday, format_string)
+    try:
+        format_string = "%Y-%m-%d"
+        datetime.strptime(birthday, format_string)
+    except Exception:
+        return False
     return True
 
 
