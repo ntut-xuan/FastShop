@@ -13,18 +13,9 @@ if TYPE_CHECKING:
 
 
 class TestRegister:
-    def test_get_should_response_content_of_register_html(
-        self,
-        client: FlaskClient,
-    ) -> None:
-        resp: TestResponse = client.get("/register")
-
-        assert b"<!-- register.html (a marker for API test) -->" in resp.data
-
-    def test_post_with_correct_data_should_have_code_ok(
-        self, client: FlaskClient
-    ) -> None:
-        data: dict[str, str] = {
+    @pytest.fixture
+    def new_data(self) -> dict[str, str]:
+        return {
             "e-mail": "abc@gmail.com",
             "password": "test",
             "firstname": "Huang",
@@ -33,7 +24,17 @@ class TestRegister:
             "birthday": "2002-06-25",
         }
 
-        resp: TestResponse = client.post("/register", json=data)
+    def test_get_should_response_content_of_register_html(
+        self, client: FlaskClient
+    ) -> None:
+        resp: TestResponse = client.get("/register")
+
+        assert b"<!-- register.html (a marker for API test) -->" in resp.data
+
+    def test_post_with_correct_data_should_have_code_ok(
+        self, client: FlaskClient, new_data: dict[str, str]
+    ) -> None:
+        resp: TestResponse = client.post("/register", json=new_data)
 
         assert resp.status_code == HTTPStatus.OK
 
@@ -56,41 +57,27 @@ class TestRegister:
     def test_post_with_wrong_data_should_be_bad_request(
         self, client: FlaskClient
     ) -> None:
-        data: dict[str, str] = {"uriah": "gaybage"}
+        data: dict[str, str] = {"uriah": "garbage"}
 
         resp: TestResponse = client.post("/register", json=data)
 
         assert resp.status_code == HTTPStatus.BAD_REQUEST
 
     def test_post_with_wrong_date_format_should_be_unprocessable_entity(
-        self, client: FlaskClient
+        self, client: FlaskClient, new_data: dict[str, str]
     ) -> None:
-        data: dict[str, str] = {
-            "e-mail": "test@email.com",
-            "password": "test",
-            "firstname": "Huang",
-            "lastname": "Han-Xuan",
-            "sex": "0",
-            "birthday": "2002/06/25",
-        }
+        new_data["birthday"] = "2002/06/25"
 
-        resp: TestResponse = client.post("/register", json=data)
+        resp: TestResponse = client.post("/register", json=new_data)
 
         assert resp.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
     def test_post_with_wrong_email_format_should_be_unprocessable_entity(
-        self, client: FlaskClient
+        self, client: FlaskClient, new_data: dict[str, str]
     ) -> None:
-        data: dict[str, str] = {
-            "e-mail": "test@email@com",
-            "password": "test",
-            "firstname": "Huang",
-            "lastname": "Han-Xuan",
-            "sex": "0",
-            "birthday": "2002-06-25",
-        }
+        new_data["e-mail"] = "test@email@com"
 
-        resp: TestResponse = client.post("/register", json=data)
+        resp: TestResponse = client.post("/register", json=new_data)
 
         assert resp.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
