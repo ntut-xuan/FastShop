@@ -37,6 +37,63 @@ class TestRegister:
 
         assert resp.status_code == HTTPStatus.OK
 
+    def test_post_with_duplicate_data_should_be_forbidden(
+        self, client: FlaskClient
+    ) -> None:
+        data: dict[str, str] = {
+            "e-mail": "test@email.com",
+            "password": "test",
+            "firstname": "Huang",
+            "lastname": "Han-Xuan",
+            "sex": "0",
+            "birthday": "2002-06-25",
+        }
+
+        resp: TestResponse = client.post("/register", json=data)
+
+        assert resp.status_code == HTTPStatus.FORBIDDEN
+
+    def test_post_with_wrong_data_should_be_bad_request(
+        self, client: FlaskClient
+    ) -> None:
+        data: dict[str, str] = {"uriah": "gaybage"}
+
+        resp: TestResponse = client.post("/register", json=data)
+
+        assert resp.status_code == HTTPStatus.BAD_REQUEST
+
+    def test_post_with_wrong_date_format_should_be_unprocessable_entity(
+        self, client: FlaskClient
+    ) -> None:
+        data: dict[str, str] = {
+            "e-mail": "test@email.com",
+            "password": "test",
+            "firstname": "Huang",
+            "lastname": "Han-Xuan",
+            "sex": "0",
+            "birthday": "2002/06/25",
+        }
+
+        resp: TestResponse = client.post("/register", json=data)
+
+        assert resp.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+
+    def test_post_with_wrong_email_format_should_be_unprocessable_entity(
+        self, client: FlaskClient
+    ) -> None:
+        data: dict[str, str] = {
+            "e-mail": "test@email@com",
+            "password": "test",
+            "firstname": "Huang",
+            "lastname": "Han-Xuan",
+            "sex": "0",
+            "birthday": "2002/06/25",
+        }
+
+        resp: TestResponse = client.post("/register", json=data)
+
+        assert resp.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+
 
 class TestLogin:
     def test_get_should_response_content_of_login_html(
