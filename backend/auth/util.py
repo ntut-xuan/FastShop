@@ -46,14 +46,14 @@ def register(email: str, password: str, profile: dict) -> bool:
     m.update(password.encode("utf-8"))
     hash = m.hexdigest()
     user_count = execute_command(
-        "SELECT COUNT(*) FROM `user` WHERE email=%s and password=%s", (email, hash)
+        "SELECT COUNT(*) FROM `user` WHERE email=? and password=?", (email, hash)
     )[0]["COUNT(*)"]
 
     if user_count > 0:
         return False
 
     execute_command(
-        "INSERT `user`(email, password, firstname, lastname, sex, birthday) VALUE(%s, %s, %s, %s, %s, %s)",
+        "INSERT INTO `user`(email, password, firstname, lastname, sex, birthday) VALUES(?, ?, ?, ?, ?, ?)",
         (
             email,
             hash,
