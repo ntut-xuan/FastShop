@@ -29,7 +29,7 @@ class TestRegister:
             "password": "test",
             "firstname": "Huang",
             "lastname": "Han-Xuan",
-            "sex": 0,
+            "sex": "0",
             "birthday": "2002-06-25",
         }
 
