@@ -1,4 +1,9 @@
 CREATE TABLE IF NOT EXISTS `user` (
-  email TEXT UNIQUE NOT NULL,
-  password TEXT NOT NULL
+  `uid` INTEGER PRIMARY KEY AUTOINCREMENT,
+  `email` TEXT NOT NULL,
+  `password` TEXT NOT NULL,
+  `firstname` TEXT NOT NULL,
+  `lastname` TEXT NOT NULL,
+  `sex` INT NOT NULL,
+  `birthday` INT NOT NULL
 )

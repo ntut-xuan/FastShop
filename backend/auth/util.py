@@ -1,4 +1,7 @@
 import re
+from dataclasses import dataclass
+from datetime import datetime
+from enum import IntEnum
 from hashlib import sha512
 
 from database.util import execute_command
@@ -15,10 +18,16 @@ def validate_email(email: str) -> bool:
     )
 
 
-def login(email: str, password: str) -> bool:
-
-    if not validate_email(email):
+def validate_birthday_format(birthday: str) -> bool:
+    try:
+        format = "%Y-%m-%d"
+        datetime.strptime(birthday, format)
+        return True
+    except ValueError:
         return False
+
+
+def login(email: str, password: str) -> bool:
 
     m = sha512()
     m.update(password.encode("utf-8"))
@@ -28,3 +37,44 @@ def login(email: str, password: str) -> bool:
     )[0]["COUNT(*)"]
 
     return user_count > 0
+
+
+@dataclass
+class Sex(IntEnum):
+    MALE = 0
+    FEMALE = 1
+
+
+@dataclass
+class UserProfile:
+    firstname: str
+    lastname: str
+    sex: Sex
+    birthday: int
+
+
+def register(email: str, password: str, profile: UserProfile) -> bool:
+
+    m = sha512()
+    m.update(password.encode("utf-8"))
+    hash = m.hexdigest()
+    user_count = execute_command(
+        "SELECT COUNT(*) FROM `user` WHERE email=? and password=?", (email, hash)
+    )[0]["COUNT(*)"]
+
+    if user_count > 0:
+        return False
+
+    execute_command(
+        "INSERT INTO `user`(email, password, firstname, lastname, sex, birthday) VALUES(?, ?, ?, ?, ?, ?)",
+        (
+            email,
+            hash,
+            profile.firstname,
+            profile.lastname,
+            profile.sex,
+            profile.birthday,
+        ),
+    )
+
+    return True

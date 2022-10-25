@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import sqlite3
 from http import HTTPStatus
 from typing import TYPE_CHECKING
 
 import pytest
 
-from auth.util import validate_email
+from auth.util import validate_birthday_format, validate_email
+from database.util import get_database
 
 if TYPE_CHECKING:
     from flask.testing import FlaskClient
@@ -13,13 +15,91 @@ if TYPE_CHECKING:
 
 
 class TestRegister:
+    @pytest.fixture
+    def new_data(self) -> dict[str, str]:
+        return {
+            "e-mail": "abc@gmail.com",
+            "password": "test",
+            "firstname": "Huang",
+            "lastname": "Han-Xuan",
+            "sex": "0",
+            "birthday": "2002-06-25",
+        }
+
     def test_get_should_response_content_of_register_html(
-        self,
-        client: FlaskClient,
+        self, client: FlaskClient
     ) -> None:
         resp: TestResponse = client.get("/register")
 
         assert b"<!-- register.html (a marker for API test) -->" in resp.data
+
+    def test_post_with_correct_data_should_have_code_ok(
+        self, client: FlaskClient, new_data: dict[str, str]
+    ) -> None:
+        resp: TestResponse = client.post("/register", json=new_data)
+
+        assert resp.status_code == HTTPStatus.OK
+
+    def test_post_with_correct_data_should_store_into_database(
+        self, client: FlaskClient, new_data: dict[str, str]
+    ) -> None:
+        with client.application.app_context():
+            db: sqlite3.Connection = get_database()  # type: ignore
+            db.row_factory = sqlite3.Row
+
+            client.post("/register", json=new_data)
+
+            user_data: sqlite3.Row = db.execute(
+                "SELECT * FROM user WHERE email = ?", ("abc@gmail.com",)
+            ).fetchone()
+            assert user_data["firstname"] == "Huang"
+            assert user_data["lastname"] == "Han-Xuan"
+            assert user_data["sex"] == 0
+            # birthday and password are stored in different format,
+            # not to bother with them here.
+
+    def test_post_with_duplicate_data_should_be_forbidden(
+        self, client: FlaskClient
+    ) -> None:
+        data: dict[str, str] = {
+            "e-mail": "test@email.com",
+            "password": "test",
+            "firstname": "Huang",
+            "lastname": "Han-Xuan",
+            "sex": "0",
+            "birthday": "2002-06-25",
+        }
+
+        resp: TestResponse = client.post("/register", json=data)
+
+        assert resp.status_code == HTTPStatus.FORBIDDEN
+
+    def test_post_with_wrong_data_should_be_bad_request(
+        self, client: FlaskClient
+    ) -> None:
+        data: dict[str, str] = {"uriah": "garbage"}
+
+        resp: TestResponse = client.post("/register", json=data)
+
+        assert resp.status_code == HTTPStatus.BAD_REQUEST
+
+    def test_post_with_wrong_date_format_should_be_unprocessable_entity(
+        self, client: FlaskClient, new_data: dict[str, str]
+    ) -> None:
+        new_data["birthday"] = "2002/06/25"
+
+        resp: TestResponse = client.post("/register", json=new_data)
+
+        assert resp.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+
+    def test_post_with_wrong_email_format_should_be_unprocessable_entity(
+        self, client: FlaskClient, new_data: dict[str, str]
+    ) -> None:
+        new_data["e-mail"] = "test@email@com"
+
+        resp: TestResponse = client.post("/register", json=new_data)
+
+        assert resp.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
 
 class TestLogin:
@@ -147,3 +227,39 @@ def test_validate_email_on_malform_email_should_return_false(
 )
 def test_validate_email_on_valid_email_should_return_true(email: str) -> None:
     assert validate_email(email)
+
+
+@pytest.mark.parametrize(
+    argnames=("birthday_in_wrong_format",),
+    argvalues=(
+        ("2000/01/01",),
+        ("2000_01_01",),
+        ("01-01-2000",),
+        ("2000.01.01",),
+        ("20000101",),
+    ),
+)
+def test_validate_birthday_format_on_wrong_format_should_return_false(
+    birthday_in_wrong_format: str,
+) -> None:
+    assert not validate_birthday_format(birthday_in_wrong_format)
+
+
+def test_validate_birthday_format_on_corret_format_should_return_true() -> None:
+    birthday = "2000-01-01"
+
+    assert validate_birthday_format(birthday)
+
+
+@pytest.mark.parametrize(
+    argnames=("bad_birthday",),
+    argvalues=(
+        ("2000/13/01",),  # bad month
+        ("-1/01/01",),  # bad year
+        ("2000/01/32",),  # bad day
+    ),
+)
+def test_validate_birthday_format_on_bad_birthday_value_should_return_false(
+    bad_birthday: str,
+) -> None:
+    assert not validate_birthday_format(bad_birthday)
