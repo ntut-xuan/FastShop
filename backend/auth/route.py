@@ -9,7 +9,7 @@ from auth.util import (
     UserProfile,
     login,
     register,
-    validate_birthday_format,
+    is_valid_birthday_format,
     is_valid_email,
 )
 from route.util import Status, fetch_page
@@ -85,7 +85,7 @@ def register_route():
             )
 
         # Validate the data
-        if not validate_birthday_format(data["birthday"]):
+        if not is_valid_birthday_format(data["birthday"]):
             return Response(
                 dumps(Status.INVALID_DATA.value),
                 mimetype="application/json",

@@ -18,7 +18,7 @@ def is_valid_email(email: str) -> bool:
     )
 
 
-def validate_birthday_format(birthday: str) -> bool:
+def is_valid_birthday_format(birthday: str) -> bool:
     try:
         format = "%Y-%m-%d"
         datetime.strptime(birthday, format)

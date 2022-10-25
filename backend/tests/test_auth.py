@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from auth.util import validate_birthday_format, is_valid_email
+from auth.util import is_valid_birthday_format, is_valid_email
 from database.util import get_database
 
 if TYPE_CHECKING:
@@ -239,16 +239,16 @@ def test_is_valid_email_on_valid_email_should_return_true(email: str) -> None:
         ("20000101",),
     ),
 )
-def test_validate_birthday_format_on_wrong_format_should_return_false(
+def test_is_valid_birthday_format_on_wrong_format_should_return_false(
     birthday_in_wrong_format: str,
 ) -> None:
-    assert not validate_birthday_format(birthday_in_wrong_format)
+    assert not is_valid_birthday_format(birthday_in_wrong_format)
 
 
-def test_validate_birthday_format_on_corret_format_should_return_true() -> None:
+def test_is_valid_birthday_format_on_corret_format_should_return_true() -> None:
     birthday = "2000-01-01"
 
-    assert validate_birthday_format(birthday)
+    assert is_valid_birthday_format(birthday)
 
 
 @pytest.mark.parametrize(
@@ -259,7 +259,7 @@ def test_validate_birthday_format_on_corret_format_should_return_true() -> None:
         ("2000/01/32",),  # bad day
     ),
 )
-def test_validate_birthday_format_on_bad_birthday_value_should_return_false(
+def test_is_valid_birthday_format_on_bad_birthday_value_should_return_false(
     bad_birthday: str,
 ) -> None:
-    assert not validate_birthday_format(bad_birthday)
+    assert not is_valid_birthday_format(bad_birthday)
