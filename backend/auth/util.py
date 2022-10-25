@@ -46,14 +46,14 @@ class Sex(IntEnum):
 
 
 @dataclass
-class Profile:
+class UserProfile:
     firstname: str
     lastname: str
     sex: Sex
     birthday: int
 
 
-def register(email: str, password: str, profile: Profile) -> bool:
+def register(email: str, password: str, profile: UserProfile) -> bool:
 
     m = sha512()
     m.update(password.encode("utf-8"))

@@ -5,7 +5,13 @@ from typing import cast
 from flask import Blueprint, request
 from flask.wrappers import Response
 
-from auth.util import Profile, login, register, validate_birthday_format, validate_email
+from auth.util import (
+    UserProfile,
+    login,
+    register,
+    validate_birthday_format,
+    validate_email,
+)
 from route.util import Status, fetch_page
 
 auth = Blueprint("auth", __name__)
@@ -97,7 +103,7 @@ def register_route():
                 status=422,
             )
 
-        profile = Profile(
+        profile = UserProfile(
             firstname=data["firstname"],
             lastname=data["lastname"],
             sex=data["sex"],
