@@ -59,7 +59,7 @@ def register_route():
         # it's safe to cast it manually for type warning supression.
         data = cast(dict, request.json)
 
-        require_columns: list[str] = [
+        required_columns: list[str] = [
             "firstname",
             "lastname",
             "sex",
@@ -68,7 +68,7 @@ def register_route():
             "password",
         ]
         # Check column is exist in json data
-        if not all([col in data for col in require_columns]):
+        if not all([col in data for col in required_columns]):
             return Response(
                 dumps(Status.INVALID_DATA.value),
                 mimetype="application/json",
