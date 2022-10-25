@@ -14,10 +14,10 @@ from auth.util import (
 )
 from route.util import Status, fetch_page
 
-auth = Blueprint("auth", __name__)
+auth_bp = Blueprint("auth", __name__)
 
 
-@auth.route("/login", methods=["GET", "POST"])
+@auth_bp.route("/login", methods=["GET", "POST"])
 def login_route():
     if request.method == "POST":
         data = request.json
@@ -51,7 +51,7 @@ def login_route():
     return fetch_page("login")
 
 
-@auth.route("/register", methods=["GET", "POST"])
+@auth_bp.route("/register", methods=["GET", "POST"])
 def register_route():
     if request.method == "POST":
         # 400 Bad Request error will automatically be raised

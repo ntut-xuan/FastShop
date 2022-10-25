@@ -7,7 +7,7 @@ from flask import Flask
 from database.util import connect_database_for_app
 from route.util import fetch_page
 
-from auth.route import auth
+from auth.route import auth_bp
 
 
 def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
@@ -25,7 +25,7 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     else:
         app.config.from_mapping(test_config)
 
-    app.register_blueprint(auth)
+    app.register_blueprint(auth_bp)
     _create_path_if_not_exist(app.instance_path)
 
     @app.route("/", methods=["GET"])
