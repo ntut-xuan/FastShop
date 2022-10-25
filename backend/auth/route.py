@@ -10,7 +10,7 @@ from auth.util import (
     login,
     register,
     validate_birthday_format,
-    validate_email,
+    is_valid_email,
 )
 from route.util import Status, fetch_page
 
@@ -35,7 +35,7 @@ def login_route():
         email = data["e-mail"]
         password = data["password"]
 
-        if not validate_email(email):
+        if not is_valid_email(email):
             return Response(
                 dumps(Status.INVALID_EMAIL.value),
                 mimetype="application/json",
@@ -92,7 +92,7 @@ def register_route():
                 status=422,
             )
 
-        if not validate_email(data["e-mail"]):
+        if not is_valid_email(data["e-mail"]):
             return Response(
                 dumps(Status.INVALID_EMAIL.value),
                 mimetype="application/json",

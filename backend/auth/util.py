@@ -11,7 +11,7 @@ def validate_by_regex(data: str, regex: str) -> bool:
     return bool(re.fullmatch(regex, data))
 
 
-def validate_email(email: str) -> bool:
+def is_valid_email(email: str) -> bool:
     return validate_by_regex(
         email,
         r"^[A-Za-z0-9_]+([.-]?[A-Za-z0-9_]+)*@[A-Za-z0-9_]+([.-]?[A-Za-z0-9_]+)*(\.[A-Za-z0-9_]{2,3})+$",

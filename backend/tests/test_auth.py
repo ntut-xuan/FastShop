@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from auth.util import validate_birthday_format, validate_email
+from auth.util import validate_birthday_format, is_valid_email
 from database.util import get_database
 
 if TYPE_CHECKING:
@@ -209,10 +209,10 @@ some_invalid_emails: list[str] = ["plainaddress", "#@%^%#$@#$@#.com", "@example.
         *((invalid_email,) for invalid_email in some_invalid_emails),
     ),
 )
-def test_validate_email_on_malform_email_should_return_false(
+def test_is_valid_email_on_malform_email_should_return_false(
     malform_email: str,
 ) -> None:
-    assert not validate_email(malform_email)
+    assert not is_valid_email(malform_email)
 
 
 @pytest.mark.parametrize(
@@ -225,8 +225,8 @@ def test_validate_email_on_malform_email_should_return_false(
         ("123@email.com",),
     ),
 )
-def test_validate_email_on_valid_email_should_return_true(email: str) -> None:
-    assert validate_email(email)
+def test_is_valid_email_on_valid_email_should_return_true(email: str) -> None:
+    assert is_valid_email(email)
 
 
 @pytest.mark.parametrize(
