@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, Iterable, cast
 
 import pymysql
 from flask import current_app, g
@@ -57,9 +57,8 @@ def execute_command(command: str, paramter: tuple) -> list:
 
         results: tuple[tuple, ...] = cursor.fetchall()
         field_names: list[str] = _get_field_names(cursor.description)
-        for data in results:
-            named_result: dict[str, Any] = dict(zip(field_names, list(data)))
-            named_results.append(named_result)
+        named_results = _map_names_to_values(field_names, results)
+
     cursor.close()
     return named_results
 
@@ -80,3 +79,13 @@ def _get_field_names(cursor_description: tuple[str, ...]) -> list[str]:
     which is useless.
     """
     return [name[0] for name in cursor_description]
+
+
+def _map_names_to_values(
+    names: Iterable[str], values: Iterable[Iterable[Any]]
+) -> list[dict[str, Any]]:
+    named_results: list[dict[str, Any]] = []
+    for data in values:
+        named_result: dict[str, Any] = dict(zip(names, list(data)))
+        named_results.append(named_result)
+    return named_results
