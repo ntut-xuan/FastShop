@@ -84,10 +84,6 @@ def register_route():
                 status=400,
             )
 
-        # Build the parameter variable
-        email = data["e-mail"]
-        password = data["password"]
-
         # Validate the data
         if not validate_birthday_format(data["birthday"]):
             return Response(
@@ -96,7 +92,7 @@ def register_route():
                 status=422,
             )
 
-        if not validate_email(email):
+        if not validate_email(data["e-mail"]):
             return Response(
                 dumps(Status.INVALID_EMAIL.value),
                 mimetype="application/json",
@@ -111,7 +107,7 @@ def register_route():
         )
 
         # Register data
-        if not register(email, password, profile):
+        if not register(data["e-mail"], data["password"], profile):
             return Response(
                 dumps(Status.INCORRECT_LOGIN.value),
                 mimetype="application/json",
