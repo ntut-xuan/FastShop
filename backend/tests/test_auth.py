@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from werkzeug.test import TestResponse
 
 
-class TestRegister:
+class TestRegisterRoute:
     @pytest.fixture
     def new_data(self) -> dict[str, str]:
         return {
@@ -102,7 +102,7 @@ class TestRegister:
         assert resp.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
 
-class TestLogin:
+class TestLoginRoute:
     def test_get_should_response_content_of_login_html(
         self,
         client: FlaskClient,
