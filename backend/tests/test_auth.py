@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from http import HTTPStatus
 import sqlite3
+from http import HTTPStatus
 from typing import TYPE_CHECKING
 
 import pytest
 
-from auth.util import validate_email
+from auth.util import validate_birthday_format, validate_email
 from database.util import get_database
 
 if TYPE_CHECKING:
@@ -227,3 +227,39 @@ def test_validate_email_on_malform_email_should_return_false(
 )
 def test_validate_email_on_valid_email_should_return_true(email: str) -> None:
     assert validate_email(email)
+
+
+@pytest.mark.parametrize(
+    argnames=("birthday_in_wrong_format",),
+    argvalues=(
+        ("2000/01/01",),
+        ("2000_01_01",),
+        ("01-01-2000",),
+        ("2000.01.01",),
+        ("20000101",),
+    ),
+)
+def test_validate_birthday_format_on_wrong_format_should_return_false(
+    birthday_in_wrong_format: str,
+) -> None:
+    assert not validate_birthday_format(birthday_in_wrong_format)
+
+
+def test_validate_birthday_format_on_corret_format_should_return_true() -> None:
+    birthday = "2000-01-01"
+
+    assert validate_birthday_format(birthday)
+
+
+@pytest.mark.parametrize(
+    argnames=("bad_birthday",),
+    argvalues=(
+        ("2000/13/01",),  # bad month
+        ("-1/01/01",),  # bad year
+        ("2000/01/32",),  # bad day
+    ),
+)
+def test_validate_birthday_format_on_bad_birthday_value_should_return_false(
+    bad_birthday: str,
+) -> None:
+    assert not validate_birthday_format(bad_birthday)
