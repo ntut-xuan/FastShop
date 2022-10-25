@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 from http import HTTPStatus
+import sqlite3
 from typing import TYPE_CHECKING
 
 import pytest
 
 from auth.util import validate_email
+from database.util import get_database
 
 if TYPE_CHECKING:
     from flask.testing import FlaskClient
@@ -37,6 +39,24 @@ class TestRegister:
         resp: TestResponse = client.post("/register", json=new_data)
 
         assert resp.status_code == HTTPStatus.OK
+
+    def test_post_with_correct_data_should_store_into_database(
+        self, client: FlaskClient, new_data: dict[str, str]
+    ) -> None:
+        with client.application.app_context():
+            db: sqlite3.Connection = get_database()  # type: ignore
+            db.row_factory = sqlite3.Row
+
+            client.post("/register", json=new_data)
+
+            user_data: sqlite3.Row = db.execute(
+                "SELECT * FROM user WHERE email = ?", ("abc@gmail.com",)
+            ).fetchone()
+            assert user_data["firstname"] == "Huang"
+            assert user_data["lastname"] == "Han-Xuan"
+            assert user_data["sex"] == 0
+            # birthday and password are stored in different format,
+            # not to bother with them here.
 
     def test_post_with_duplicate_data_should_be_forbidden(
         self, client: FlaskClient
