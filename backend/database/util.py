@@ -55,7 +55,7 @@ def execute_command(command: str, paramter: tuple) -> list:
         # whether the executed operation could have produced rows,
         # but we only use those defined in DB-API 2.0.
 
-        results: tuple[tuple] = cursor.fetchall()
+        results: tuple[tuple, ...] = cursor.fetchall()
         field_names: list[str] = _get_field_names(cursor.description)
         for data in results:
             named_result: dict[str, Any] = dict(zip(field_names, list(data)))
