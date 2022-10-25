@@ -19,10 +19,7 @@ auth = Blueprint("auth", __name__)
 
 @auth.route("/login", methods=["GET", "POST"])
 def login_route():
-    def get():
-        return fetch_page("login")
-
-    def post():
+    if request.method == "POST":
         data = request.json
 
         if data is None or "e-mail" not in data or "password" not in data:
@@ -51,18 +48,12 @@ def login_route():
 
         return Response(dumps(Status.OK.value), mimetype="application/json", status=200)
 
-    if request.method == "GET":
-        return get()
-    else:  # POST
-        return post()
+    return fetch_page("login")
 
 
 @auth.route("/register", methods=["GET", "POST"])
 def register_route():
-    def get():
-        return fetch_page("register")
-
-    def post():
+    if request.method == "POST":
         # 400 Bad Request error will automatically be raised
         # if the content-type is not "application/json", so
         # it's safe to cast it manually for type warning supression.
@@ -116,7 +107,4 @@ def register_route():
 
         return Response(dumps(Status.OK.value), mimetype="application/json", status=200)
 
-    if request.method == "GET":
-        return get()
-    else:  # POST
-        return post()
+    return fetch_page("register")
