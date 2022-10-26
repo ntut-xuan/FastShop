@@ -1,12 +1,11 @@
+import hashlib
 import re
 from dataclasses import dataclass
 from datetime import datetime
 from enum import IntEnum
-from hashlib import sha512
 from typing import Final
 
 from database.util import execute_command
-
 
 EMAIL_REGEX: Final[str] = r"^[A-Za-z0-9_]+([.-]?[A-Za-z0-9_]+)*@[A-Za-z0-9_]+([.-]?[A-Za-z0-9_]+)*(\.[A-Za-z0-9_]{2,3})+$"  # fmt: skip
 BIRTHDAY_FORMAT: Final[str] = "%Y-%m-%d"
@@ -29,13 +28,10 @@ def is_valid_birthday_format(birthday: str) -> bool:
 
 
 def login(email: str, password: str) -> bool:
-
-    m = sha512()
-    m.update(password.encode("utf-8"))
-    hash = m.hexdigest()
+    hashed_password: str = hashlib.sha512(password.encode("utf-8")).hexdigest()
     user_count = execute_command(
         "SELECT COUNT(*) FROM `user` WHERE `email` = ? and `password` = ?",
-        (email, hash),
+        (email, hashed_password),
     )[0]["COUNT(*)"]
 
     return user_count > 0
@@ -56,13 +52,10 @@ class UserProfile:
 
 
 def register(email: str, password: str, profile: UserProfile) -> bool:
-
-    m = sha512()
-    m.update(password.encode("utf-8"))
-    hash = m.hexdigest()
+    hashed_password: str = hashlib.sha512(password.encode("utf-8")).hexdigest()
     user_count = execute_command(
         "SELECT COUNT(*) FROM `user` WHERE `email` = ? and `password` = ?",
-        (email, hash),
+        (email, hashed_password),
     )[0]["COUNT(*)"]
 
     if user_count > 0:
@@ -72,7 +65,7 @@ def register(email: str, password: str, profile: UserProfile) -> bool:
         "INSERT INTO `user`(`email`, `password`, `firstname`, `lastname`, `sex`, `birthday`) VALUES(?, ?, ?, ?, ?, ?)",
         (
             email,
-            hash,
+            hashed_password,
             profile.firstname,
             profile.lastname,
             profile.sex,
