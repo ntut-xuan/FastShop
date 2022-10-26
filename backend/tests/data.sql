@@ -1,4 +1,4 @@
-INSERT INTO `user` (uid, email, password, firstname, lastname, sex, birthday)
+INSERT INTO `user` (`uid`, `email`, `password`, `firstname`, `lastname`, `sex`, `birthday`)
 VALUES (
     0,
     'test@email.com',
@@ -22,8 +22,8 @@ VALUES (
 
 
 CREATE TABLE `test_table` (
-  account TEXT PRIMARY KEY,
-  password TEXT NOT NULL
+  `account` TEXT PRIMARY KEY,
+  `password` TEXT NOT NULL
 );
 
 INSERT INTO `test_table` (`account`, `password`)

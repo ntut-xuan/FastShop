@@ -33,7 +33,8 @@ def login(email: str, password: str) -> bool:
     m.update(password.encode("utf-8"))
     hash = m.hexdigest()
     user_count = execute_command(
-        "SELECT COUNT(*) FROM `user` WHERE email=? and password=?", (email, hash)
+        "SELECT COUNT(*) FROM `user` WHERE `email` = ? and `password` = ?",
+        (email, hash),
     )[0]["COUNT(*)"]
 
     return user_count > 0
@@ -59,14 +60,15 @@ def register(email: str, password: str, profile: UserProfile) -> bool:
     m.update(password.encode("utf-8"))
     hash = m.hexdigest()
     user_count = execute_command(
-        "SELECT COUNT(*) FROM `user` WHERE email=? and password=?", (email, hash)
+        "SELECT COUNT(*) FROM `user` WHERE `email` = ? and `password` = ?",
+        (email, hash),
     )[0]["COUNT(*)"]
 
     if user_count > 0:
         return False
 
     execute_command(
-        "INSERT INTO `user`(email, password, firstname, lastname, sex, birthday) VALUES(?, ?, ?, ?, ?, ?)",
+        "INSERT INTO `user`(`email`, `password`, `firstname`, `lastname`, `sex`, `birthday`) VALUES(?, ?, ?, ?, ?, ?)",
         (
             email,
             hash,
