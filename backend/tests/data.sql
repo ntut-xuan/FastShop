@@ -19,3 +19,13 @@ VALUES (
     0,
     1666604387
   );
+
+
+CREATE TABLE `test_table` (
+  account TEXT PRIMARY KEY,
+  password TEXT NOT NULL
+);
+
+INSERT INTO `test_table` (`account`, `password`)
+  VALUES ('my_account', '#my_password'),
+    ('other_account', '#other_password');
