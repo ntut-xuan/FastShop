@@ -5,11 +5,16 @@ from http import HTTPStatus
 from typing import TYPE_CHECKING
 
 import pytest
-
-from auth.util import is_valid_birthday_format, is_valid_email
+from auth.util import (
+    hash_with_sha512,
+    is_registered,
+    is_valid_birthday_format,
+    is_valid_email,
+)
 from database.util import get_database
 
 if TYPE_CHECKING:
+    from flask import Flask
     from flask.testing import FlaskClient
     from werkzeug.test import TestResponse
 
@@ -263,3 +268,19 @@ def test_is_valid_birthday_format_on_bad_birthday_value_should_return_false(
     bad_birthday: str,
 ) -> None:
     assert not is_valid_birthday_format(bad_birthday)
+
+
+def test_is_registered_on_registered_user_should_be_true(app: Flask) -> None:
+    email: str = "test@email.com"
+    hashed_password: str = hash_with_sha512("test")
+    with app.app_context():
+
+        assert is_registered(email, hashed_password)
+
+
+def test_is_registered_on_unregistered_user_should_be_false(app: Flask) -> None:
+    email: str = "unregistered@email.com"
+    hashed_password: str = hash_with_sha512("unregistered")
+    with app.app_context():
+
+        assert not is_registered(email, hashed_password)
