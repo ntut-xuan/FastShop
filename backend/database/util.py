@@ -40,6 +40,12 @@ def connect_database() -> None:
     )
 
 
+def close_db(error: BaseException | None = None) -> None:
+    if _is_connected():
+        db = g.pop("db")
+        db.close()
+
+
 def execute_command(command: str, paramter: tuple) -> list[dict[str, Any]]:
     """Executes the command on the database of the current app context.
 
@@ -70,12 +76,6 @@ def get_results_mapped_by_field_name(cursor: Cursor) -> list[dict[str, Any]]:
         results: tuple[tuple, ...] = cursor.fetchall()
         named_results = _map_names_to_values(field_names, results)
     return named_results
-
-
-def close_db(error: BaseException | None = None) -> None:
-    if _is_connected():
-        db = g.pop("db")
-        db.close()
 
 
 def _is_connected() -> bool:
