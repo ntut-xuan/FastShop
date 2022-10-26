@@ -4,8 +4,12 @@ import sqlite3
 from typing import TYPE_CHECKING, Any, no_type_check
 
 import pytest
-
-from database.util import execute_command, get_database, _map_names_to_values
+from database.util import (
+    _map_names_to_values,
+    execute_command,
+    get_database,
+    get_results_mapped_by_field_name,
+)
 
 if TYPE_CHECKING:
     from flask import Flask
@@ -45,6 +49,17 @@ def test_map_names_to_values() -> None:
     assert other_one["id"] == 2
     assert other_one["name"] == "other_name"
     assert other_one["age"] == 19
+
+
+def test_get_results_mapped_by_field_name() -> None:
+    conn: sqlite3.Connection = sqlite3.Connection(":memory:")
+    cursor: sqlite3.Cursor = conn.cursor()
+    cursor.execute("SELECT 'user' as `name`, 'user@email.com' as `e-mail`")
+
+    (named_result,) = get_results_mapped_by_field_name(cursor)  # type: ignore
+
+    assert named_result["name"] == "user"
+    assert named_result["e-mail"] == "user@email.com"
 
 
 def test_execute_command_on_update_should_have_empty_result(app: Flask) -> None:
@@ -88,7 +103,7 @@ def test_execute_command_on_delete_should_have_empty_result(app: Flask) -> None:
 
 
 def test_execute_command_on_create_should_have_empty_result(app: Flask) -> None:
-    create_stmt: str = "CREATE TABLE `new_table` (id INT PRIMARY KEY);"
+    create_stmt: str = "CREATE TABLE `new_table` (`id` INT PRIMARY KEY);"
 
     with app.app_context():
         results: list[dict[str, Any]] = execute_command(create_stmt, ())

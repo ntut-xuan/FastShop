@@ -40,22 +40,35 @@ def connect_database() -> None:
     )
 
 
-# TODO: this method does more than one thing
-def execute_command(command: str, paramter: tuple) -> list:
-    # 1. execute command
+def execute_command(command: str, paramter: tuple) -> list[dict[str, Any]]:
+    """Executes the command on the database of the current app context.
+
+    Returns:
+        A list of results. Each result is represented as a dict with its
+        field names being the keys.
+    """
     conn: pymysql.Connection = get_database()
     cursor: Cursor = conn.cursor()
     cursor.execute(command, paramter)
     conn.commit()
 
-    # 2. combine field with value to a dict
+    named_results: list[dict[str, Any]] = get_results_mapped_by_field_name(cursor)
+    cursor.close()
+
+    return named_results
+
+
+def get_results_mapped_by_field_name(cursor: Cursor) -> list[dict[str, Any]]:
+    """
+    Returns:
+        A list of results held by the `cursor`. Each result is represented as a dict with its
+        field names being the keys. The list is empty for executions that do not return rows.
+    """
     named_results: list[dict[str, Any]] = []
     if _has_result(cursor):
         field_names: list[str] = _get_field_names(cursor.description)
         results: tuple[tuple, ...] = cursor.fetchall()
         named_results = _map_names_to_values(field_names, results)
-    cursor.close()
-
     return named_results
 
 
