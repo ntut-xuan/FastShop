@@ -29,10 +29,10 @@ def is_valid_birthday_format(birthday: str) -> bool:
 
 def login(email: str, password: str) -> bool:
     hashed_password: str = hashlib.sha512(password.encode("utf-8")).hexdigest()
-    user_count = execute_command(
-        "SELECT COUNT(*) FROM `user` WHERE `email` = ? and `password` = ?",
+    user_count: int = execute_command(
+        "SELECT COUNT(*) as `user_count` FROM `user` WHERE `email` = ? and `password` = ?",
         (email, hashed_password),
-    )[0]["COUNT(*)"]
+    )[0]["user_count"]
 
     return user_count > 0
 
@@ -53,10 +53,10 @@ class UserProfile:
 
 def register(email: str, password: str, profile: UserProfile) -> bool:
     hashed_password: str = hashlib.sha512(password.encode("utf-8")).hexdigest()
-    user_count = execute_command(
-        "SELECT COUNT(*) FROM `user` WHERE `email` = ? and `password` = ?",
+    user_count: int = execute_command(
+        "SELECT COUNT(*) as `user_count` FROM `user` WHERE `email` = ? and `password` = ?",
         (email, hashed_password),
-    )[0]["COUNT(*)"]
+    )[0]["user_count"]
 
     if user_count > 0:
         return False
