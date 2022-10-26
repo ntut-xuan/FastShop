@@ -3,25 +3,26 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import IntEnum
 from hashlib import sha512
+from typing import Final
 
 from database.util import execute_command
 
 
-def validate_by_regex(data: str, regex: str) -> bool:
-    return bool(re.fullmatch(regex, data))
+EMAIL_REGEX: Final[str] = r"^[A-Za-z0-9_]+([.-]?[A-Za-z0-9_]+)*@[A-Za-z0-9_]+([.-]?[A-Za-z0-9_]+)*(\.[A-Za-z0-9_]{2,3})+$"  # fmt: skip
+BIRTHDAY_FORMAT: Final[str] = "%Y-%m-%d"
+
+
+def is_fullmatched_with_regex(string: str, regex: str) -> bool:
+    return bool(re.fullmatch(regex, string))
 
 
 def is_valid_email(email: str) -> bool:
-    return validate_by_regex(
-        email,
-        r"^[A-Za-z0-9_]+([.-]?[A-Za-z0-9_]+)*@[A-Za-z0-9_]+([.-]?[A-Za-z0-9_]+)*(\.[A-Za-z0-9_]{2,3})+$",
-    )
+    return is_fullmatched_with_regex(email, EMAIL_REGEX)
 
 
 def is_valid_birthday_format(birthday: str) -> bool:
     try:
-        format = "%Y-%m-%d"
-        datetime.strptime(birthday, format)
+        datetime.strptime(birthday, BIRTHDAY_FORMAT)
         return True
     except ValueError:
         return False

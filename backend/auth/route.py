@@ -6,6 +6,7 @@ from flask import Blueprint, request
 from flask.wrappers import Response
 
 from auth.util import (
+    BIRTHDAY_FORMAT,
     UserProfile,
     login,
     register,
@@ -94,7 +95,9 @@ def register_route():
             firstname=data["firstname"],
             lastname=data["lastname"],
             sex=data["sex"],
-            birthday=int(datetime.strptime(data["birthday"], "%Y-%m-%d").timestamp()),
+            birthday=int(
+                datetime.strptime(data["birthday"], BIRTHDAY_FORMAT).timestamp()
+            ),
         )
 
         # Register data
