@@ -50,16 +50,12 @@ def execute_command(command: str, paramter: tuple) -> list:
 
     # 2. combine field with value to a dict
     named_results: list[dict[str, Any]] = []
-    if cursor.description != None:
-        # mysql may support better named attributes such as `with_rows` to check
-        # whether the executed operation could have produced rows,
-        # but we only use those defined in DB-API 2.0.
-
-        results: tuple[tuple, ...] = cursor.fetchall()
+    if _has_result(cursor):
         field_names: list[str] = _get_field_names(cursor.description)
+        results: tuple[tuple, ...] = cursor.fetchall()
         named_results = _map_names_to_values(field_names, results)
-
     cursor.close()
+
     return named_results
 
 
@@ -89,3 +85,10 @@ def _map_names_to_values(
         named_result: dict[str, Any] = dict(zip(names, list(data)))
         named_results.append(named_result)
     return named_results
+
+
+def _has_result(cursor: Cursor) -> bool:
+    """Returns whether the latest execution on `cursor` produces results."""
+    # cursor.desciption is None for executions that do not return rows
+    # or if the cursor has not had an execution invoked yet.
+    return cursor.description is not None
