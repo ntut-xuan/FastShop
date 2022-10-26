@@ -1,4 +1,5 @@
 from datetime import datetime
+from http import HTTPStatus
 from json import dumps
 from typing import cast
 
@@ -27,7 +28,7 @@ def login_route():
             return Response(
                 dumps(Status.INVALID_DATA.value),
                 mimetype="application/json",
-                status=400,
+                status=HTTPStatus.BAD_REQUEST,
             )
 
         email = data["e-mail"]
@@ -37,17 +38,19 @@ def login_route():
             return Response(
                 dumps(Status.INVALID_EMAIL.value),
                 mimetype="application/json",
-                status=422,
+                status=HTTPStatus.UNPROCESSABLE_ENTITY,
             )
 
         if not login(email, password):
             return Response(
                 dumps(Status.INCORRECT_LOGIN.value),
                 mimetype="application/json",
-                status=403,
+                status=HTTPStatus.FORBIDDEN,
             )
 
-        return Response(dumps(Status.OK.value), mimetype="application/json", status=200)
+        return Response(
+            dumps(Status.OK.value), mimetype="application/json", status=HTTPStatus.OK
+        )
 
     return fetch_page("login")
 
@@ -55,7 +58,7 @@ def login_route():
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register_route():
     if request.method == "POST":
-        # 400 Bad Request error will automatically be raised
+        # HTTPStatus.BAD_REQUEST Bad Request error will automatically be raised
         # if the content-type is not "application/json", so
         # it's safe to cast it manually for type warning supression.
         data = cast(dict, request.json)
@@ -73,7 +76,7 @@ def register_route():
             return Response(
                 dumps(Status.INVALID_DATA.value),
                 mimetype="application/json",
-                status=400,
+                status=HTTPStatus.BAD_REQUEST,
             )
 
         # Validate the data
@@ -81,14 +84,14 @@ def register_route():
             return Response(
                 dumps(Status.INVALID_DATA.value),
                 mimetype="application/json",
-                status=422,
+                status=HTTPStatus.UNPROCESSABLE_ENTITY,
             )
 
         if not is_valid_email(data["e-mail"]):
             return Response(
                 dumps(Status.INVALID_EMAIL.value),
                 mimetype="application/json",
-                status=422,
+                status=HTTPStatus.UNPROCESSABLE_ENTITY,
             )
 
         profile = UserProfile(
@@ -105,9 +108,11 @@ def register_route():
             return Response(
                 dumps(Status.INCORRECT_LOGIN.value),
                 mimetype="application/json",
-                status=403,
+                status=HTTPStatus.FORBIDDEN,
             )
 
-        return Response(dumps(Status.OK.value), mimetype="application/json", status=200)
+        return Response(
+            dumps(Status.OK.value), mimetype="application/json", status=HTTPStatus.OK
+        )
 
     return fetch_page("register")
