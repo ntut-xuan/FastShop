@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from datetime import datetime
 from http import HTTPStatus
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 from flask import Blueprint, make_response, request
 
@@ -14,11 +16,14 @@ from auth.util import (
 )
 from util import Status, fetch_page
 
+if TYPE_CHECKING:
+    from flask.wrappers import Response
+
 auth_bp = Blueprint("auth", __name__)
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
-def login_route():
+def login_route() -> Response | str:
     if request.method == "POST":
         data = request.json
 
@@ -42,7 +47,7 @@ def login_route():
 
 
 @auth_bp.route("/register", methods=["GET", "POST"])
-def register_route():
+def register_route() -> Response | str:
     if request.method == "POST":
         # HTTPStatus.BAD_REQUEST Bad Request error will automatically be raised
         # if the content-type is not "application/json", so

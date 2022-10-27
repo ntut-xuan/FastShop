@@ -28,7 +28,7 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     _create_path_if_not_exist(app.instance_path)
 
     @app.route("/", methods=["GET"])
-    def index():
+    def index() -> str:
         return fetch_page("index")
 
     connect_database_for_app(app)
