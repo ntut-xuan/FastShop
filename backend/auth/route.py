@@ -46,7 +46,7 @@ def login_route() -> Response | str:
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register_route() -> Response | str:
     if request.method == "POST":
-        # HTTPStatus.BAD_REQUEST Bad Request error will automatically be raised
+        # 400 Bad Request error will automatically be raised
         # if the content-type is not "application/json", so
         # it's safe to cast it manually for type warning supression.
         data = cast(dict, request.json)
