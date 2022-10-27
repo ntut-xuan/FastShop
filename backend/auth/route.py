@@ -27,21 +27,21 @@ def login_route() -> Response | str:
     if request.method == "POST":
         data = request.json
 
+        status: Status
+        status_code: HTTPStatus
         if data is None or "e-mail" not in data or "password" not in data:
-            return make_response((Status.INVALID_DATA.value, HTTPStatus.BAD_REQUEST))
-
-        email = data["e-mail"]
-        password = data["password"]
-
-        if not is_valid_email(email):
-            return make_response(
-                (Status.INVALID_EMAIL.value, HTTPStatus.UNPROCESSABLE_ENTITY)
-            )
-
-        if not login(email, password):
-            return make_response((Status.INCORRECT_LOGIN.value, HTTPStatus.FORBIDDEN))
-
-        return make_response((Status.OK.value, HTTPStatus.OK))
+            status = Status.INVALID_DATA
+            status_code = HTTPStatus.BAD_REQUEST
+        elif not is_valid_email(data["e-mail"]):
+            status = Status.INVALID_EMAIL
+            status_code = HTTPStatus.UNPROCESSABLE_ENTITY
+        elif not login(data["e-mail"], data["password"]):
+            status = Status.INCORRECT_LOGIN
+            status_code = HTTPStatus.FORBIDDEN
+        else:
+            status = Status.OK
+            status_code = HTTPStatus.OK
+        return make_response(status.value, status_code)
 
     return fetch_page("login")
 
@@ -62,34 +62,32 @@ def register_route() -> Response | str:
             "e-mail",
             "password",
         ]
-        # Check column is exist in json data
+        status: Status
+        status_code: HTTPStatus
         if not all([col in data for col in required_columns]):
-            return make_response((Status.INVALID_DATA.value, HTTPStatus.BAD_REQUEST))
-
-        # Validate the data
-        if not is_valid_birthday_format(data["birthday"]):
-            return make_response(
-                (Status.INVALID_DATA.value, HTTPStatus.UNPROCESSABLE_ENTITY)
+            status = Status.INVALID_DATA
+            status_code = HTTPStatus.BAD_REQUEST
+        elif not is_valid_birthday_format(data["birthday"]):
+            status = Status.INVALID_DATA
+            status_code = HTTPStatus.UNPROCESSABLE_ENTITY
+        elif not is_valid_email(data["e-mail"]):
+            status = Status.INVALID_EMAIL
+            status_code = HTTPStatus.UNPROCESSABLE_ENTITY
+        else:
+            profile = UserProfile(
+                firstname=data["firstname"],
+                lastname=data["lastname"],
+                sex=data["sex"],
+                birthday=int(
+                    datetime.strptime(data["birthday"], BIRTHDAY_FORMAT).timestamp()
+                ),
             )
-
-        if not is_valid_email(data["e-mail"]):
-            return make_response(
-                (Status.INVALID_EMAIL.value, HTTPStatus.UNPROCESSABLE_ENTITY)
-            )
-
-        profile = UserProfile(
-            firstname=data["firstname"],
-            lastname=data["lastname"],
-            sex=data["sex"],
-            birthday=int(
-                datetime.strptime(data["birthday"], BIRTHDAY_FORMAT).timestamp()
-            ),
-        )
-
-        # Register data
-        if not register(data["e-mail"], data["password"], profile):
-            return make_response((Status.INCORRECT_LOGIN.value, HTTPStatus.FORBIDDEN))
-
-        return make_response((Status.OK.value, HTTPStatus.OK))
+            if not register(data["e-mail"], data["password"], profile):
+                status = Status.INCORRECT_LOGIN
+                status_code = HTTPStatus.FORBIDDEN
+            else:
+                status = Status.OK
+                status_code = HTTPStatus.OK
+        return make_response(status.value, status_code)
 
     return fetch_page("register")
