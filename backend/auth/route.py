@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from http import HTTPStatus
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, Iterable, Mapping, cast
 
 from flask import Blueprint, make_response, request
 
@@ -27,7 +27,7 @@ def login_route() -> Response | str:
     if request.method == "POST":
         data = request.json
 
-        if data is None or "e-mail" not in data or "password" not in data:
+        if data is None or not _has_required_login_data(data):
             return _make_single_message_response(HTTPStatus.BAD_REQUEST)
         if not is_valid_email(data["e-mail"]):
             return _make_single_message_response(HTTPStatus.UNPROCESSABLE_ENTITY)
@@ -58,11 +58,9 @@ def register_route() -> Response | str:
             "e-mail",
             "password",
         ]
-        if not all([col in data for col in required_columns]):
+        if not _has_required_columns(data, required_columns):
             return _make_single_message_response(HTTPStatus.BAD_REQUEST)
-        if not is_valid_birthday_format(data["birthday"]):
-            return _make_single_message_response(HTTPStatus.UNPROCESSABLE_ENTITY)
-        if not is_valid_email(data["e-mail"]):
+        if not _has_valid_register_data_format(data):
             return _make_single_message_response(HTTPStatus.UNPROCESSABLE_ENTITY)
 
         profile = UserProfile(
@@ -81,6 +79,18 @@ def register_route() -> Response | str:
         return _make_single_message_response(status_code)
 
     return fetch_page("register")
+
+
+def _has_required_login_data(data: Mapping[str, Any]) -> bool:
+    return "e-mail" in data and "password" in data
+
+
+def _has_required_columns(data: Mapping, required_columns: Iterable) -> bool:
+    return all([col in data for col in required_columns])
+
+
+def _has_valid_register_data_format(data: Mapping[str, Any]) -> bool:
+    return is_valid_birthday_format(data["birthday"]) and is_valid_email(data["e-mail"])
 
 
 def _make_single_message_response(code: int, message: str | None = None) -> Response:
