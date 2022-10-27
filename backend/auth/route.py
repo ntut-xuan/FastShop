@@ -1,18 +1,16 @@
 from datetime import datetime
 from http import HTTPStatus
-from json import dumps
 from typing import cast
 
-from flask import Blueprint, request
-from flask.wrappers import Response
+from flask import Blueprint, make_response, request
 
 from auth.util import (
     BIRTHDAY_FORMAT,
     UserProfile,
-    login,
-    register,
     is_valid_birthday_format,
     is_valid_email,
+    login,
+    register,
 )
 from route.util import Status, fetch_page
 
@@ -25,32 +23,20 @@ def login_route():
         data = request.json
 
         if data is None or "e-mail" not in data or "password" not in data:
-            return Response(
-                dumps(Status.INVALID_DATA.value),
-                mimetype="application/json",
-                status=HTTPStatus.BAD_REQUEST,
-            )
+            return make_response((Status.INVALID_DATA.value, HTTPStatus.BAD_REQUEST))
 
         email = data["e-mail"]
         password = data["password"]
 
         if not is_valid_email(email):
-            return Response(
-                dumps(Status.INVALID_EMAIL.value),
-                mimetype="application/json",
-                status=HTTPStatus.UNPROCESSABLE_ENTITY,
+            return make_response(
+                (Status.INVALID_EMAIL.value, HTTPStatus.UNPROCESSABLE_ENTITY)
             )
 
         if not login(email, password):
-            return Response(
-                dumps(Status.INCORRECT_LOGIN.value),
-                mimetype="application/json",
-                status=HTTPStatus.FORBIDDEN,
-            )
+            return make_response((Status.INCORRECT_LOGIN.value, HTTPStatus.FORBIDDEN))
 
-        return Response(
-            dumps(Status.OK.value), mimetype="application/json", status=HTTPStatus.OK
-        )
+        return make_response((Status.OK.value, HTTPStatus.OK))
 
     return fetch_page("login")
 
@@ -73,25 +59,17 @@ def register_route():
         ]
         # Check column is exist in json data
         if not all([col in data for col in required_columns]):
-            return Response(
-                dumps(Status.INVALID_DATA.value),
-                mimetype="application/json",
-                status=HTTPStatus.BAD_REQUEST,
-            )
+            return make_response((Status.INVALID_DATA.value, HTTPStatus.BAD_REQUEST))
 
         # Validate the data
         if not is_valid_birthday_format(data["birthday"]):
-            return Response(
-                dumps(Status.INVALID_DATA.value),
-                mimetype="application/json",
-                status=HTTPStatus.UNPROCESSABLE_ENTITY,
+            return make_response(
+                (Status.INVALID_DATA.value, HTTPStatus.UNPROCESSABLE_ENTITY)
             )
 
         if not is_valid_email(data["e-mail"]):
-            return Response(
-                dumps(Status.INVALID_EMAIL.value),
-                mimetype="application/json",
-                status=HTTPStatus.UNPROCESSABLE_ENTITY,
+            return make_response(
+                (Status.INVALID_EMAIL.value, HTTPStatus.UNPROCESSABLE_ENTITY)
             )
 
         profile = UserProfile(
@@ -105,14 +83,8 @@ def register_route():
 
         # Register data
         if not register(data["e-mail"], data["password"], profile):
-            return Response(
-                dumps(Status.INCORRECT_LOGIN.value),
-                mimetype="application/json",
-                status=HTTPStatus.FORBIDDEN,
-            )
+            return make_response((Status.INCORRECT_LOGIN.value, HTTPStatus.FORBIDDEN))
 
-        return Response(
-            dumps(Status.OK.value), mimetype="application/json", status=HTTPStatus.OK
-        )
+        return make_response((Status.OK.value, HTTPStatus.OK))
 
     return fetch_page("register")
