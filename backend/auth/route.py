@@ -9,6 +9,7 @@ from flask import Blueprint, make_response, request
 from auth.util import (
     BIRTHDAY_FORMAT,
     UserProfile,
+    is_registered,
     is_valid_birthday_format,
     is_valid_email,
     login,
@@ -33,9 +34,10 @@ def login_route() -> Response | str:
             return _make_single_message_response(HTTPStatus.UNPROCESSABLE_ENTITY)
 
         status_code: HTTPStatus
-        if not login(data["e-mail"], data["password"]):
+        if not is_registered(data["e-mail"], data["password"]):
             status_code = HTTPStatus.FORBIDDEN
         else:
+            login(data["e-mail"], data["password"])
             status_code = HTTPStatus.OK
         return _make_single_message_response(status_code)
 
@@ -72,9 +74,10 @@ def register_route() -> Response | str:
             ),
         )
         status_code: HTTPStatus
-        if not register(data["e-mail"], data["password"], profile):
+        if is_registered(data["e-mail"], data["password"]):
             status_code = HTTPStatus.FORBIDDEN
         else:
+            register(data["e-mail"], data["password"], profile)
             status_code = HTTPStatus.OK
         return _make_single_message_response(status_code)
 

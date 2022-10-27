@@ -27,9 +27,11 @@ def is_valid_birthday_format(birthday: str) -> bool:
         return False
 
 
-def login(email: str, password: str) -> bool:
-    hashed_password: str = hash_with_sha512(password)
-    return is_registered(email, hashed_password)
+def login(email: str, password: str) -> None:
+    if not is_registered(email, password):
+        # TODO: raise exception
+        pass
+    # TODO: modify some cookie to mark the user as logged in
 
 
 @dataclass
@@ -46,11 +48,12 @@ class UserProfile:
     birthday: int
 
 
-def register(email: str, password: str, profile: UserProfile) -> bool:
+def register(email: str, password: str, profile: UserProfile) -> None:
     hashed_password: str = hash_with_sha512(password)
 
-    if is_registered(email, hashed_password):
-        return False
+    if is_registered(email, hashed_password, is_hashed=True):
+        # TODO: raise exception
+        pass
 
     stmt_to_insert_new_user: str = "INSERT INTO `user`(`email`, `password`, `firstname`, `lastname`, `sex`, `birthday`) VALUES(?, ?, ?, ?, ?, ?)"
     execute_command(
@@ -64,17 +67,18 @@ def register(email: str, password: str, profile: UserProfile) -> bool:
             profile.birthday,
         ),
     )
-    return True
+
+
+def is_registered(email: str, password: str, is_hashed: bool = False) -> bool:
+    if not is_hashed:
+        password = hash_with_sha512(password)
+    user_count: int = execute_command(
+        "SELECT COUNT(*) as `user_count` FROM `user` WHERE `email` = ? and `password` = ?",
+        (email, password),
+    )[0]["user_count"]
+
+    return user_count != 0
 
 
 def hash_with_sha512(string: str) -> str:
     return hashlib.sha512(string.encode("utf-8")).hexdigest()
-
-
-def is_registered(email: str, hashed_password: str) -> bool:
-    user_count: int = execute_command(
-        "SELECT COUNT(*) as `user_count` FROM `user` WHERE `email` = ? and `password` = ?",
-        (email, hashed_password),
-    )[0]["user_count"]
-
-    return user_count != 0

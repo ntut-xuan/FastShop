@@ -272,15 +272,15 @@ def test_is_valid_birthday_format_on_bad_birthday_value_should_return_false(
 
 def test_is_registered_on_registered_user_should_be_true(app: Flask) -> None:
     email: str = "test@email.com"
-    hashed_password: str = hash_with_sha512("test")
+    password: str = "test"
     with app.app_context():
 
-        assert is_registered(email, hashed_password)
+        assert is_registered(email, password)
 
 
 def test_is_registered_on_unregistered_user_should_be_false(app: Flask) -> None:
     email: str = "unregistered@email.com"
-    hashed_password: str = hash_with_sha512("unregistered")
+    password: str = "unregistered"
     with app.app_context():
 
-        assert not is_registered(email, hashed_password)
+        assert not is_registered(email, password)
