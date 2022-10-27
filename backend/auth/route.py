@@ -12,7 +12,7 @@ from auth.util import (
     login,
     register,
 )
-from route.util import Status, fetch_page
+from util import Status, fetch_page
 
 auth_bp = Blueprint("auth", __name__)
 
