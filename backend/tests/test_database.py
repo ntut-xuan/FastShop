@@ -4,10 +4,10 @@ import sqlite3
 from typing import TYPE_CHECKING, Any, no_type_check
 
 import pytest
+from database import get_database
 from database.util import (
     _map_names_to_values,
     execute_command,
-    get_database,
     get_results_mapped_by_field_name,
 )
 

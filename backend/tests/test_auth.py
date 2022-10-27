@@ -11,7 +11,7 @@ from auth.util import (
     is_valid_birthday_format,
     is_valid_email,
 )
-from database.util import get_database
+from database import get_database
 
 if TYPE_CHECKING:
     from flask import Flask

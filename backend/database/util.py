@@ -1,49 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Iterable, cast
+from typing import TYPE_CHECKING, Any, Iterable
 
-import pymysql
-from flask import current_app, g
+from database import get_database
 
 if TYPE_CHECKING:
-    from flask import Flask
+    import pymysql
     from pymysql.cursors import Cursor
-
-
-def connect_database_for_app(app: Flask) -> None:
-    with app.app_context():
-        connect_database()
-    app.teardown_appcontext(close_db)
-
-
-def create_database() -> None:
-    db: pymysql.Connection = get_database()
-    with current_app.open_resource("schema.sql") as f:
-        db.cursor().executescript(f.read().decode("utf-8"))  # type: ignore # f.read() is "bytes", not "str"
-        db.commit()
-
-
-def get_database() -> pymysql.Connection:
-    if not _is_connected():
-        connect_database()
-    return cast(
-        pymysql.Connection, g.db
-    )  # we know the type should be `Connection` while inferred to `Any`
-
-
-def connect_database() -> None:
-    g.db = pymysql.connect(
-        host="fastshop-mariadb-1",
-        user="fsa",
-        password="@fsa2022",
-        database="fastshop",
-    )
-
-
-def close_db(error: BaseException | None = None) -> None:
-    if _is_connected():
-        db = g.pop("db")
-        db.close()
 
 
 def execute_command(command: str, paramter: tuple) -> list[dict[str, Any]]:
@@ -76,10 +39,6 @@ def get_results_mapped_by_field_name(cursor: Cursor) -> list[dict[str, Any]]:
         results: tuple[tuple, ...] = cursor.fetchall()
         named_results = _map_names_to_values(field_names, results)
     return named_results
-
-
-def _is_connected() -> bool:
-    return "db" in g
 
 
 def _get_field_names(cursor_description: tuple[str, ...]) -> list[str]:

@@ -4,10 +4,9 @@ from typing import Any, Mapping
 
 from flask import Flask
 
-from database.util import connect_database_for_app
-from util import fetch_page
-
 from auth.route import auth_bp
+from database import connect_database_for_app
+from util import fetch_page
 
 
 def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
