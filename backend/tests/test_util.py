@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+import pytest
 from http import HTTPStatus
 from typing import TYPE_CHECKING
 
-from app import fetch_page
+from util import SingleMessageStatus, fetch_page
 
 if TYPE_CHECKING:
     from flask.testing import FlaskClient
@@ -22,3 +23,30 @@ def test_get_static_file_should_have_code_ok(client: FlaskClient) -> None:
 
     assert response.status_code == HTTPStatus.OK
     # not asserting data here because the file content may change
+
+
+class SingleMessageStatusTest:
+    def test_message_wrapped_as_dict(self) -> None:
+        status = SingleMessageStatus(HTTPStatus.OK, "page returned")
+
+        assert status.message == {"message": "page returned"}
+
+    @pytest.mark.parametrize(
+        argnames=("status_code,"), argvalues=((102,), (226,), (308,))
+    )
+    def test_default_message_on_not_error_status_code_should_be_ok(
+        self, status_code: int
+    ) -> None:
+        status = SingleMessageStatus(status_code)
+
+        assert status.message["message"] == "OK"
+
+    @pytest.mark.parametrize(
+        argnames=("status_code,"), argvalues=((400,), (451,), (500,), (511,))
+    )
+    def test_default_message_on_error_status_code_should_be_failed(
+        self, status_code: int
+    ) -> None:
+        status = SingleMessageStatus(status_code)
+
+        assert status.message["message"] == "Failed"

@@ -151,7 +151,7 @@ class TestLoginRoute:
         resp: TestResponse = client.post("/login", json=email_and_password)
 
         assert resp.is_json
-        assert resp.json is not None and resp.json["status"] == "Failed"
+        assert resp.json is not None and resp.json["message"] == "Failed"
 
     def test_post_with_invalid_data_should_have_code_bad_request(
         self,
@@ -172,7 +172,7 @@ class TestLoginRoute:
         resp: TestResponse = client.post("/login", json=invalid_data)
 
         assert resp.is_json
-        assert resp.json is not None and resp.json["status"] == "Failed"
+        assert resp.json is not None and resp.json["message"] == "Failed"
 
     def test_post_with_invalid_email_should_have_code_unprocessable_entity(
         self,
@@ -195,7 +195,7 @@ class TestLoginRoute:
         resp: TestResponse = client.post("/login", json=data)
 
         assert resp.is_json
-        assert resp.json is not None and resp.json["status"] == "Failed"
+        assert resp.json is not None and resp.json["message"] == "Failed"
 
 
 some_invalid_emails: list[str] = ["plainaddress", "#@%^%#$@#$@#.com", "@example.com", "Joe Smith <email@example.com>", "email.example.com", "email@example@example.com", ".email@example.com", "email..email@example.com", "email@example.com (Joe Smith)", "email@example", "email@-example.com", "email@111.222.333.44444", "email@example..com", "Abc..123@example.com"]  # fmt: skip

@@ -14,7 +14,7 @@ from auth.util import (
     login,
     register,
 )
-from util import Status, fetch_page
+from util import SingleMessageStatus, fetch_page
 
 if TYPE_CHECKING:
     from flask.wrappers import Response
@@ -27,21 +27,18 @@ def login_route() -> Response | str:
     if request.method == "POST":
         data = request.json
 
-        status: Status
         status_code: HTTPStatus
         if data is None or "e-mail" not in data or "password" not in data:
-            status = Status.INVALID_DATA
             status_code = HTTPStatus.BAD_REQUEST
         elif not is_valid_email(data["e-mail"]):
-            status = Status.INVALID_EMAIL
             status_code = HTTPStatus.UNPROCESSABLE_ENTITY
         elif not login(data["e-mail"], data["password"]):
-            status = Status.INCORRECT_LOGIN
             status_code = HTTPStatus.FORBIDDEN
         else:
-            status = Status.OK
             status_code = HTTPStatus.OK
-        return make_response(status.value, status_code)
+
+        status = SingleMessageStatus(status_code)
+        return make_response(status.message, status.code)
 
     return fetch_page("login")
 
@@ -62,16 +59,12 @@ def register_route() -> Response | str:
             "e-mail",
             "password",
         ]
-        status: Status
         status_code: HTTPStatus
         if not all([col in data for col in required_columns]):
-            status = Status.INVALID_DATA
             status_code = HTTPStatus.BAD_REQUEST
         elif not is_valid_birthday_format(data["birthday"]):
-            status = Status.INVALID_DATA
             status_code = HTTPStatus.UNPROCESSABLE_ENTITY
         elif not is_valid_email(data["e-mail"]):
-            status = Status.INVALID_EMAIL
             status_code = HTTPStatus.UNPROCESSABLE_ENTITY
         else:
             profile = UserProfile(
@@ -83,11 +76,11 @@ def register_route() -> Response | str:
                 ),
             )
             if not register(data["e-mail"], data["password"], profile):
-                status = Status.INCORRECT_LOGIN
                 status_code = HTTPStatus.FORBIDDEN
             else:
-                status = Status.OK
                 status_code = HTTPStatus.OK
-        return make_response(status.value, status_code)
+
+        status = SingleMessageStatus(status_code)
+        return make_response(status.message, status.code)
 
     return fetch_page("register")

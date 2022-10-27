@@ -1,4 +1,4 @@
-from enum import Enum
+from dataclasses import dataclass
 
 from flask import current_app
 
@@ -8,9 +8,30 @@ def fetch_page(page_name: str) -> str:
         return page.read()
 
 
-class Status(Enum):
-    OK = {"status": "OK"}
-    INVALID_DATA = {"status": "Failed", "code": 301}
-    INVALID_EMAIL = {"status": "Failed", "code": 302}
-    INVALID_PASSWORD = {"status": "Failed", "code": 303}
-    INCORRECT_LOGIN = {"status": "Failed", "code": 401}
+@dataclass
+class SingleMessageStatus:
+    """A convenient response status dataclass.
+
+    The message can be directly passed for responses with mimetype in json.
+
+    Attributes:
+        code: HTTP status code.
+        message: A dict with a single key "message".
+    """
+
+    code: int
+    message: dict[str, str]
+
+    def __init__(self, code: int, message: str | None = None) -> None:
+        """
+        Args:
+            code:
+                HTTP status code.
+            message:
+                The response message to be wrapped into the message dict.
+                Default to "OK" if code is lower than 400, to "Failed" otherwise.
+        """
+        self.code: int = code
+        if message is None:
+            message = "OK" if code < 400 else "Failed"
+        self.message = {"message": message}
