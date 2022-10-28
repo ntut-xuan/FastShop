@@ -8,7 +8,7 @@ import pytest
 
 from auth.exception import EmailAlreadyRegisteredError, IncorrectEmailOrPasswordError
 from auth.util import (
-    Sex,
+    Gender,
     UserProfile,
     is_correct_password,
     is_registered,
@@ -65,7 +65,7 @@ class TestRegisterRoute:
             ).fetchone()
             assert user_data["firstname"] == "new_firstname"
             assert user_data["lastname"] == "new_lastname"
-            assert user_data["gender"] == Sex.FEMALE
+            assert user_data["gender"] == Gender.FEMALE
             # birthday and password are stored in different format,
             # not to bother with them here.
 
@@ -334,7 +334,7 @@ class TestLoginFunction:
 class TestRegisterFunction:
     @pytest.fixture
     def some_user_profile(self) -> UserProfile:
-        return UserProfile("Han-Xuan", "Huang", Sex.MALE, 1666604387)
+        return UserProfile("Han-Xuan", "Huang", Gender.MALE, 1666604387)
 
     def test_on_registered_email_should_raise_exception(
         self, app: Flask, some_user_profile: UserProfile

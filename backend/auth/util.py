@@ -39,7 +39,7 @@ def login(email: str, password: str) -> None:
 
 
 @dataclass
-class Sex(IntEnum):
+class Gender(IntEnum):
     MALE = 0
     FEMALE = 1
 
@@ -48,7 +48,7 @@ class Sex(IntEnum):
 class UserProfile:
     firstname: str
     lastname: str
-    sex: Sex
+    sex: Gender
     birthday: int
 
 
