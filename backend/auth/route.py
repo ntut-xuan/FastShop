@@ -56,7 +56,7 @@ def register_route() -> Response | str:
         required_columns: list[str] = [
             "firstname",
             "lastname",
-            "sex",
+            "gender",
             "birthday",
             "e-mail",
             "password",
@@ -69,7 +69,7 @@ def register_route() -> Response | str:
         profile = UserProfile(
             firstname=data["firstname"],
             lastname=data["lastname"],
-            sex=data["sex"],
+            sex=data["gender"],
             birthday=int(
                 datetime.strptime(data["birthday"], BIRTHDAY_FORMAT).timestamp()
             ),

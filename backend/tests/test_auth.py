@@ -33,7 +33,7 @@ class TestRegisterRoute:
             "password": "abc",
             "firstname": "new_firstname",
             "lastname": "new_lastname",
-            "sex": "1",
+            "gender": "1",
             "birthday": "2001-01-01",
         }
 
@@ -65,7 +65,7 @@ class TestRegisterRoute:
             ).fetchone()
             assert user_data["firstname"] == "new_firstname"
             assert user_data["lastname"] == "new_lastname"
-            assert user_data["sex"] == Sex.FEMALE
+            assert user_data["gender"] == Sex.FEMALE
             # birthday and password are stored in different format,
             # not to bother with them here.
 
@@ -77,7 +77,7 @@ class TestRegisterRoute:
             "password": "test",
             "firstname": "Han-Xuan",
             "lastname": "Huang",
-            "sex": "0",
+            "gender": "0",
             "birthday": "2002-06-25",
         }
 
@@ -362,4 +362,4 @@ class TestRegisterFunction:
             ).fetchone()
             assert user_data["firstname"] == some_user_profile.firstname
             assert user_data["lastname"] == some_user_profile.lastname
-            assert user_data["sex"] == some_user_profile.sex
+            assert user_data["gender"] == some_user_profile.sex

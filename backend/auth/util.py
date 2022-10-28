@@ -62,7 +62,7 @@ def register(email: str, password: str, profile: UserProfile) -> None:
         raise EmailAlreadyRegisteredError
 
     stmt_to_insert_new_user: str = """
-        INSERT INTO `user`(`email`, `password`, `firstname`, `lastname`, `sex`, `birthday`)
+        INSERT INTO `user`(`email`, `password`, `firstname`, `lastname`, `gender`, `birthday`)
             VALUES(?, ?, ?, ?, ?, ?)
     """
     execute_command(
