@@ -29,12 +29,12 @@ class TestRegisterRoute:
     @pytest.fixture
     def new_data(self) -> dict[str, str]:
         return {
-            "e-mail": "abc@gmail.com",
-            "password": "test",
-            "firstname": "Huang",
-            "lastname": "Han-Xuan",
-            "sex": "0",
-            "birthday": "2002-06-25",
+            "e-mail": "new@gmail.com",
+            "password": "abc",
+            "firstname": "new_firstname",
+            "lastname": "new_lastname",
+            "sex": "1",
+            "birthday": "2001-01-01",
         }
 
     def test_get_should_response_content_of_register_html(
@@ -61,11 +61,11 @@ class TestRegisterRoute:
             client.post("/register", json=new_data)
 
             user_data: sqlite3.Row = db.execute(
-                "SELECT * FROM user WHERE email = ?", ("abc@gmail.com",)
+                "SELECT * FROM user WHERE email = ?", ("new@gmail.com",)
             ).fetchone()
-            assert user_data["firstname"] == "Huang"
-            assert user_data["lastname"] == "Han-Xuan"
-            assert user_data["sex"] == 0
+            assert user_data["firstname"] == "new_firstname"
+            assert user_data["lastname"] == "new_lastname"
+            assert user_data["sex"] == Sex.FEMALE
             # birthday and password are stored in different format,
             # not to bother with them here.
 
@@ -75,8 +75,8 @@ class TestRegisterRoute:
         data: dict[str, str] = {
             "e-mail": "test@email.com",
             "password": "test",
-            "firstname": "Huang",
-            "lastname": "Han-Xuan",
+            "firstname": "Han-Xuan",
+            "lastname": "Huang",
             "sex": "0",
             "birthday": "2002-06-25",
         }
@@ -97,7 +97,7 @@ class TestRegisterRoute:
     def test_post_with_wrong_date_format_should_be_unprocessable_entity(
         self, client: FlaskClient, new_data: dict[str, str]
     ) -> None:
-        new_data["birthday"] = "2002/06/25"
+        new_data["birthday"] = "2001/01/01"
 
         resp: TestResponse = client.post("/register", json=new_data)
 
