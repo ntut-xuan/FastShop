@@ -112,7 +112,7 @@ def _make_single_message_response(code: int, message: str | None = None) -> Resp
     return make_response(status.message, status.code)
 
 
-def _make_response_with_jwt_cookie(data: str, response: Response):
+def _make_response_with_jwt_cookie(data: dict, response: Response):
     current_time: datetime = datetime.now(tz=timezone.utc)
     expire_time: datetime = current_time + timedelta(days=1)
     jwt_data = generate_payload(data)

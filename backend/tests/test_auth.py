@@ -1,8 +1,10 @@
 from __future__ import annotations
+from pydoc import cli
 
 import sqlite3
 from http import HTTPStatus
-from typing import TYPE_CHECKING, ClassVar
+from http.cookiejar import Cookie
+from typing import TYPE_CHECKING, ClassVar, no_type_check
 
 import pytest
 
@@ -212,6 +214,7 @@ class TestLoginRoute:
         assert resp.is_json
         assert resp.json is not None and resp.json["message"] == "Failed"
 
+    @no_type_check
     def test_post_with_existing_email_and_password_should_exist_jwt_cookie(
         self,
         client: FlaskClient,
@@ -223,8 +226,9 @@ class TestLoginRoute:
         )
 
         assert cookie != None
-        assert is_valid_jwt_data(str(cookie.value).encode()) == True
+        assert is_valid_jwt_data(str(cookie.value)) == True
 
+    @no_type_check
     def test_post_with_correct_data_should_have_correct_jwt_token_attribute(
         self,
         client: FlaskClient,
@@ -234,7 +238,7 @@ class TestLoginRoute:
         cookie = next(
             (cookie for cookie in client.cookie_jar if cookie.name == "cd_wy_sbl"), None
         )
-        encode_cookie = str(cookie.value).encode()
+        encode_cookie = str(cookie.value)
         jwt_data = decode_jwt(encode_cookie)
 
         assert jwt_data["data"]["e-mail"] == new_data["e-mail"]

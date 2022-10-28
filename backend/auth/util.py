@@ -104,7 +104,7 @@ def hash_with_sha512(string: str) -> str:
     return hashlib.sha512(string.encode("utf-8")).hexdigest()
 
 
-def is_valid_jwt_data(data: bytes) -> bool:
+def is_valid_jwt_data(data: str) -> bool:
     """Return the jwt data is valid or not."""
     if data is None:
         return False
@@ -134,6 +134,6 @@ def generate_payload(
     return jwt_data
 
 
-def decode_jwt(data: bytes) -> dict:
+def decode_jwt(data: str) -> dict:
     """Return the decoded jwt data, the jwt data should be exist."""
     return jwt.decode(data, "secret", algorithms=["HS256"])
