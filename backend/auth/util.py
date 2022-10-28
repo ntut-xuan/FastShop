@@ -6,7 +6,11 @@ from datetime import datetime, timezone, timedelta
 from enum import IntEnum
 from typing import Final
 
-from auth.exception import EmailAlreadyRegisteredError, IncorrectEmailOrPasswordError
+from auth.exception import (
+    EmailAlreadyRegisteredError,
+    IncorrectEmailOrPasswordError,
+    UserNotFoundError,
+)
 from database.util import execute_command
 
 EMAIL_REGEX: Final[str] = r"^[A-Za-z0-9_]+([.-]?[A-Za-z0-9_]+)*@[A-Za-z0-9_]+([.-]?[A-Za-z0-9_]+)*(\.[A-Za-z0-9_]{2,3})+$"  # fmt: skip
@@ -133,3 +137,18 @@ def generate_payload(
 def decode_jwt(data: str) -> dict:
     """Return the decoded jwt data, the jwt data should be exist."""
     return jwt.decode(data, "secret", algorithms=["HS256"])
+
+
+def fetch_specific_account_profile(email: str) -> dict:
+    """
+    Raises:
+        UserNotFoundError: The `email` in parameter isn't register yet.
+    """
+
+    if not is_registered(email):
+        raise UserNotFoundError
+
+    return execute_command(
+        "SELECT firstname, lastname, gender, birthday FROM `user` WHERE `email` = ?",
+        (email,),
+    )[0]

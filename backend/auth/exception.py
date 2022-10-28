@@ -4,3 +4,7 @@ class IncorrectEmailOrPasswordError(RuntimeError):
 
 class EmailAlreadyRegisteredError(RuntimeError):
     pass
+
+
+class UserNotFoundError(RuntimeError):
+    pass

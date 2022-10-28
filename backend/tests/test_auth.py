@@ -121,10 +121,14 @@ class TestRegisterRoute:
 
 class TestLoginRoute:
     @pytest.fixture
-    def new_data(self) -> dict[str, str]:
+    def new_data(self) -> dict[str, str | int]:
         return {
             "e-mail": "test@email.com",
             "password": "test",
+            "firstname": "Han-Xuan",
+            "lastname": "Huang",
+            "gender": 0,
+            "birthday": "2002-06-25",
         }
 
     def test_get_should_response_content_of_login_html(
@@ -240,10 +244,13 @@ class TestLoginRoute:
         cookie = next(
             (cookie for cookie in client.cookie_jar if cookie.name == "cd_wy_sbl"), None
         )
-        encode_cookie = str(cookie.value)
-        jwt_data = decode_jwt(encode_cookie)
+        cookie_value = str(cookie.value)
+        jwt_data = decode_jwt(cookie_value)
 
         assert jwt_data["data"]["e-mail"] == new_data["e-mail"]
+        assert jwt_data["data"]["firstname"] == new_data["firstname"]
+        assert jwt_data["data"]["lastname"] == new_data["lastname"]
+        assert jwt_data["data"]["gender"] == new_data["gender"]
 
 
 class TestIsValidEmail:

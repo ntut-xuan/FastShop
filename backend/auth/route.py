@@ -16,6 +16,7 @@ from auth.util import (
     login,
     register,
     generate_payload,
+    fetch_specific_account_profile,
 )
 from util import SingleMessageStatus, fetch_page
 
@@ -47,6 +48,7 @@ def login_route() -> Response | str:
 
         if status_code == HTTPStatus.OK:
             del data["password"]
+            data |= fetch_specific_account_profile(data["e-mail"])
             prepare_response = _make_response_with_jwt_cookie(data, prepare_response)
 
         return prepare_response
