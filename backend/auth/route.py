@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from http import HTTPStatus
 from typing import TYPE_CHECKING, Any, Iterable, Mapping, cast
 
 from flask import Blueprint, make_response, request
+import jwt
 from auth.exception import EmailAlreadyRegisteredError, IncorrectEmailOrPasswordError
 
 from auth.util import (
@@ -14,6 +15,7 @@ from auth.util import (
     is_valid_email,
     login,
     register,
+    generate_payload,
 )
 from util import SingleMessageStatus, fetch_page
 
@@ -40,7 +42,14 @@ def login_route() -> Response | str:
             status_code = HTTPStatus.FORBIDDEN
         else:
             status_code = HTTPStatus.OK
-        return _make_single_message_response(status_code)
+
+        prepare_response = _make_single_message_response(status_code)
+
+        if status_code == HTTPStatus.OK:
+            del data["password"]
+            prepare_response = _make_response_with_jwt_cookie(data, prepare_response)
+
+        return prepare_response
 
     return fetch_page("login")
 
@@ -101,3 +110,11 @@ def _has_valid_register_data_format(data: Mapping[str, Any]) -> bool:
 def _make_single_message_response(code: int, message: str | None = None) -> Response:
     status = SingleMessageStatus(code, message)
     return make_response(status.message, status.code)
+
+
+def _make_response_with_jwt_cookie(data: str, response: Response):
+    current_time: datetime = datetime.now(tz=timezone.utc)
+    expire_time: datetime = current_time + timedelta(days=1)
+    jwt_data = generate_payload(data)
+    response.set_cookie("cd_wy_sbl", value=jwt_data, expires=expire_time)
+    return response

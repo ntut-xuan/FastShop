@@ -1,7 +1,8 @@
 import hashlib
 import re
+import jwt
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from enum import IntEnum
 from typing import Final
 
@@ -101,3 +102,38 @@ def is_registered(email: str) -> bool:
 
 def hash_with_sha512(string: str) -> str:
     return hashlib.sha512(string.encode("utf-8")).hexdigest()
+
+
+def is_valid_jwt_data(data: bytes) -> bool:
+    """Return the jwt data is valid or not."""
+    if data is None:
+        return False
+
+    decode_data = jwt.decode(data, "secret", algorithms=["HS256"])
+    expire_time = decode_data["exp"]
+    current_time = datetime.now(tz=timezone.utc).timestamp()
+
+    if current_time > expire_time:
+        return False
+
+    return True
+
+
+def generate_payload(
+    data: dict, expire_time_delta: timedelta = timedelta(days=1)
+) -> str:
+    """Return the payload with generate time attribute (iat) and 1 day expired strict attribute (exp)."""
+    current_time: datetime = datetime.now(tz=timezone.utc)
+    expire_time = current_time + expire_time_delta
+    payload = {
+        "data": data,
+        "iat": current_time,
+        "exp": expire_time,
+    }
+    jwt_data = jwt.encode(payload, "secret", algorithm="HS256")
+    return jwt_data
+
+
+def decode_jwt(data: bytes) -> dict:
+    """Return the decoded jwt data, the jwt data should be exist."""
+    return jwt.decode(data, "secret", algorithms=["HS256"])
