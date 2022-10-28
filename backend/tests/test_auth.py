@@ -5,12 +5,13 @@ from http import HTTPStatus
 from typing import TYPE_CHECKING
 
 import pytest
+
 from auth.util import (
+    EmailAlreadyRegisteredError,
+    IncorrectEmailOrPasswordError,
     Sex,
-    UserAlreadyRegisteredError,
     UserProfile,
-    UserUnregisteredError,
-    hash_with_sha512,
+    is_correct_password,
     is_registered,
     is_valid_birthday_format,
     is_valid_email,
@@ -256,7 +257,7 @@ def test_is_valid_birthday_format_on_incorrect_format_should_return_false(
     assert not is_valid_birthday_format(birthday_in_incorrect_format)
 
 
-def test_is_valid_birthday_format_on_corret_format_should_return_true() -> None:
+def test_is_valid_birthday_format_on_correct_format_should_return_true() -> None:
     birthday = "2000-01-01"
 
     assert is_valid_birthday_format(birthday)
@@ -276,41 +277,60 @@ def test_is_valid_birthday_format_on_bad_birthday_value_should_return_false(
     assert not is_valid_birthday_format(bad_birthday)
 
 
-class TestIsRegisteredFunction:
-    def test_is_registered_on_registered_user_should_be_true(self, app: Flask) -> None:
+class TestIsCorrectPassword:
+    def test_on_correct_password_should_be_true(self, app: Flask) -> None:
         email: str = "test@email.com"
         password: str = "test"
         with app.app_context():
 
-            assert is_registered(email, password)
+            assert is_correct_password(email, password)
 
-    def test_is_registered_on_unregistered_user_should_be_false(
-        self, app: Flask
-    ) -> None:
-        email: str = "unregistered@email.com"
-        password: str = "unregistered"
-        with app.app_context():
-
-            assert not is_registered(email, password)
-
-    def test_is_registered_with_is_hashed_flag_should_not_hash_again(
-        self, app: Flask
-    ) -> None:
+    def test_on_incorrect_user_should_be_false(self, app: Flask) -> None:
         email: str = "test@email.com"
-        hashed_password: str = hash_with_sha512("test")
-        is_hashed: bool = True
+        password: str = "should_be_test"
         with app.app_context():
 
-            assert is_registered(email, hashed_password, is_hashed=is_hashed)
+            assert not is_correct_password(email, password)
+
+    def test_on_unregistered_email_should_raise_exception(self, app: Flask) -> None:
+        email: str = "unregistered@email.com"
+        password: str = "test"
+        with app.app_context():
+
+            with pytest.raises(Exception):
+                is_correct_password(email, password)
 
 
-def test_login_on_unregistered_user_should_raise_exception(app: Flask) -> None:
-    email: str = "unregistered@email.com"
-    password: str = "unregistered"
-    with app.app_context():
+class TestIsRegistered:
+    def test_on_registered_email_should_be_true(self, app: Flask) -> None:
+        registered_email: str = "test@email.com"
+        with app.app_context():
 
-        with pytest.raises(UserUnregisteredError):
-            login(email, password)
+            assert is_registered(registered_email)
+
+    def test_on_unregistered_email_should_be_false(self, app: Flask) -> None:
+        unregistered_email: str = "unregistered@email.com"
+        with app.app_context():
+
+            assert not is_registered(unregistered_email)
+
+
+class TestLoginFunction:
+    def test_on_unregistered_email_should_raise_exception(self, app: Flask) -> None:
+        unregistered_email: str = "unregistered@email.com"
+        password: str = "test"
+        with app.app_context():
+
+            with pytest.raises(IncorrectEmailOrPasswordError):
+                login(unregistered_email, password)
+
+    def test_on_incorrect_password_should_raise_exception(self, app: Flask) -> None:
+        email: str = "test@email.com"
+        incorrect_password: str = "should_be_test"
+        with app.app_context():
+
+            with pytest.raises(IncorrectEmailOrPasswordError):
+                login(email, incorrect_password)
 
 
 class TestRegisterFunction:
@@ -325,7 +345,7 @@ class TestRegisterFunction:
         password: str = "no_matter_the_password_is_registered_or_not"
         with app.app_context():
 
-            with pytest.raises(UserAlreadyRegisteredError):
+            with pytest.raises(EmailAlreadyRegisteredError):
                 register(email, password, some_user_profile)
 
     def test_on_registered_password_should_registered_successfully(

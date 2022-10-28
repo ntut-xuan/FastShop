@@ -27,17 +27,17 @@ def is_valid_birthday_format(birthday: str) -> bool:
         return False
 
 
-class UserUnregisteredError(RuntimeError):
+class IncorrectEmailOrPasswordError(RuntimeError):
     pass
 
 
 def login(email: str, password: str) -> None:
     """
     Raises:
-        UserUnregisteredError
+        IncorrectEmailOrPasswordError
     """
-    if not is_registered(email, password):
-        raise UserUnregisteredError
+    if not is_registered(email) or not is_correct_password(email, password):
+        raise IncorrectEmailOrPasswordError
     # TODO: modify some cookie to mark the user as logged in
 
 
@@ -55,26 +55,28 @@ class UserProfile:
     birthday: int
 
 
-class UserAlreadyRegisteredError(RuntimeError):
+class EmailAlreadyRegisteredError(RuntimeError):
     pass
 
 
 def register(email: str, password: str, profile: UserProfile) -> None:
     """
     Raises:
-        UserAlreadyRegisteredError
+        EmailAlreadyRegisteredError: `email` should not be already registered.
     """
-    hashed_password: str = hash_with_sha512(password)
 
-    if is_registered(email, hashed_password, is_hashed=True):
-        raise UserAlreadyRegisteredError
+    if is_registered(email):
+        raise EmailAlreadyRegisteredError
 
-    stmt_to_insert_new_user: str = "INSERT INTO `user`(`email`, `password`, `firstname`, `lastname`, `sex`, `birthday`) VALUES(?, ?, ?, ?, ?, ?)"
+    stmt_to_insert_new_user: str = """
+        INSERT INTO `user`(`email`, `password`, `firstname`, `lastname`, `sex`, `birthday`)
+            VALUES(?, ?, ?, ?, ?, ?)
+    """
     execute_command(
         stmt_to_insert_new_user,
         (
             email,
-            hashed_password,
+            hash_with_sha512(password),
             profile.firstname,
             profile.lastname,
             profile.sex,
@@ -83,12 +85,22 @@ def register(email: str, password: str, profile: UserProfile) -> None:
     )
 
 
-def is_registered(email: str, password: str, is_hashed: bool = False) -> bool:
-    if not is_hashed:
-        password = hash_with_sha512(password)
+def is_correct_password(registered_email: str, password_to_check: str) -> bool:
+    """The `registered_email` should be already registered, otherwise Exception raised by the database."""
+    hashed_password_to_check = hash_with_sha512(password_to_check)
+    hashed_user_password: int = execute_command(
+        "SELECT `password` FROM `user` WHERE `email` = ?",
+        (registered_email,),
+    )[0]["password"]
+
+    return hashed_password_to_check == hashed_user_password
+
+
+def is_registered(email: str) -> bool:
+    """Returns whether the email is aldready used."""
     user_count: int = execute_command(
-        "SELECT COUNT(*) as `user_count` FROM `user` WHERE `email` = ? and `password` = ?",
-        (email, password),
+        "SELECT COUNT(*) as `user_count` FROM `user` WHERE `email` = ?",
+        (email,),
     )[0]["user_count"]
 
     return user_count != 0

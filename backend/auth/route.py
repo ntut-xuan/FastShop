@@ -9,7 +9,6 @@ from flask import Blueprint, make_response, request
 from auth.util import (
     BIRTHDAY_FORMAT,
     UserProfile,
-    is_registered,
     is_valid_birthday_format,
     is_valid_email,
     login,
