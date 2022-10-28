@@ -1,4 +1,4 @@
-INSERT INTO `user` (`uid`, `email`, `password`, `firstname`, `lastname`, `sex`, `birthday`)
+INSERT INTO `user` (`uid`, `email`, `password`, `firstname`, `lastname`, `gender`, `birthday`)
 VALUES (
     0,
     'test@email.com',
