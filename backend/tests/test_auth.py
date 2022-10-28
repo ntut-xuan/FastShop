@@ -14,6 +14,8 @@ from auth.util import (
     is_registered,
     is_valid_birthday_format,
     is_valid_email,
+    is_valid_jwt_data,
+    decode_jwt,
     login,
     register,
 )
@@ -114,6 +116,13 @@ class TestRegisterRoute:
 
 
 class TestLoginRoute:
+    @pytest.fixture
+    def new_data(self) -> dict[str, str]:
+        return {
+            "e-mail": "test@email.com",
+            "password": "test",
+        }
+
     def test_get_should_response_content_of_login_html(
         self,
         client: FlaskClient,
@@ -202,6 +211,33 @@ class TestLoginRoute:
 
         assert resp.is_json
         assert resp.json is not None and resp.json["message"] == "Failed"
+
+    def test_post_with_existing_email_and_password_should_exist_jwt_cookie(
+        self,
+        client: FlaskClient,
+        new_data: dict[str, str],
+    ) -> None:
+        client.post("/login", json=new_data)
+        cookie = next(
+            (cookie for cookie in client.cookie_jar if cookie.name == "cd_wy_sbl"), None
+        )
+
+        assert cookie != None
+        assert is_valid_jwt_data(str(cookie.value).encode()) == True
+
+    def test_post_with_correct_data_should_have_correct_jwt_token_attribute(
+        self,
+        client: FlaskClient,
+        new_data: dict[str, str],
+    ) -> None:
+        client.post("/login", json=new_data)
+        cookie = next(
+            (cookie for cookie in client.cookie_jar if cookie.name == "cd_wy_sbl"), None
+        )
+        encode_cookie = str(cookie.value).encode()
+        jwt_data = decode_jwt(encode_cookie)
+
+        assert jwt_data["data"]["e-mail"] == new_data["e-mail"]
 
 
 class TestIsValidEmail:
