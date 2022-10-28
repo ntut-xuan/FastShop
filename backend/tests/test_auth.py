@@ -362,4 +362,4 @@ class TestRegisterFunction:
             ).fetchone()
             assert user_data["firstname"] == some_user_profile.firstname
             assert user_data["lastname"] == some_user_profile.lastname
-            assert user_data["gender"] == some_user_profile.sex
+            assert user_data["gender"] == some_user_profile.gender

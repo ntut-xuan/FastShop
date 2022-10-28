@@ -69,7 +69,7 @@ def register_route() -> Response | str:
         profile = UserProfile(
             firstname=data["firstname"],
             lastname=data["lastname"],
-            sex=data["gender"],
+            gender=data["gender"],
             birthday=int(
                 datetime.strptime(data["birthday"], BIRTHDAY_FORMAT).timestamp()
             ),

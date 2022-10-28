@@ -48,7 +48,7 @@ class Gender(IntEnum):
 class UserProfile:
     firstname: str
     lastname: str
-    sex: Gender
+    gender: Gender
     birthday: int
 
 
@@ -72,7 +72,7 @@ def register(email: str, password: str, profile: UserProfile) -> None:
             hash_with_sha512(password),
             profile.firstname,
             profile.lastname,
-            profile.sex,
+            profile.gender,
             profile.birthday,
         ),
     )
