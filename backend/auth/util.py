@@ -5,6 +5,7 @@ from datetime import datetime
 from enum import IntEnum
 from typing import Final
 
+from auth.exception import EmailAlreadyRegisteredError, IncorrectEmailOrPasswordError
 from database.util import execute_command
 
 EMAIL_REGEX: Final[str] = r"^[A-Za-z0-9_]+([.-]?[A-Za-z0-9_]+)*@[A-Za-z0-9_]+([.-]?[A-Za-z0-9_]+)*(\.[A-Za-z0-9_]{2,3})+$"  # fmt: skip
@@ -25,10 +26,6 @@ def is_valid_birthday_format(birthday: str) -> bool:
         return True
     except ValueError:
         return False
-
-
-class IncorrectEmailOrPasswordError(RuntimeError):
-    pass
 
 
 def login(email: str, password: str) -> None:
@@ -53,10 +50,6 @@ class UserProfile:
     lastname: str
     sex: Sex
     birthday: int
-
-
-class EmailAlreadyRegisteredError(RuntimeError):
-    pass
 
 
 def register(email: str, password: str, profile: UserProfile) -> None:

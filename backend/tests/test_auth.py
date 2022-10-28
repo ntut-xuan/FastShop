@@ -6,9 +6,8 @@ from typing import TYPE_CHECKING, ClassVar
 
 import pytest
 
+from auth.exception import EmailAlreadyRegisteredError, IncorrectEmailOrPasswordError
 from auth.util import (
-    EmailAlreadyRegisteredError,
-    IncorrectEmailOrPasswordError,
     Sex,
     UserProfile,
     is_correct_password,
