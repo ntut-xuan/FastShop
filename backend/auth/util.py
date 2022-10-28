@@ -106,17 +106,16 @@ def hash_with_sha512(string: str) -> str:
 
 def is_valid_jwt_data(data: str) -> bool:
     """Return the jwt data is valid or not."""
-    if data is None:
+    try:
+        if data is None or len(data.split(".")) != 3:
+            return False
+
+        jwt.decode(data, "secret", algorithms=["HS256"])
+        return True
+    except jwt.DecodeError:
         return False
-
-    decode_data = jwt.decode(data, "secret", algorithms=["HS256"])
-    expire_time = decode_data["exp"]
-    current_time = datetime.now(tz=timezone.utc).timestamp()
-
-    if current_time > expire_time:
+    except jwt.exceptions.ExpiredSignatureError:
         return False
-
-    return True
 
 
 def generate_payload(

@@ -1,4 +1,5 @@
 from __future__ import annotations
+from datetime import timedelta
 from pydoc import cli
 
 import sqlite3
@@ -12,6 +13,7 @@ from auth.exception import EmailAlreadyRegisteredError, IncorrectEmailOrPassword
 from auth.util import (
     Gender,
     UserProfile,
+    generate_payload,
     is_correct_password,
     is_registered,
     is_valid_birthday_format,
@@ -403,3 +405,23 @@ class TestRegisterFunction:
             assert user_data["firstname"] == some_user_profile.firstname
             assert user_data["lastname"] == some_user_profile.lastname
             assert user_data["gender"] == some_user_profile.gender
+
+
+class TestJWTFunction:
+    def test_if_data_none_validation_should_return_false(self) -> None:
+        some_jwt_key = None
+        assert is_valid_jwt_data(some_jwt_key) == False
+
+    def test_if_data_not_have_enought_segment_validation_should_return_false(
+        self,
+    ) -> None:
+        some_jwt_key = "abc123"
+        assert is_valid_jwt_data(some_jwt_key) == False
+
+    def test_if_data_invalid_validation_should_return_false(self) -> None:
+        some_jwt_key = "abc.123.bcd"
+        assert is_valid_jwt_data(some_jwt_key) == False
+
+    def test_if_data_expired_validation_should_return_false(self) -> None:
+        jwt_payload = generate_payload({}, timedelta(days=-87))
+        assert is_valid_jwt_data(jwt_payload) == False
