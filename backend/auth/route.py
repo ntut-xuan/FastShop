@@ -5,6 +5,7 @@ from http import HTTPStatus
 from typing import TYPE_CHECKING, Any, Iterable, Mapping, cast
 
 from flask import Blueprint, make_response, request
+from auth.exception import EmailAlreadyRegisteredError, IncorrectEmailOrPasswordError
 
 from auth.util import (
     BIRTHDAY_FORMAT,
@@ -35,7 +36,7 @@ def login_route() -> Response | str:
         status_code: HTTPStatus
         try:
             login(data["e-mail"], data["password"])
-        except Exception:
+        except IncorrectEmailOrPasswordError:
             status_code = HTTPStatus.FORBIDDEN
         else:
             status_code = HTTPStatus.OK
@@ -76,7 +77,7 @@ def register_route() -> Response | str:
         status_code: HTTPStatus
         try:
             register(data["e-mail"], data["password"], profile)
-        except Exception:
+        except EmailAlreadyRegisteredError:
             status_code = HTTPStatus.FORBIDDEN
         else:
             status_code = HTTPStatus.OK
