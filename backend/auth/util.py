@@ -29,8 +29,7 @@ def is_valid_birthday_format(birthday: str) -> bool:
 
 def login(email: str, password: str) -> None:
     if not is_registered(email, password):
-        # TODO: raise exception
-        pass
+        raise Exception
     # TODO: modify some cookie to mark the user as logged in
 
 

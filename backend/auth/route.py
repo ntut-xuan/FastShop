@@ -34,10 +34,11 @@ def login_route() -> Response | str:
             return _make_single_message_response(HTTPStatus.UNPROCESSABLE_ENTITY)
 
         status_code: HTTPStatus
-        if not is_registered(data["e-mail"], data["password"]):
+        try:
+            login(data["e-mail"], data["password"])
+        except Exception:
             status_code = HTTPStatus.FORBIDDEN
         else:
-            login(data["e-mail"], data["password"])
             status_code = HTTPStatus.OK
         return _make_single_message_response(status_code)
 

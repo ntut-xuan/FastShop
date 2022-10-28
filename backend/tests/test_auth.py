@@ -10,6 +10,7 @@ from auth.util import (
     is_registered,
     is_valid_birthday_format,
     is_valid_email,
+    login,
 )
 from database import get_database
 
@@ -284,3 +285,21 @@ def test_is_registered_on_unregistered_user_should_be_false(app: Flask) -> None:
     with app.app_context():
 
         assert not is_registered(email, password)
+
+
+def test_is_registered_with_is_hashed_flag_should_not_hash_again(app: Flask) -> None:
+    email: str = "test@email.com"
+    hashed_password: str = hash_with_sha512("test")
+    is_hashed: bool = True
+    with app.app_context():
+
+        assert is_registered(email, hashed_password, is_hashed=is_hashed)
+
+
+def test_login_on_unregistered_user_should_raise_exception(app: Flask) -> None:
+    email: str = "unregistered@email.com"
+    password: str = "unregistered"
+    with app.app_context():
+
+        with pytest.raises(Exception):
+            login(email, password)
