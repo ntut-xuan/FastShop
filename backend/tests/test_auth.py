@@ -9,7 +9,11 @@ from typing import TYPE_CHECKING, ClassVar, no_type_check
 
 import pytest
 
-from auth.exception import EmailAlreadyRegisteredError, IncorrectEmailOrPasswordError
+from auth.exception import (
+    EmailAlreadyRegisteredError,
+    IncorrectEmailOrPasswordError,
+    UserNotFoundError,
+)
 from auth.util import (
     Gender,
     UserProfile,
@@ -22,6 +26,7 @@ from auth.util import (
     decode_jwt,
     login,
     register,
+    fetch_specific_account_profile,
 )
 from database import get_database
 
@@ -412,6 +417,15 @@ class TestRegisterFunction:
             assert user_data["firstname"] == some_user_profile.firstname
             assert user_data["lastname"] == some_user_profile.lastname
             assert user_data["gender"] == some_user_profile.gender
+
+
+class TestProfileFetchFunction:
+    def test_using_profile_fetch_function_with_unregister_email(
+        self, app: Flask
+    ) -> None:
+        with app.app_context():
+            with pytest.raises(UserNotFoundError):
+                fetch_specific_account_profile("c8763@ccc.nnn")
 
 
 class TestJWTFunction:
