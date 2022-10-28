@@ -107,9 +107,6 @@ def hash_with_sha512(string: str) -> str:
 def is_valid_jwt_data(data: str) -> bool:
     """Return the jwt data is valid or not."""
     try:
-        if data is None or len(data.split(".")) != 3:
-            return False
-
         jwt.decode(data, "secret", algorithms=["HS256"])
         return True
     except jwt.DecodeError:

@@ -408,10 +408,6 @@ class TestRegisterFunction:
 
 
 class TestJWTFunction:
-    def test_if_data_none_validation_should_return_false(self) -> None:
-        some_jwt_key = None
-        assert is_valid_jwt_data(some_jwt_key) == False
-
     def test_if_data_not_have_enought_segment_validation_should_return_false(
         self,
     ) -> None:
