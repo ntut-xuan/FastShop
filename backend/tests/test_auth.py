@@ -69,7 +69,7 @@ class TestRegisterRoute:
             # birthday and password are stored in different format,
             # not to bother with them here.
 
-    def test_post_with_duplicate_data_should_be_forbidden(
+    def test_post_with_registered_data_should_be_forbidden(
         self, client: FlaskClient
     ) -> None:
         data: dict[str, str] = {
@@ -85,7 +85,7 @@ class TestRegisterRoute:
 
         assert resp.status_code == HTTPStatus.FORBIDDEN
 
-    def test_post_with_wrong_data_should_be_bad_request(
+    def test_post_with_incorrect_data_should_be_bad_request(
         self, client: FlaskClient
     ) -> None:
         data: dict[str, str] = {"uriah": "garbage"}
@@ -94,7 +94,7 @@ class TestRegisterRoute:
 
         assert resp.status_code == HTTPStatus.BAD_REQUEST
 
-    def test_post_with_wrong_date_format_should_be_unprocessable_entity(
+    def test_post_with_incorrect_date_format_should_be_unprocessable_entity(
         self, client: FlaskClient, new_data: dict[str, str]
     ) -> None:
         new_data["birthday"] = "2001/01/01"
@@ -103,7 +103,7 @@ class TestRegisterRoute:
 
         assert resp.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
-    def test_post_with_wrong_email_format_should_be_unprocessable_entity(
+    def test_post_with_incorrect_email_format_should_be_unprocessable_entity(
         self, client: FlaskClient, new_data: dict[str, str]
     ) -> None:
         new_data["e-mail"] = "test@email@com"
@@ -134,7 +134,7 @@ class TestLoginRoute:
 
         assert resp.status_code == HTTPStatus.OK
 
-    def test_post_with_wrong_password_should_have_code_forbidden(
+    def test_post_with_incorrect_password_should_have_code_forbidden(
         self, client: FlaskClient
     ) -> None:
         email_and_password: dict[str, str] = {
@@ -146,7 +146,7 @@ class TestLoginRoute:
 
         assert resp.status_code == HTTPStatus.FORBIDDEN
 
-    def test_post_with_wrong_password_should_response_failed_message_in_json(
+    def test_post_with_incorrect_password_should_response_failed_message_in_json(
         self, client: FlaskClient
     ) -> None:
         email_and_password: dict[str, str] = {
@@ -241,7 +241,7 @@ def test_is_valid_email_on_valid_email_should_return_true(email: str) -> None:
 
 
 @pytest.mark.parametrize(
-    argnames=("birthday_in_wrong_format",),
+    argnames=("birthday_in_incorrect_format",),
     argvalues=(
         ("2000/01/01",),
         ("2000_01_01",),
@@ -250,10 +250,10 @@ def test_is_valid_email_on_valid_email_should_return_true(email: str) -> None:
         ("20000101",),
     ),
 )
-def test_is_valid_birthday_format_on_wrong_format_should_return_false(
-    birthday_in_wrong_format: str,
+def test_is_valid_birthday_format_on_incorrect_format_should_return_false(
+    birthday_in_incorrect_format: str,
 ) -> None:
-    assert not is_valid_birthday_format(birthday_in_wrong_format)
+    assert not is_valid_birthday_format(birthday_in_incorrect_format)
 
 
 def test_is_valid_birthday_format_on_corret_format_should_return_true() -> None:
@@ -276,29 +276,32 @@ def test_is_valid_birthday_format_on_bad_birthday_value_should_return_false(
     assert not is_valid_birthday_format(bad_birthday)
 
 
-def test_is_registered_on_registered_user_should_be_true(app: Flask) -> None:
-    email: str = "test@email.com"
-    password: str = "test"
-    with app.app_context():
+class TestIsRegisteredFunction:
+    def test_is_registered_on_registered_user_should_be_true(self, app: Flask) -> None:
+        email: str = "test@email.com"
+        password: str = "test"
+        with app.app_context():
 
-        assert is_registered(email, password)
+            assert is_registered(email, password)
 
+    def test_is_registered_on_unregistered_user_should_be_false(
+        self, app: Flask
+    ) -> None:
+        email: str = "unregistered@email.com"
+        password: str = "unregistered"
+        with app.app_context():
 
-def test_is_registered_on_unregistered_user_should_be_false(app: Flask) -> None:
-    email: str = "unregistered@email.com"
-    password: str = "unregistered"
-    with app.app_context():
+            assert not is_registered(email, password)
 
-        assert not is_registered(email, password)
+    def test_is_registered_with_is_hashed_flag_should_not_hash_again(
+        self, app: Flask
+    ) -> None:
+        email: str = "test@email.com"
+        hashed_password: str = hash_with_sha512("test")
+        is_hashed: bool = True
+        with app.app_context():
 
-
-def test_is_registered_with_is_hashed_flag_should_not_hash_again(app: Flask) -> None:
-    email: str = "test@email.com"
-    hashed_password: str = hash_with_sha512("test")
-    is_hashed: bool = True
-    with app.app_context():
-
-        assert is_registered(email, hashed_password, is_hashed=is_hashed)
+            assert is_registered(email, hashed_password, is_hashed=is_hashed)
 
 
 def test_login_on_unregistered_user_should_raise_exception(app: Flask) -> None:
@@ -310,11 +313,35 @@ def test_login_on_unregistered_user_should_raise_exception(app: Flask) -> None:
             login(email, password)
 
 
-def test_register_on_registered_user_should_raise_exception(app: Flask) -> None:
-    email: str = "test@email.com"
-    password: str = "test"
-    profile = UserProfile("Han-Xuan", "Huang", Sex.MALE, 1666604387)
-    with app.app_context():
+class TestRegisterFunction:
+    @pytest.fixture
+    def some_user_profile(self) -> UserProfile:
+        return UserProfile("Han-Xuan", "Huang", Sex.MALE, 1666604387)
 
-        with pytest.raises(UserAlreadyRegisteredError):
-            register(email, password, profile)
+    def test_on_registered_email_should_raise_exception(
+        self, app: Flask, some_user_profile: UserProfile
+    ) -> None:
+        email: str = "test@email.com"
+        password: str = "no_matter_the_password_is_registered_or_not"
+        with app.app_context():
+
+            with pytest.raises(UserAlreadyRegisteredError):
+                register(email, password, some_user_profile)
+
+    def test_on_registered_password_should_registered_successfully(
+        self, app: Flask, some_user_profile: UserProfile
+    ) -> None:
+        email: str = "unregistered_email@email.com"
+        password: str = "test"
+        with app.app_context():
+
+            register(email, password, some_user_profile)
+
+            db: sqlite3.Connection = get_database()  # type: ignore
+            db.row_factory = sqlite3.Row
+            user_data: sqlite3.Row = db.execute(
+                "SELECT * FROM user WHERE email = ?", (email,)
+            ).fetchone()
+            assert user_data["firstname"] == some_user_profile.firstname
+            assert user_data["lastname"] == some_user_profile.lastname
+            assert user_data["sex"] == some_user_profile.sex
