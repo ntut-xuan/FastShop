@@ -27,9 +27,17 @@ def is_valid_birthday_format(birthday: str) -> bool:
         return False
 
 
+class UserUnregisteredError(RuntimeError):
+    pass
+
+
 def login(email: str, password: str) -> None:
+    """
+    Raises:
+        UserUnregisteredError
+    """
     if not is_registered(email, password):
-        raise Exception
+        raise UserUnregisteredError
     # TODO: modify some cookie to mark the user as logged in
 
 
@@ -47,11 +55,19 @@ class UserProfile:
     birthday: int
 
 
+class UserAlreadyRegisteredError(RuntimeError):
+    pass
+
+
 def register(email: str, password: str, profile: UserProfile) -> None:
+    """
+    Raises:
+        UserAlreadyRegisteredError
+    """
     hashed_password: str = hash_with_sha512(password)
 
     if is_registered(email, hashed_password, is_hashed=True):
-        raise Exception
+        raise UserAlreadyRegisteredError
 
     stmt_to_insert_new_user: str = "INSERT INTO `user`(`email`, `password`, `firstname`, `lastname`, `sex`, `birthday`) VALUES(?, ?, ?, ?, ?, ?)"
     execute_command(
