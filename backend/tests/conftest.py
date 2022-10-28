@@ -10,7 +10,7 @@ import pytest
 from flask import g
 
 from app import create_app
-from database.util import create_database, get_database
+from database import create_database, get_database
 
 if TYPE_CHECKING:
     from flask import Flask
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 def app(monkeypatch: pytest.MonkeyPatch) -> Generator[Flask, None, None]:
     db_fd, db_path = tempfile.mkstemp()
     monkeypatch.setattr(
-        "database.util.connect_database",
+        "database.connect_database",
         lambda: connect_sqlite_database(db_path),
     )
     app: Flask = create_app({"TESTING": True})

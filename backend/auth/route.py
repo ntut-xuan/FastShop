@@ -1,122 +1,103 @@
-from datetime import datetime
-from json import dumps
-from typing import cast
+from __future__ import annotations
 
-from flask import Blueprint, request
-from flask.wrappers import Response
+from datetime import datetime
+from http import HTTPStatus
+from typing import TYPE_CHECKING, Any, Iterable, Mapping, cast
+
+from flask import Blueprint, make_response, request
+from auth.exception import EmailAlreadyRegisteredError, IncorrectEmailOrPasswordError
 
 from auth.util import (
+    BIRTHDAY_FORMAT,
     UserProfile,
+    is_valid_birthday_format,
+    is_valid_email,
     login,
     register,
-    validate_birthday_format,
-    validate_email,
 )
-from route.util import Status, fetch_page
+from util import SingleMessageStatus, fetch_page
 
-auth = Blueprint("auth", __name__)
+if TYPE_CHECKING:
+    from flask.wrappers import Response
+
+auth_bp = Blueprint("auth", __name__)
 
 
-@auth.route("/login", methods=["GET", "POST"])
-def login_route():
-    def get():
-        return fetch_page("login")
-
-    def post():
+@auth_bp.route("/login", methods=["GET", "POST"])
+def login_route() -> Response | str:
+    if request.method == "POST":
         data = request.json
 
-        if data is None or "e-mail" not in data or "password" not in data:
-            return Response(
-                dumps(Status.INVALID_DATA.value),
-                mimetype="application/json",
-                status=400,
-            )
+        if data is None or not _has_required_login_data(data):
+            return _make_single_message_response(HTTPStatus.BAD_REQUEST)
+        if not is_valid_email(data["e-mail"]):
+            return _make_single_message_response(HTTPStatus.UNPROCESSABLE_ENTITY)
 
-        email = data["e-mail"]
-        password = data["password"]
+        status_code: HTTPStatus
+        try:
+            login(data["e-mail"], data["password"])
+        except IncorrectEmailOrPasswordError:
+            status_code = HTTPStatus.FORBIDDEN
+        else:
+            status_code = HTTPStatus.OK
+        return _make_single_message_response(status_code)
 
-        if not validate_email(email):
-            return Response(
-                dumps(Status.INVALID_EMAIL.value),
-                mimetype="application/json",
-                status=422,
-            )
-
-        if not login(email, password):
-            return Response(
-                dumps(Status.INCORRECT_LOGIN.value),
-                mimetype="application/json",
-                status=403,
-            )
-
-        return Response(dumps(Status.OK.value), mimetype="application/json", status=200)
-
-    if request.method == "GET":
-        return get()
-    else:  # POST
-        return post()
+    return fetch_page("login")
 
 
-@auth.route("/register", methods=["GET", "POST"])
-def register_route():
-    def get():
-        return fetch_page("register")
-
-    def post():
+@auth_bp.route("/register", methods=["GET", "POST"])
+def register_route() -> Response | str:
+    if request.method == "POST":
         # 400 Bad Request error will automatically be raised
         # if the content-type is not "application/json", so
         # it's safe to cast it manually for type warning supression.
         data = cast(dict, request.json)
 
-        require_columns: list[str] = [
+        required_columns: list[str] = [
             "firstname",
             "lastname",
-            "sex",
+            "gender",
             "birthday",
             "e-mail",
             "password",
         ]
-        # Check column is exist in json data
-        if not all([col in data for col in require_columns]):
-            return Response(
-                dumps(Status.INVALID_DATA.value),
-                mimetype="application/json",
-                status=400,
-            )
-
-        # Validate the data
-        if not validate_birthday_format(data["birthday"]):
-            return Response(
-                dumps(Status.INVALID_DATA.value),
-                mimetype="application/json",
-                status=422,
-            )
-
-        if not validate_email(data["e-mail"]):
-            return Response(
-                dumps(Status.INVALID_EMAIL.value),
-                mimetype="application/json",
-                status=422,
-            )
+        if not _has_required_columns(data, required_columns):
+            return _make_single_message_response(HTTPStatus.BAD_REQUEST)
+        if not _has_valid_register_data_format(data):
+            return _make_single_message_response(HTTPStatus.UNPROCESSABLE_ENTITY)
 
         profile = UserProfile(
             firstname=data["firstname"],
             lastname=data["lastname"],
-            sex=data["sex"],
-            birthday=int(datetime.strptime(data["birthday"], "%Y-%m-%d").timestamp()),
+            gender=data["gender"],
+            birthday=int(
+                datetime.strptime(data["birthday"], BIRTHDAY_FORMAT).timestamp()
+            ),
         )
+        status_code: HTTPStatus
+        try:
+            register(data["e-mail"], data["password"], profile)
+        except EmailAlreadyRegisteredError:
+            status_code = HTTPStatus.FORBIDDEN
+        else:
+            status_code = HTTPStatus.OK
+        return _make_single_message_response(status_code)
 
-        # Register data
-        if not register(data["e-mail"], data["password"], profile):
-            return Response(
-                dumps(Status.INCORRECT_LOGIN.value),
-                mimetype="application/json",
-                status=403,
-            )
+    return fetch_page("register")
 
-        return Response(dumps(Status.OK.value), mimetype="application/json", status=200)
 
-    if request.method == "GET":
-        return get()
-    else:  # POST
-        return post()
+def _has_required_login_data(data: Mapping[str, Any]) -> bool:
+    return "e-mail" in data and "password" in data
+
+
+def _has_required_columns(data: Mapping, required_columns: Iterable) -> bool:
+    return all([col in data for col in required_columns])
+
+
+def _has_valid_register_data_format(data: Mapping[str, Any]) -> bool:
+    return is_valid_birthday_format(data["birthday"]) and is_valid_email(data["e-mail"])
+
+
+def _make_single_message_response(code: int, message: str | None = None) -> Response:
+    status = SingleMessageStatus(code, message)
+    return make_response(status.message, status.code)

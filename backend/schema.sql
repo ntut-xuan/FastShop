@@ -4,6 +4,6 @@ CREATE TABLE IF NOT EXISTS `user` (
   `password` TEXT NOT NULL,
   `firstname` TEXT NOT NULL,
   `lastname` TEXT NOT NULL,
-  `sex` INT NOT NULL,
+  `gender` INT NOT NULL,
   `birthday` INT NOT NULL
 )

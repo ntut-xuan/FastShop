@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 
 def test_test_config_should_be_loaded(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr("database.util.connect_database", connect_in_memory_sqlite_db)
+    monkeypatch.setattr("database.connect_database", connect_in_memory_sqlite_db)
 
     assert not create_app().testing
     assert create_app(test_config={"TESTING": True}).testing
