@@ -6,11 +6,14 @@ from typing import TYPE_CHECKING
 
 import pytest
 from auth.util import (
+    Sex,
+    UserProfile,
     hash_with_sha512,
     is_registered,
     is_valid_birthday_format,
     is_valid_email,
     login,
+    register,
 )
 from database import get_database
 
@@ -303,3 +306,13 @@ def test_login_on_unregistered_user_should_raise_exception(app: Flask) -> None:
 
         with pytest.raises(Exception):
             login(email, password)
+
+
+def test_register_on_registered_user_should_raise_exception(app: Flask) -> None:
+    email: str = "test@email.com"
+    password: str = "test"
+    profile = UserProfile("Han-Xuan", "Huang", Sex.MALE, 1666604387)
+    with app.app_context():
+
+        with pytest.raises(Exception):
+            register(email, password, profile)

@@ -75,10 +75,11 @@ def register_route() -> Response | str:
             ),
         )
         status_code: HTTPStatus
-        if is_registered(data["e-mail"], data["password"]):
+        try:
+            register(data["e-mail"], data["password"], profile)
+        except Exception:
             status_code = HTTPStatus.FORBIDDEN
         else:
-            register(data["e-mail"], data["password"], profile)
             status_code = HTTPStatus.OK
         return _make_single_message_response(status_code)
 

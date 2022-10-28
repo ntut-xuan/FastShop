@@ -51,8 +51,7 @@ def register(email: str, password: str, profile: UserProfile) -> None:
     hashed_password: str = hash_with_sha512(password)
 
     if is_registered(email, hashed_password, is_hashed=True):
-        # TODO: raise exception
-        pass
+        raise Exception
 
     stmt_to_insert_new_user: str = "INSERT INTO `user`(`email`, `password`, `firstname`, `lastname`, `sex`, `birthday`) VALUES(?, ?, ?, ?, ?, ?)"
     execute_command(
