@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import sqlite3
 from http import HTTPStatus
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 import pytest
 
@@ -205,76 +205,75 @@ class TestLoginRoute:
         assert resp.json is not None and resp.json["message"] == "Failed"
 
 
-some_invalid_emails: list[str] = ["plainaddress", "#@%^%#$@#$@#.com", "@example.com", "Joe Smith <email@example.com>", "email.example.com", "email@example@example.com", ".email@example.com", "email..email@example.com", "email@example.com (Joe Smith)", "email@example", "email@-example.com", "email@111.222.333.44444", "email@example..com", "Abc..123@example.com"]  # fmt: skip
-@pytest.mark.parametrize(
-    argnames=("malform_email",),
-    argvalues=(
-        ("noletterafterdash-@email.com",),
-        ("badsymbolindomain@ema#il.com",),
-        ("multipleat@email@org.tw",),
-        ("badsymbol#123@email.com",),
-        (".startwithdot@email.com",),
-        ("double..dot@email.com",),
-        ("domainwithnodot@email",),
-        ("missingat.email.com",),
-        ("あいうえお@example.com",),
-        *((invalid_email,) for invalid_email in some_invalid_emails),
-    ),
-)
-def test_is_valid_email_on_malform_email_should_return_false(
-    malform_email: str,
-) -> None:
-    assert not is_valid_email(malform_email)
+class TestIsValidEmail:
+    _some_invalid_emails: ClassVar[list[str]] = ["plainaddress", "#@%^%#$@#$@#.com", "@example.com", "Joe Smith <email@example.com>", "email.example.com", "email@example@example.com", ".email@example.com", "email..email@example.com", "email@example.com (Joe Smith)", "email@example", "email@-example.com", "email@111.222.333.44444", "email@example..com", "Abc..123@example.com"]  # fmt: skip
+    @pytest.mark.parametrize(
+        argnames=("malform_email",),
+        argvalues=(
+            ("noletterafterdash-@email.com",),
+            ("badsymbolindomain@ema#il.com",),
+            ("multipleat@email@org.tw",),
+            ("badsymbol#123@email.com",),
+            (".startwithdot@email.com",),
+            ("double..dot@email.com",),
+            ("domainwithnodot@email",),
+            ("missingat.email.com",),
+            ("あいうえお@example.com",),
+            *((invalid_email,) for invalid_email in _some_invalid_emails),
+        ),
+    )
+    def test_on_malform_email_should_return_false(self, malform_email: str) -> None:
+        assert not is_valid_email(malform_email)
+
+    @pytest.mark.parametrize(
+        argnames=("email",),
+        argvalues=(
+            ("letterafterdash-123@email.com",),
+            ("dot.in.middle@email.com",),
+            ("under_score@email.com",),
+            ("CAPTIAL@email.com",),
+            ("123@email.com",),
+        ),
+    )
+    def test_on_valid_email_should_return_true(self, email: str) -> None:
+        assert is_valid_email(email)
 
 
-@pytest.mark.parametrize(
-    argnames=("email",),
-    argvalues=(
-        ("letterafterdash-123@email.com",),
-        ("dot.in.middle@email.com",),
-        ("under_score@email.com",),
-        ("CAPTIAL@email.com",),
-        ("123@email.com",),
-    ),
-)
-def test_is_valid_email_on_valid_email_should_return_true(email: str) -> None:
-    assert is_valid_email(email)
+class TestIsValidBirthday:
+    @pytest.mark.parametrize(
+        argnames=("birthday_in_incorrect_format",),
+        argvalues=(
+            ("2000/01/01",),
+            ("2000_01_01",),
+            ("01-01-2000",),
+            ("2000.01.01",),
+            ("20000101",),
+        ),
+    )
+    def test_on_incorrect_format_should_return_false(
+        self,
+        birthday_in_incorrect_format: str,
+    ) -> None:
+        assert not is_valid_birthday_format(birthday_in_incorrect_format)
 
+    def test_on_correct_format_should_return_true(self) -> None:
+        birthday = "2000-01-01"
 
-@pytest.mark.parametrize(
-    argnames=("birthday_in_incorrect_format",),
-    argvalues=(
-        ("2000/01/01",),
-        ("2000_01_01",),
-        ("01-01-2000",),
-        ("2000.01.01",),
-        ("20000101",),
-    ),
-)
-def test_is_valid_birthday_format_on_incorrect_format_should_return_false(
-    birthday_in_incorrect_format: str,
-) -> None:
-    assert not is_valid_birthday_format(birthday_in_incorrect_format)
+        assert is_valid_birthday_format(birthday)
 
-
-def test_is_valid_birthday_format_on_correct_format_should_return_true() -> None:
-    birthday = "2000-01-01"
-
-    assert is_valid_birthday_format(birthday)
-
-
-@pytest.mark.parametrize(
-    argnames=("bad_birthday",),
-    argvalues=(
-        ("2000/13/01",),  # bad month
-        ("-1/01/01",),  # bad year
-        ("2000/01/32",),  # bad day
-    ),
-)
-def test_is_valid_birthday_format_on_bad_birthday_value_should_return_false(
-    bad_birthday: str,
-) -> None:
-    assert not is_valid_birthday_format(bad_birthday)
+    @pytest.mark.parametrize(
+        argnames=("bad_birthday",),
+        argvalues=(
+            ("2000/13/01",),  # bad month
+            ("-1/01/01",),  # bad year
+            ("2000/01/32",),  # bad day
+        ),
+    )
+    def test_on_bad_birthday_value_should_return_false(
+        self,
+        bad_birthday: str,
+    ) -> None:
+        assert not is_valid_birthday_format(bad_birthday)
 
 
 class TestIsCorrectPassword:
