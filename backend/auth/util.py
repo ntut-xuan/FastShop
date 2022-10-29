@@ -3,7 +3,7 @@ import re
 from dataclasses import dataclass
 from datetime import datetime, timezone, timedelta
 from enum import IntEnum
-from typing import Final
+from typing import Final, Any
 
 import jwt
 
@@ -148,7 +148,7 @@ def decode_jwt(data: str) -> dict:
     return jwt.decode(data, JWTCodec.key, algorithms=[JWTCodec.algorithm])
 
 
-def fetch_specific_account_profile(email: str) -> dict:
+def fetch_specific_account_profile(email: str) -> dict[str, Any]:
     """
     Raises:
         UserNotFoundError: No registered user with email `email`.
