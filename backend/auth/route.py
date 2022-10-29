@@ -117,5 +117,5 @@ def _set_jwt_cookie_to_response(data: dict, response: Response):
     current_time: datetime = datetime.now(tz=timezone.utc)
     expiration_time: datetime = current_time + timedelta(days=1)
     jwt_payload: str = generate_payload(data)
-    response.set_cookie("cd_wy_sbl", value=jwt_payload, expires=expiration_time)
+    response.set_cookie("jwt", value=jwt_payload, expires=expiration_time)
     return response

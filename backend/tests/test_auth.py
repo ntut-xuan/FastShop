@@ -233,7 +233,7 @@ class TestLoginRoute:
     ) -> None:
         client.post("/login", json=new_data)
         cookie = next(
-            (cookie for cookie in client.cookie_jar if cookie.name == "cd_wy_sbl"), None
+            (cookie for cookie in client.cookie_jar if cookie.name == "jwt"), None
         )
 
         assert cookie != None
@@ -247,7 +247,7 @@ class TestLoginRoute:
     ) -> None:
         client.post("/login", json=new_data)
         cookie = next(
-            (cookie for cookie in client.cookie_jar if cookie.name == "cd_wy_sbl"), None
+            (cookie for cookie in client.cookie_jar if cookie.name == "jwt"), None
         )
         cookie_value = str(cookie.value)
         jwt_data = decode_jwt(cookie_value)
