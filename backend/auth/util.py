@@ -110,7 +110,7 @@ def hash_with_sha512(string: str) -> str:
 
 
 def is_valid_jwt_data(data: str) -> bool:
-    """Return the jwt data is valid or not."""
+    """Returns the jwt data is valid or not."""
     try:
         jwt.decode(data, "secret", algorithms=["HS256"])
         return True
@@ -121,7 +121,7 @@ def is_valid_jwt_data(data: str) -> bool:
 def generate_payload(
     data: dict, expiration_time_delta: timedelta = timedelta(days=1)
 ) -> str:
-    """Return the payload with generate time attribute (iat) and 1 day expired strict attribute (exp)."""
+    """Returns the payload with generate time attribute (iat) and specific-date expiration strict attribute (exp)."""
     current_time: datetime = datetime.now(tz=timezone.utc)
     expire_time = current_time + expiration_time_delta
     payload = {
@@ -134,14 +134,14 @@ def generate_payload(
 
 
 def decode_jwt(data: str) -> dict:
-    """Return the decoded jwt data, the jwt data should be exist."""
+    """Returns the decoded jwt data, the jwt data should be exist."""
     return jwt.decode(data, "secret", algorithms=["HS256"])
 
 
 def fetch_specific_account_profile(email: str) -> dict:
     """
     Raises:
-        UserNotFoundError: The `email` in parameter isn't register yet.
+        UserNotFoundError: No registered user with email `email`.
     """
 
     if not is_registered(email):
