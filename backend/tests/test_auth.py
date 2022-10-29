@@ -17,16 +17,16 @@ from auth.exception import (
 from auth.util import (
     Gender,
     UserProfile,
+    decode_jwt,
+    fetch_specific_account_profile,
     generate_payload,
     is_correct_password,
     is_registered,
     is_valid_birthday_format,
     is_valid_email,
     is_valid_jwt_data,
-    decode_jwt,
     login,
     register,
-    fetch_specific_account_profile,
 )
 from database import get_database
 

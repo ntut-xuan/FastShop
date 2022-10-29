@@ -5,18 +5,17 @@ from http import HTTPStatus
 from typing import TYPE_CHECKING, Any, Iterable, Mapping, cast
 
 from flask import Blueprint, make_response, request
-import jwt
 from auth.exception import EmailAlreadyRegisteredError, IncorrectEmailOrPasswordError
 
 from auth.util import (
     BIRTHDAY_FORMAT,
     UserProfile,
+    fetch_specific_account_profile,
+    generate_payload,
     is_valid_birthday_format,
     is_valid_email,
     login,
     register,
-    generate_payload,
-    fetch_specific_account_profile,
 )
 from util import SingleMessageStatus, fetch_page
 
