@@ -114,9 +114,7 @@ def is_valid_jwt_data(data: str) -> bool:
     try:
         jwt.decode(data, "secret", algorithms=["HS256"])
         return True
-    except jwt.DecodeError:
-        return False
-    except jwt.exceptions.ExpiredSignatureError:
+    except (jwt.DecodeError, jwt.exceptions.ExpiredSignatureError):
         return False
 
 
