@@ -120,11 +120,11 @@ def is_valid_jwt_data(data: str) -> bool:
 
 
 def generate_payload(
-    data: dict, expire_time_delta: timedelta = timedelta(days=1)
+    data: dict, expiration_time_delta: timedelta = timedelta(days=1)
 ) -> str:
     """Return the payload with generate time attribute (iat) and 1 day expired strict attribute (exp)."""
     current_time: datetime = datetime.now(tz=timezone.utc)
-    expire_time = current_time + expire_time_delta
+    expire_time = current_time + expiration_time_delta
     payload = {
         "data": data,
         "iat": current_time,
