@@ -1,10 +1,11 @@
 import hashlib
 import re
-import jwt
 from dataclasses import dataclass
 from datetime import datetime, timezone, timedelta
 from enum import IntEnum
 from typing import Final
+
+import jwt
 
 from auth.exception import (
     EmailAlreadyRegisteredError,
