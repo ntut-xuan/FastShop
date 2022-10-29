@@ -59,7 +59,7 @@ class UserProfile:
 
 
 @dataclass
-class JWTPayloadAttribute:
+class JWTCodec:
     key: str = "secret"
     algorithm: str = "HS256"
 
@@ -118,7 +118,11 @@ def hash_with_sha512(string: str) -> str:
 def is_valid_jwt_data(data: str) -> bool:
     """Returns the jwt data is valid or not."""
     try:
-        jwt.decode(data, JWTPayloadAttribute.key, list(JWTPayloadAttribute.algorithm))
+        jwt.decode(
+            data,
+            JWTCodec.key,
+            algorithms=[JWTCodec.algorithm],
+        )
         return True
     except (jwt.DecodeError, jwt.exceptions.ExpiredSignatureError):
         return False
@@ -135,17 +139,13 @@ def generate_payload(
         "iat": current_time,
         "exp": expire_time,
     }
-    jwt_payload: str = jwt.encode(
-        payload, JWTPayloadAttribute.key, algorithm=JWTPayloadAttribute.algorithm
-    )
+    jwt_payload: str = jwt.encode(payload, JWTCodec.key, algorithm=JWTCodec.algorithm)
     return jwt_payload
 
 
 def decode_jwt(data: str) -> dict:
     """Returns the decoded jwt data, the jwt data should be exist."""
-    return jwt.decode(
-        data, JWTPayloadAttribute.key, algorithm=list(JWTPayloadAttribute.algorithm)
-    )
+    return jwt.decode(data, JWTCodec.key, algorithms=[JWTCodec.algorithm])
 
 
 def fetch_specific_account_profile(email: str) -> dict:
