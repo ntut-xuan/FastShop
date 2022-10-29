@@ -48,7 +48,7 @@ def login_route() -> Response | str:
         if status_code == HTTPStatus.OK:
             del data["password"]
             data |= fetch_specific_account_profile(data["e-mail"])
-            prepare_response = _make_response_with_jwt_cookie(data, prepare_response)
+            prepare_response = _set_jwt_cookie_to_response(data, prepare_response)
 
         return prepare_response
 
@@ -113,7 +113,7 @@ def _make_single_message_response(code: int, message: str | None = None) -> Resp
     return make_response(status.message, status.code)
 
 
-def _make_response_with_jwt_cookie(data: dict, response: Response):
+def _set_jwt_cookie_to_response(data: dict, response: Response):
     current_time: datetime = datetime.now(tz=timezone.utc)
     expire_time: datetime = current_time + timedelta(days=1)
     jwt_data = generate_payload(data)
