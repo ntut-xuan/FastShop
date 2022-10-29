@@ -129,8 +129,8 @@ def generate_payload(
         "iat": current_time,
         "exp": expire_time,
     }
-    jwt_data: str = jwt.encode(payload, "secret", algorithm="HS256")
-    return jwt_data
+    jwt_payload: str = jwt.encode(payload, "secret", algorithm="HS256")
+    return jwt_payload
 
 
 def decode_jwt(data: str) -> dict:
