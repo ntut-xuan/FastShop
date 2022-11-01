@@ -439,6 +439,6 @@ class TestJWTFunction:
         some_jwt_key = "abc.123.bcd"
         assert not is_valid_jwt_data(some_jwt_key)
 
-    def test_if_data_expired_validation_should_return_false(self) -> None:
-        jwt_payload = generate_payload({}, timedelta(days=-87))
-        assert not is_valid_jwt_data(jwt_payload)
+    def test_on_expired_data_should_return_false(self) -> None:
+        expired_jwt_payload = generate_payload({}, timedelta(days=-87))
+        assert not is_valid_jwt_data(expired_jwt_payload)
