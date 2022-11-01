@@ -435,7 +435,7 @@ class TestJWTFunction:
         some_jwt_key = "abc123"
         assert is_valid_jwt_data(some_jwt_key) == False
 
-    def test_if_data_invalid_validation_should_return_false(self) -> None:
+    def test_on_invalid_data_should_return_false(self) -> None:
         some_jwt_key = "abc.123.bcd"
         assert is_valid_jwt_data(some_jwt_key) == False
 
