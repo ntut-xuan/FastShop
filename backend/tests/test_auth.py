@@ -428,7 +428,7 @@ class TestFetchProfileFunction:
                 fetch_specific_account_profile(unregister_email)
 
 
-class TestJWTFunction:
+class TestIsValidJWTData:
     def test_on_data_with_not_enought_segment_should_return_false(
         self,
     ) -> None:
