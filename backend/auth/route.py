@@ -11,7 +11,7 @@ from auth.util import (
     BIRTHDAY_FORMAT,
     JWTCodec,
     UserProfile,
-    fetch_specific_account_profile,
+    fetch_user_profile,
     is_valid_birthday_format,
     is_valid_email,
     login,
@@ -47,7 +47,7 @@ def login_route() -> Response | str:
 
         if status_code == HTTPStatus.OK:
             del data["password"]
-            data |= fetch_specific_account_profile(data["e-mail"])
+            data |= fetch_user_profile(data["e-mail"])
             _set_jwt_cookie_to_response(data, prepare_response)
 
         return prepare_response

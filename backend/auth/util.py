@@ -148,7 +148,7 @@ def hash_with_sha512(string: str) -> str:
     return hashlib.sha512(string.encode("utf-8")).hexdigest()
 
 
-def fetch_specific_account_profile(email: str) -> dict[str, Any]:
+def fetch_user_profile(email: str) -> dict[str, Any]:
     """
     Raises:
         UserNotFoundError: No registered user with email `email`.

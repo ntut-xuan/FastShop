@@ -16,7 +16,7 @@ from auth.util import (
     Gender,
     JWTCodec,
     UserProfile,
-    fetch_specific_account_profile,
+    fetch_user_profile,
     is_correct_password,
     is_registered,
     is_valid_birthday_format,
@@ -416,14 +416,13 @@ class TestRegisterFunction:
             assert user_data["gender"] == some_user_profile.gender
 
 
-class TestFetchProfileFunction:
+class TestFetchUserProfileFunction:
     def test_with_unregister_email_should_rasie_exception(self, app: Flask) -> None:
         unregister_email = "c8763@ccc.nnn"
         with app.app_context():
 
             with pytest.raises(UserNotFoundError):
-
-                fetch_specific_account_profile(unregister_email)
+                fetch_user_profile(unregister_email)
 
 
 class TestJWTCodec:
