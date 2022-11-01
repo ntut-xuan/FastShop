@@ -429,7 +429,7 @@ class TestFetchProfileFunction:
 
 
 class TestJWTFunction:
-    def test_if_data_not_have_enought_segment_validation_should_return_false(
+    def test_on_data_with_not_enought_segment_should_return_false(
         self,
     ) -> None:
         some_jwt_key = "abc123"
