@@ -62,7 +62,7 @@ class JWTCodec:
     key: str = "secret"
     algorithm: str = "HS256"
 
-    def __init__(self, key: str, algorithm: str) -> None:
+    def __init__(self, key: str = "secret", algorithm: str = "HS256") -> None:
         self._key: str = key
         self._algorithm: str = algorithm
 
@@ -75,6 +75,14 @@ class JWTCodec:
             token, key=self._key, algorithms=[self._algorithm]
         )
         return data
+
+    def is_valid_jwt(self, token: str) -> bool:
+        """Returns False if the expiration time (exp) is in the past or it failed validation."""
+        try:
+            self.decode(token)
+            return True
+        except (jwt.exceptions.DecodeError, jwt.exceptions.ExpiredSignatureError):
+            return False
 
 
 def register(email: str, password: str, profile: UserProfile) -> None:
@@ -126,19 +134,6 @@ def is_registered(email: str) -> bool:
 
 def hash_with_sha512(string: str) -> str:
     return hashlib.sha512(string.encode("utf-8")).hexdigest()
-
-
-def is_valid_jwt_data(data: str) -> bool:
-    """Returns the jwt data is valid or not."""
-    try:
-        jwt.decode(
-            data,
-            JWTCodec.key,
-            algorithms=[JWTCodec.algorithm],
-        )
-        return True
-    except (jwt.DecodeError, jwt.exceptions.ExpiredSignatureError):
-        return False
 
 
 def generate_payload(
