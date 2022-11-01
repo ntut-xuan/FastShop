@@ -228,7 +228,7 @@ class TestLoginRoute:
     def test_post_with_existing_email_and_password_should_exist_jwt_cookie(
         self,
         client: FlaskClient,
-        new_data: dict[str, str],
+        new_data: dict[str, str | int],
     ) -> None:
         client.post("/login", json=new_data)
         cookie = next(
