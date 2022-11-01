@@ -1,9 +1,9 @@
 import hashlib
 import re
 from dataclasses import dataclass
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import IntEnum
-from typing import Final, Any
+from typing import Any, Final
 
 import jwt
 

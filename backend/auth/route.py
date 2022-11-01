@@ -5,8 +5,8 @@ from http import HTTPStatus
 from typing import TYPE_CHECKING, Any, Iterable, Mapping, cast
 
 from flask import Blueprint, make_response, request
-from auth.exception import EmailAlreadyRegisteredError, IncorrectEmailOrPasswordError
 
+from auth.exception import EmailAlreadyRegisteredError, IncorrectEmailOrPasswordError
 from auth.util import (
     BIRTHDAY_FORMAT,
     UserProfile,

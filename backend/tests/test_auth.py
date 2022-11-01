@@ -3,7 +3,6 @@ from __future__ import annotations
 import sqlite3
 from datetime import timedelta
 from http import HTTPStatus
-from pydoc import cli
 from typing import TYPE_CHECKING, ClassVar, no_type_check
 
 import pytest
