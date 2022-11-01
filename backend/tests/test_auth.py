@@ -420,9 +420,12 @@ class TestRegisterFunction:
 
 class TestFetchProfileFunction:
     def test_with_unregister_email_should_rasie_exception(self, app: Flask) -> None:
+        unregister_email = "c8763@ccc.nnn"
         with app.app_context():
+
             with pytest.raises(UserNotFoundError):
-                fetch_specific_account_profile("c8763@ccc.nnn")
+
+                fetch_specific_account_profile(unregister_email)
 
 
 class TestJWTFunction:
