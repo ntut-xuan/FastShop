@@ -1,5 +1,6 @@
-import sqlite3
 from __future__ import annotations
+
+import sqlite3
 from datetime import timedelta
 from http import HTTPStatus
 from pydoc import cli
