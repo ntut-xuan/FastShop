@@ -1,10 +1,8 @@
+import sqlite3
 from __future__ import annotations
 from datetime import timedelta
-from pydoc import cli
-
-import sqlite3
 from http import HTTPStatus
-from http.cookiejar import Cookie
+from pydoc import cli
 from typing import TYPE_CHECKING, ClassVar, no_type_check
 
 import pytest
