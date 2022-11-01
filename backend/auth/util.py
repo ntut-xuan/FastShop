@@ -58,10 +58,23 @@ class UserProfile:
     birthday: int
 
 
-@dataclass
 class JWTCodec:
     key: str = "secret"
     algorithm: str = "HS256"
+
+    def __init__(self, key: str, algorithm: str) -> None:
+        self._key: str = key
+        self._algorithm: str = algorithm
+
+    def encode(self, data: dict) -> str:
+        token: str = jwt.encode(data, key=self._key, algorithm=self._algorithm)
+        return token
+
+    def decode(self, token: str) -> dict[str, Any]:
+        data: dict[str, Any] = jwt.decode(
+            token, key=self._key, algorithms=[self._algorithm]
+        )
+        return data
 
 
 def register(email: str, password: str, profile: UserProfile) -> None:

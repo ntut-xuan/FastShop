@@ -14,6 +14,7 @@ from auth.exception import (
 )
 from auth.util import (
     Gender,
+    JWTCodec,
     UserProfile,
     decode_jwt,
     fetch_specific_account_profile,
@@ -441,3 +442,23 @@ class TestIsValidJWTData:
     def test_on_expired_data_should_return_false(self) -> None:
         expired_jwt_payload = generate_payload({}, timedelta(days=-87))
         assert not is_valid_jwt_data(expired_jwt_payload)
+
+
+class TestJWTCodec:
+    def test_encode(self) -> None:
+        data: dict[str, str] = {"some": "payload"}
+        codec = JWTCodec(key="secret", algorithm="HS256")
+
+        token: str = codec.encode(data)
+
+        expected: str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzb21lIjoicGF5bG9hZCJ9.4twFt5NiznN84AWoo1d7KO1T_yoc0Z6XOpOVswacPZg"
+        assert token == expected
+
+    def test_decode(self) -> None:
+        token: str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzb21lIjoicGF5bG9hZCJ9.4twFt5NiznN84AWoo1d7KO1T_yoc0Z6XOpOVswacPZg"
+        codec = JWTCodec(key="secret", algorithm="HS256")
+
+        data: dict = codec.decode(token)
+
+        expected: dict[str, str] = {"some": "payload"}
+        assert data == expected
