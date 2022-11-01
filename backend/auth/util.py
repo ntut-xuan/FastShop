@@ -66,8 +66,20 @@ class JWTCodec:
         self._key: str = key
         self._algorithm: str = algorithm
 
-    def encode(self, data: dict) -> str:
-        token: str = jwt.encode(data, key=self._key, algorithm=self._algorithm)
+    def encode(
+        self,
+        payload: dict[str, Any],
+        expiration_time_delta: timedelta = timedelta(days=1),
+    ) -> str:
+        """Returns the JWT with `data`, Issue At (iat) and Expiration Time (exp) as payload."""
+        current_time: datetime = datetime.now(tz=timezone.utc)
+        expiration_time: datetime = current_time + expiration_time_delta
+        payload = {
+            "data": payload,
+            "iat": current_time,
+            "exp": expiration_time,
+        }
+        token: str = jwt.encode(payload, key=self._key, algorithm=self._algorithm)
         return token
 
     def decode(self, token: str) -> dict[str, Any]:
@@ -134,26 +146,6 @@ def is_registered(email: str) -> bool:
 
 def hash_with_sha512(string: str) -> str:
     return hashlib.sha512(string.encode("utf-8")).hexdigest()
-
-
-def generate_payload(
-    data: dict, expiration_time_delta: timedelta = timedelta(days=1)
-) -> str:
-    """Returns the payload with generate time attribute (iat) and specific-date expiration strict attribute (exp)."""
-    current_time: datetime = datetime.now(tz=timezone.utc)
-    expire_time = current_time + expiration_time_delta
-    payload = {
-        "data": data,
-        "iat": current_time,
-        "exp": expire_time,
-    }
-    jwt_payload: str = jwt.encode(payload, JWTCodec.key, algorithm=JWTCodec.algorithm)
-    return jwt_payload
-
-
-def decode_jwt(data: str) -> dict:
-    """Returns the decoded jwt data, the jwt data should be exist."""
-    return jwt.decode(data, JWTCodec.key, algorithms=[JWTCodec.algorithm])
 
 
 def fetch_specific_account_profile(email: str) -> dict[str, Any]:

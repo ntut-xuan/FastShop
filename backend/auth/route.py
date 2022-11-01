@@ -9,9 +9,9 @@ from flask import Blueprint, make_response, request
 from auth.exception import EmailAlreadyRegisteredError, IncorrectEmailOrPasswordError
 from auth.util import (
     BIRTHDAY_FORMAT,
+    JWTCodec,
     UserProfile,
     fetch_specific_account_profile,
-    generate_payload,
     is_valid_birthday_format,
     is_valid_email,
     login,
@@ -114,7 +114,11 @@ def _make_single_message_response(code: int, message: str | None = None) -> Resp
 
 
 def _set_jwt_cookie_to_response(data: dict, response: Response) -> None:
-    current_time: datetime = datetime.now(tz=timezone.utc)
-    expiration_time: datetime = current_time + timedelta(days=1)
-    jwt_payload: str = generate_payload(data)
-    response.set_cookie("jwt", value=jwt_payload, expires=expiration_time)
+    expiration_time_delta = timedelta(days=1)
+    codec = JWTCodec()
+    token: str = codec.encode(data, expiration_time_delta)
+    response.set_cookie(
+        "jwt",
+        value=token,
+        expires=datetime.now(tz=timezone.utc) + expiration_time_delta,
+    )
