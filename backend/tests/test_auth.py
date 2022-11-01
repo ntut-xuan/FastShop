@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import sqlite3
+from contextlib import contextmanager
 from http import HTTPStatus
-from typing import TYPE_CHECKING, Any, no_type_check
+from http.cookiejar import Cookie, CookieJar
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
@@ -203,20 +205,17 @@ class TestLoginRoute:
         assert resp.is_json
         assert resp.json is not None and resp.json["message"] == "Failed"
 
-    @no_type_check
     def test_post_with_existing_email_and_password_should_exist_jwt_cookie(
         self,
         client: FlaskClient,
         new_data: dict[str, str | int],
     ) -> None:
         client.post("/login", json=new_data)
-        cookie = next(
-            (cookie for cookie in client.cookie_jar if cookie.name == "jwt"), None
-        )
 
-        assert cookie is not None
+        cookies: tuple[Cookie, ...] = _get_cookies(client.cookie_jar)
+        with _assert_not_raise(ValueError):
+            (jwt_cookie,) = tuple(filter(lambda x: x.name == "jwt", cookies))
 
-    @no_type_check
     def test_post_with_correct_data_should_have_correct_jwt_token_attribute(
         self,
         client: FlaskClient,
@@ -226,12 +225,26 @@ class TestLoginRoute:
 
         client.post("/login", json=new_data)
 
-        cookie = next(
-            (cookie for cookie in client.cookie_jar if cookie.name == "jwt"), None
-        )
-        jwt_payload: dict[str, Any] = codec.decode(str(cookie.value))
+        cookies: tuple[Cookie, ...] = _get_cookies(client.cookie_jar)
+        (jwt_cookie,) = tuple(filter(lambda x: x.name == "jwt", cookies))
+        assert jwt_cookie.value is not None
+        jwt_payload: dict[str, Any] = codec.decode(jwt_cookie.value)
         data = jwt_payload["data"]
         assert data["e-mail"] == new_data["e-mail"]
         assert data["firstname"] == new_data["firstname"]
         assert data["lastname"] == new_data["lastname"]
         assert data["gender"] == new_data["gender"]
+
+
+def _get_cookies(cookie_jar: CookieJar | None) -> tuple[Cookie, ...]:
+    if cookie_jar is None:
+        return tuple()
+    return tuple(cookie for cookie in cookie_jar)
+
+
+@contextmanager
+def _assert_not_raise(exception):
+    try:
+        yield
+    except exception:
+        pytest.fail(f"DID RAISE {exception}")
