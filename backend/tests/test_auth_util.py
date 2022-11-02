@@ -4,6 +4,7 @@ import sqlite3
 from datetime import timedelta
 from typing import TYPE_CHECKING, ClassVar
 
+import freezegun
 import pytest
 
 from auth.exception import (
@@ -204,13 +205,13 @@ class TestJWTCodec:
     def codec(self) -> JWTCodec:
         return JWTCodec(key="secret", algorithm="HS256")
 
-    @pytest.mark.skip("depends on the real time")
+    @freezegun.freeze_time("2000-01-01 00:00:00")
     def test_encode(self, codec: JWTCodec) -> None:
         data: dict[str, str] = {"some": "payload"}
 
-        token: str = codec.encode(data)
+        token: str = codec.encode(data, timedelta(days=1))
 
-        expected: str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzb21lIjoicGF5bG9hZCJ9.4twFt5NiznN84AWoo1d7KO1T_yoc0Z6XOpOVswacPZg"
+        expected: str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InNvbWUiOiJwYXlsb2FkIn0sImlhdCI6OTQ2Njg0ODAwLCJleHAiOjk0Njc3MTIwMH0.FU7fNuSrA-EuVtpE2duW-VD9hJX1B1QfPuQ2_kJ95Lw"
         assert token == expected
 
     def test_decode(self, codec: JWTCodec) -> None:
@@ -227,10 +228,12 @@ class TestJWTCodec:
             codec: JWTCodec,
         ) -> None:
             token: str = "should_have_three_dot_separated_segments"
+
             assert not codec.is_valid_jwt(token)
 
         def test_on_invalid_token_should_return_false(self, codec: JWTCodec) -> None:
             token: str = "this.failed.validation"
+
             assert not codec.is_valid_jwt(token)
 
         def test_on_expired_token_should_return_false(self, codec: JWTCodec) -> None:
