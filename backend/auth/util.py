@@ -60,12 +60,17 @@ class UserProfile:
 
 
 class JWTCodec:
-    key: str = "secret"
-    algorithm: str = "HS256"
-
     def __init__(self, key: str = "secret", algorithm: str = "HS256") -> None:
         self._key: str = key
         self._algorithm: str = algorithm
+
+    @property
+    def key(self) -> str:
+        return self._key
+
+    @property
+    def algorithm(self) -> str:
+        return self._algorithm
 
     def encode(
         self,
