@@ -139,7 +139,7 @@ class TestIsRegistered:
             assert not is_registered(unregistered_email)
 
 
-class TestLoginFunction:
+class TestLogin:
     def test_on_unregistered_email_should_raise_exception(self, app: Flask) -> None:
         unregistered_email: str = "unregistered@email.com"
         password: str = "test"
@@ -157,7 +157,7 @@ class TestLoginFunction:
                 login(email, incorrect_password)
 
 
-class TestRegisterFunction:
+class TestRegister:
     @pytest.fixture
     def some_user_profile(self) -> UserProfile:
         return UserProfile("Han-Xuan", "Huang", Gender.MALE, 1666604387)
@@ -191,7 +191,7 @@ class TestRegisterFunction:
             assert user_data["gender"] == some_user_profile.gender
 
 
-class TestFetchUserProfileFunction:
+class TestFetchUserProfile:
     def test_with_unregister_email_should_rasie_exception(self, app: Flask) -> None:
         unregister_email = "c8763@ccc.nnn"
         with app.app_context():
