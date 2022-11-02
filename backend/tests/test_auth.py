@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import sqlite3
 from contextlib import contextmanager
 from http import HTTPStatus
 from http.cookiejar import Cookie, CookieJar
 from typing import TYPE_CHECKING, Any
 
 import pytest
+import pymysql
 
 from auth.util import Gender, JWTCodec
 from database import get_database
@@ -46,17 +46,19 @@ class TestRegisterRoute:
         self, client: FlaskClient, new_data: dict[str, Any]
     ) -> None:
         with client.application.app_context():
-            db: sqlite3.Connection = get_database()  # type: ignore
-            db.row_factory = sqlite3.Row
+            db: pymysql.Connection = get_database()  # type: ignore
 
             client.post("/register", json=new_data)
 
-            user_data: sqlite3.Row = db.execute(
-                "SELECT * FROM user WHERE email = ?", ("new@gmail.com",)
-            ).fetchone()
-            assert user_data["firstname"] == "new_firstname"
-            assert user_data["lastname"] == "new_lastname"
-            assert user_data["gender"] == Gender.FEMALE
+            with db.cursor() as cursor:
+                cursor.execute(
+                    "SELECT * FROM user WHERE email = %s", ("new@gmail.com",)
+                )
+                user_data = cursor.fetchone()
+
+            assert user_data[5] == "new_firstname"
+            assert user_data[6] == "new_lastname"
+            assert user_data[11] == Gender.FEMALE.value
             # birthday and password are stored in different format,
             # not to bother with them here.
 

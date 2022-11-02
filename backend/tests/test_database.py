@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import sqlite3
 from typing import TYPE_CHECKING, Any, no_type_check
+from flask import current_app
+import pymysql
 
 import pytest
 from database import get_database
@@ -28,10 +30,14 @@ def test_connection_should_close_automatically_at_the_end_of_request(
     app: Flask,
 ) -> None:
     with app.app_context():
-        db: sqlite3.Connection = get_database()  # type: ignore  # sqlite in test environment
+        if current_app.config["TESTING"] is True:
+            db: sqlite3.Connection = get_database()  # type: ignore  # sqlite in test environment
+        else:
+            db: pymysql.Connection = get_database()
 
-    with pytest.raises(sqlite3.ProgrammingError, match="closed"):
-        db.execute("SELECT 1")
+    with pytest.raises(pymysql.InterfaceError, match="0"):
+        with db.cursor() as cursor:
+            cursor.execute("SELECT 1")
 
 
 def test_map_names_to_values() -> None:
@@ -51,19 +57,22 @@ def test_map_names_to_values() -> None:
     assert other_one["age"] == 19
 
 
-def test_get_results_mapped_by_field_name() -> None:
-    conn: sqlite3.Connection = sqlite3.Connection(":memory:")
-    cursor: sqlite3.Cursor = conn.cursor()
-    cursor.execute("SELECT 'user' as `name`, 'user@email.com' as `e-mail`")
+def test_get_results_mapped_by_field_name(
+    app: Flask,
+) -> None:
+    with app.app_context():
+        conn: pymysql.Connection = get_database()
+        cursor: pymysql.cursors.Cursor = conn.cursor()
+        cursor.execute("SELECT 'user' as `name`, 'user@email.com' as `e-mail`")
 
-    (named_result,) = get_results_mapped_by_field_name(cursor)  # type: ignore
+        (named_result,) = get_results_mapped_by_field_name(cursor)  # type: ignore
 
-    assert named_result["name"] == "user"
-    assert named_result["e-mail"] == "user@email.com"
+        assert named_result["name"] == "user"
+        assert named_result["e-mail"] == "user@email.com"
 
 
 def test_execute_command_on_update_should_have_empty_result(app: Flask) -> None:
-    update_stmt: str = "UPDATE `test_table` SET `password` = ? WHERE `account` = ?;"
+    update_stmt: str = "UPDATE `test_table` SET `password` = %s WHERE `account` = %s;"
 
     with app.app_context():
         results: list[dict[str, Any]] = execute_command(
@@ -94,7 +103,7 @@ def test_execute_command_on_const_select_should_have_results(app: Flask) -> None
 
 
 def test_execute_command_on_delete_should_have_empty_result(app: Flask) -> None:
-    delete_stmt: str = "DELETE FROM `test_table` WHERE `account` = ?;"
+    delete_stmt: str = "DELETE FROM `test_table` WHERE `account` = %s;"
 
     with app.app_context():
         results: list[dict[str, Any]] = execute_command(delete_stmt, ("my_account",))

@@ -6,6 +6,7 @@ from enum import IntEnum
 from typing import Any, Final
 
 import jwt
+from flask import current_app
 
 from auth.exception import (
     EmailAlreadyRegisteredError,
@@ -112,10 +113,17 @@ def register(email: str, password: str, profile: UserProfile) -> None:
     if is_registered(email):
         raise EmailAlreadyRegisteredError
 
-    stmt_to_insert_new_user: str = """
-        INSERT INTO `user`(`email`, `password`, `firstname`, `lastname`, `gender`, `birthday`)
-            VALUES(?, ?, ?, ?, ?, ?)
-    """
+    if current_app.config["TESTING"] is True:
+        stmt_to_insert_new_user: str = """
+            INSERT INTO `user`(`email`, `password`, `firstname`, `lastname`, `gender`, `birthday`)
+                VALUES(?, ?, ?, ?, ?, ?)
+        """
+    else:
+        stmt_to_insert_new_user = """
+            INSERT INTO `user`(`email`, `password`, `firstname`, `lastname`, `gender`, `birthday`)
+                VALUES(%s, %s, %s, %s, %s, %s)
+        """
+
     execute_command(
         stmt_to_insert_new_user,
         (
@@ -131,9 +139,15 @@ def register(email: str, password: str, profile: UserProfile) -> None:
 
 def is_correct_password(registered_email: str, password_to_check: str) -> bool:
     """The `registered_email` should be already registered, otherwise Exception raised by the database."""
+
+    if current_app.config["TESTING"] is True:
+        database_execute_command = "SELECT `password` FROM `user` WHERE `email` = ?"
+    else:
+        database_execute_command = "SELECT `password` FROM `user` WHERE `email` = %s"
+
     hashed_password_to_check = hash_with_sha512(password_to_check)
     hashed_user_password: int = execute_command(
-        "SELECT `password` FROM `user` WHERE `email` = ?",
+        database_execute_command,
         (registered_email,),
     )[0]["password"]
 
@@ -142,10 +156,19 @@ def is_correct_password(registered_email: str, password_to_check: str) -> bool:
 
 def is_registered(email: str) -> bool:
     """Returns whether the email is aldready used."""
-    user_count: int = execute_command(
-        "SELECT COUNT(*) as `user_count` FROM `user` WHERE `email` = ?",
-        (email,),
-    )[0]["user_count"]
+
+    if current_app.config["TESTING"] is True:
+        database_execute_command = (
+            "SELECT COUNT(*) as `user_count` FROM `user` WHERE `email` = ?"
+        )
+    else:
+        database_execute_command = (
+            "SELECT COUNT(*) as `user_count` FROM `user` WHERE `email` = %s"
+        )
+
+    user_count: int = execute_command(database_execute_command, (email,),)[
+        0
+    ]["user_count"]
 
     return user_count != 0
 
@@ -160,10 +183,15 @@ def fetch_user_profile(email: str) -> dict[str, Any]:
         UserNotFoundError: No registered user with email `email`.
     """
 
+    if current_app.config["TESTING"] is True:
+        database_execute_command = "SELECT `firstname`, `lastname`, `gender`, `birthday` FROM `user` WHERE `email` = ?"
+    else:
+        database_execute_command = "SELECT `firstname`, `lastname`, `gender`, `birthday` FROM `user` WHERE `email` = %s"
+
     if not is_registered(email):
         raise UserNotFoundError
 
     return execute_command(
-        "SELECT `firstname`, `lastname`, `gender`, `birthday` FROM `user` WHERE `email` = ?",
+        database_execute_command,
         (email,),
     )[0]
