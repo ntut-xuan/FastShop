@@ -35,22 +35,18 @@ def login_route() -> Response | str:
         if not is_valid_email(data["e-mail"]):
             return _make_single_message_response(HTTPStatus.UNPROCESSABLE_ENTITY)
 
-        status_code: HTTPStatus
         try:
             login(data["e-mail"], data["password"])
         except IncorrectEmailOrPasswordError:
-            status_code = HTTPStatus.FORBIDDEN
+            return _make_single_message_response(HTTPStatus.FORBIDDEN)
         else:
-            status_code = HTTPStatus.OK
+            response: Response = _make_single_message_response(HTTPStatus.OK)
 
-        prepare_response = _make_single_message_response(status_code)
-
-        if status_code == HTTPStatus.OK:
             del data["password"]
             data |= fetch_user_profile(data["e-mail"])
-            _set_jwt_cookie_to_response(data, prepare_response)
+            _set_jwt_cookie_to_response(data, response)
 
-        return prepare_response
+            return response
 
     return fetch_page("login")
 
@@ -113,10 +109,13 @@ def _make_single_message_response(code: int, message: str | None = None) -> Resp
     return make_response(status.message, status.code)
 
 
-def _set_jwt_cookie_to_response(data: dict, response: Response) -> None:
-    expiration_time_delta = timedelta(days=1)
+def _set_jwt_cookie_to_response(
+    payload: dict[str, Any],
+    response: Response,
+    expiration_time_delta: timedelta = timedelta(days=1),
+) -> None:
     codec = JWTCodec()
-    token: str = codec.encode(data, expiration_time_delta)
+    token: str = codec.encode(payload, expiration_time_delta)
     response.set_cookie(
         "jwt",
         value=token,
