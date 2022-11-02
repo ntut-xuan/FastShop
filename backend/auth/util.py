@@ -164,6 +164,6 @@ def fetch_user_profile(email: str) -> dict[str, Any]:
         raise UserNotFoundError
 
     return execute_command(
-        "SELECT firstname, lastname, gender, birthday FROM `user` WHERE `email` = ?",
+        "SELECT `firstname`, `lastname`, `gender`, `birthday` FROM `user` WHERE `email` = ?",
         (email,),
     )[0]
