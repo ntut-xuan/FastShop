@@ -26,7 +26,8 @@ def is_valid_email(email: str) -> bool:
     return is_fullmatched_with_regex(email, EMAIL_REGEX)
 
 
-def is_valid_birthday_format(birthday: str) -> bool:
+def is_valid_birthday(birthday: str) -> bool:
+    """Returns whether `birthday` is in format "%Y-%m-%d" and the day exists."""
     try:
         datetime.strptime(birthday, BIRTHDAY_FORMAT)
         return True

@@ -18,7 +18,7 @@ from auth.util import (
     fetch_user_profile,
     is_correct_password,
     is_registered,
-    is_valid_birthday_format,
+    is_valid_birthday,
     is_valid_email,
     login,
     register,
@@ -78,12 +78,12 @@ class TestIsValidBirthday:
         self,
         birthday_in_incorrect_format: str,
     ) -> None:
-        assert not is_valid_birthday_format(birthday_in_incorrect_format)
+        assert not is_valid_birthday(birthday_in_incorrect_format)
 
     def test_on_correct_format_should_return_true(self) -> None:
         birthday = "2000-01-01"
 
-        assert is_valid_birthday_format(birthday)
+        assert is_valid_birthday(birthday)
 
     @pytest.mark.parametrize(
         argnames=("bad_birthday",),
@@ -97,7 +97,7 @@ class TestIsValidBirthday:
         self,
         bad_birthday: str,
     ) -> None:
-        assert not is_valid_birthday_format(bad_birthday)
+        assert not is_valid_birthday(bad_birthday)
 
 
 class TestIsCorrectPassword:
@@ -230,7 +230,7 @@ class TestJWTCodec:
             assert not codec.is_valid_jwt(token)
 
         def test_on_invalid_token_should_return_false(self, codec: JWTCodec) -> None:
-            token: str = "abc.123.bcd"
+            token: str = "this.failed.validation"
             assert not codec.is_valid_jwt(token)
 
         def test_on_expired_token_should_return_false(self, codec: JWTCodec) -> None:

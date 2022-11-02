@@ -12,7 +12,7 @@ from auth.util import (
     JWTCodec,
     UserProfile,
     fetch_user_profile,
-    is_valid_birthday_format,
+    is_valid_birthday,
     is_valid_email,
     login,
     register,
@@ -105,7 +105,7 @@ def _has_required_columns(data: Mapping, required_columns: Iterable) -> bool:
 
 
 def _has_valid_register_data_format(data: Mapping[str, Any]) -> bool:
-    return is_valid_birthday_format(data["birthday"]) and is_valid_email(data["e-mail"])
+    return is_valid_birthday(data["birthday"]) and is_valid_email(data["e-mail"])
 
 
 def _make_single_message_response(code: int, message: str | None = None) -> Response:
