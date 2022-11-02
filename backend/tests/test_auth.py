@@ -24,7 +24,7 @@ class TestRegisterRoute:
             "password": "abc",
             "firstname": "new_firstname",
             "lastname": "new_lastname",
-            "gender": Gender.FEMALE,
+            "gender": 1,
             "birthday": "2001-01-01",
         }
 
@@ -68,7 +68,7 @@ class TestRegisterRoute:
             "password": "test",
             "firstname": "Han-Xuan",
             "lastname": "Huang",
-            "gender": Gender.MALE,
+            "gender": 0,
             "birthday": "2002-06-25",
         }
 
@@ -112,7 +112,7 @@ class TestLoginRoute:
             "password": "test",
             "firstname": "Han-Xuan",
             "lastname": "Huang",
-            "gender": Gender.MALE,
+            "gender": 0,
             "birthday": "2002-06-25",
         }
 
