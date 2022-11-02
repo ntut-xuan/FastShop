@@ -18,13 +18,13 @@ if TYPE_CHECKING:
 
 class TestRegisterRoute:
     @pytest.fixture
-    def new_data(self) -> dict[str, str]:
+    def new_data(self) -> dict[str, Any]:
         return {
             "e-mail": "new@gmail.com",
             "password": "abc",
             "firstname": "new_firstname",
             "lastname": "new_lastname",
-            "gender": "1",
+            "gender": Gender.FEMALE,
             "birthday": "2001-01-01",
         }
 
@@ -36,14 +36,14 @@ class TestRegisterRoute:
         assert b"<!-- register.html (a marker for API test) -->" in resp.data
 
     def test_post_with_correct_data_should_have_code_ok(
-        self, client: FlaskClient, new_data: dict[str, str]
+        self, client: FlaskClient, new_data: dict[str, Any]
     ) -> None:
         resp: TestResponse = client.post("/register", json=new_data)
 
         assert resp.status_code == HTTPStatus.OK
 
     def test_post_with_correct_data_should_store_into_database(
-        self, client: FlaskClient, new_data: dict[str, str]
+        self, client: FlaskClient, new_data: dict[str, Any]
     ) -> None:
         with client.application.app_context():
             db: sqlite3.Connection = get_database()  # type: ignore
@@ -63,12 +63,12 @@ class TestRegisterRoute:
     def test_post_with_registered_data_should_be_forbidden(
         self, client: FlaskClient
     ) -> None:
-        data: dict[str, str] = {
+        data: dict[str, Any] = {
             "e-mail": "test@email.com",
             "password": "test",
             "firstname": "Han-Xuan",
             "lastname": "Huang",
-            "gender": "0",
+            "gender": Gender.MALE,
             "birthday": "2002-06-25",
         }
 
@@ -86,7 +86,7 @@ class TestRegisterRoute:
         assert resp.status_code == HTTPStatus.BAD_REQUEST
 
     def test_post_with_incorrect_date_format_should_be_unprocessable_entity(
-        self, client: FlaskClient, new_data: dict[str, str]
+        self, client: FlaskClient, new_data: dict[str, Any]
     ) -> None:
         new_data["birthday"] = "2001/01/01"
 
@@ -95,7 +95,7 @@ class TestRegisterRoute:
         assert resp.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
     def test_post_with_incorrect_email_format_should_be_unprocessable_entity(
-        self, client: FlaskClient, new_data: dict[str, str]
+        self, client: FlaskClient, new_data: dict[str, Any]
     ) -> None:
         new_data["e-mail"] = "test@email@com"
 
@@ -106,13 +106,13 @@ class TestRegisterRoute:
 
 class TestLoginRoute:
     @pytest.fixture
-    def new_data(self) -> dict[str, str | int]:
+    def new_data(self) -> dict[str, Any]:
         return {
             "e-mail": "test@email.com",
             "password": "test",
             "firstname": "Han-Xuan",
             "lastname": "Huang",
-            "gender": 0,
+            "gender": Gender.MALE,
             "birthday": "2002-06-25",
         }
 
@@ -208,7 +208,7 @@ class TestLoginRoute:
     def test_post_with_existing_email_and_password_should_exist_jwt_cookie(
         self,
         client: FlaskClient,
-        new_data: dict[str, str | int],
+        new_data: dict[str, Any],
     ) -> None:
         client.post("/login", json=new_data)
 
@@ -219,7 +219,7 @@ class TestLoginRoute:
     def test_post_with_correct_data_should_have_correct_jwt_token_attribute(
         self,
         client: FlaskClient,
-        new_data: dict[str, str],
+        new_data: dict[str, Any],
     ) -> None:
         codec = JWTCodec()
 
