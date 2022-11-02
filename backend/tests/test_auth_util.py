@@ -1,5 +1,4 @@
 from __future__ import annotations
-from re import A
 
 import sqlite3
 from datetime import timedelta
