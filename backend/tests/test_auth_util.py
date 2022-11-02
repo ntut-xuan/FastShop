@@ -222,11 +222,11 @@ class TestJWTCodec:
         assert data == expected
 
     class TestIsValidJWT:
-        def test_on_token_with_not_enought_segment_should_return_false(
+        def test_on_token_with_not_enough_segment_should_return_false(
             self,
             codec: JWTCodec,
         ) -> None:
-            token: str = "should_have_three_dot_separated_segment"
+            token: str = "should_have_three_dot_separated_segments"
             assert not codec.is_valid_jwt(token)
 
         def test_on_invalid_token_should_return_false(self, codec: JWTCodec) -> None:
