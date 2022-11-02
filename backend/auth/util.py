@@ -1,11 +1,17 @@
 import hashlib
 import re
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from enum import IntEnum
-from typing import Final
+from typing import Any, Final
 
-from auth.exception import EmailAlreadyRegisteredError, IncorrectEmailOrPasswordError
+import jwt
+
+from auth.exception import (
+    EmailAlreadyRegisteredError,
+    IncorrectEmailOrPasswordError,
+    UserNotFoundError,
+)
 from database.util import execute_command
 
 EMAIL_REGEX: Final[str] = r"^[A-Za-z0-9_]+([.-]?[A-Za-z0-9_]+)*@[A-Za-z0-9_]+([.-]?[A-Za-z0-9_]+)*(\.[A-Za-z0-9_]{2,3})+$"  # fmt: skip
@@ -20,7 +26,8 @@ def is_valid_email(email: str) -> bool:
     return is_fullmatched_with_regex(email, EMAIL_REGEX)
 
 
-def is_valid_birthday_format(birthday: str) -> bool:
+def is_valid_birthday(birthday: str) -> bool:
+    """Returns whether `birthday` is in format "%Y-%m-%d" and the day exists."""
     try:
         datetime.strptime(birthday, BIRTHDAY_FORMAT)
         return True
@@ -50,6 +57,50 @@ class UserProfile:
     lastname: str
     gender: Gender
     birthday: int
+
+
+class JWTCodec:
+    def __init__(self, key: str = "secret", algorithm: str = "HS256") -> None:
+        self._key: str = key
+        self._algorithm: str = algorithm
+
+    @property
+    def key(self) -> str:
+        return self._key
+
+    @property
+    def algorithm(self) -> str:
+        return self._algorithm
+
+    def encode(
+        self,
+        payload: dict[str, Any],
+        expiration_time_delta: timedelta = timedelta(days=1),
+    ) -> str:
+        """Returns the JWT with `data`, Issue At (iat) and Expiration Time (exp) as payload."""
+        current_time: datetime = datetime.now(tz=timezone.utc)
+        expiration_time: datetime = current_time + expiration_time_delta
+        payload = {
+            "data": payload,
+            "iat": current_time,
+            "exp": expiration_time,
+        }
+        token: str = jwt.encode(payload, key=self._key, algorithm=self._algorithm)
+        return token
+
+    def decode(self, token: str) -> dict[str, Any]:
+        data: dict[str, Any] = jwt.decode(
+            token, key=self._key, algorithms=[self._algorithm]
+        )
+        return data
+
+    def is_valid_jwt(self, token: str) -> bool:
+        """Returns False if the expiration time (exp) is in the past or it failed validation."""
+        try:
+            self.decode(token)
+            return True
+        except (jwt.exceptions.DecodeError, jwt.exceptions.ExpiredSignatureError):
+            return False
 
 
 def register(email: str, password: str, profile: UserProfile) -> None:
@@ -101,3 +152,18 @@ def is_registered(email: str) -> bool:
 
 def hash_with_sha512(string: str) -> str:
     return hashlib.sha512(string.encode("utf-8")).hexdigest()
+
+
+def fetch_user_profile(email: str) -> dict[str, Any]:
+    """
+    Raises:
+        UserNotFoundError: No registered user with email `email`.
+    """
+
+    if not is_registered(email):
+        raise UserNotFoundError
+
+    return execute_command(
+        "SELECT `firstname`, `lastname`, `gender`, `birthday` FROM `user` WHERE `email` = ?",
+        (email,),
+    )[0]
