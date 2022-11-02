@@ -1,10 +1,12 @@
 from __future__ import annotations
+from re import A
 
 import sqlite3
 from datetime import timedelta
 from typing import TYPE_CHECKING, ClassVar
 
 import freezegun
+import jwt
 import pytest
 
 from auth.exception import (
@@ -242,3 +244,11 @@ class TestJWTCodec:
             token: str = codec.encode({"some": "payload"}, time_to_the_past)
 
             assert not codec.is_valid_jwt(token)
+
+        def test_on_vaild_token_should_return_true(self, codec: JWTCodec) -> None:
+            payload: dict[str, str] = {"some": "payload"}
+            token: str = jwt.encode(payload, key=codec.key, algorithm=codec.algorithm)
+
+            is_valid_jwt: bool = codec.is_valid_jwt(token)
+
+            assert is_valid_jwt
