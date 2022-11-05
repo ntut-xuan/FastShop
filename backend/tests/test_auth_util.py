@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sqlite3
 from datetime import timedelta
 from typing import TYPE_CHECKING, ClassVar
 
@@ -185,12 +184,15 @@ class TestRegister:
 
             db: pymysql.Connection = get_database()  # type: ignore
             with db.cursor() as cursor:
-                cursor.execute("SELECT * FROM user WHERE email = %s", (email,))
+                cursor.execute(
+                    "SELECT `firstname`, `lastname`, `gender` FROM user WHERE email = %s",
+                    (email,),
+                )
                 user_data: tuple = cursor.fetchone()
 
-            assert user_data[5] == some_user_profile.firstname
-            assert user_data[6] == some_user_profile.lastname
-            assert user_data[11] == some_user_profile.gender
+            assert user_data[0] == some_user_profile.firstname
+            assert user_data[1] == some_user_profile.lastname
+            assert user_data[2] == some_user_profile.gender
 
 
 class TestFetchUserProfile:

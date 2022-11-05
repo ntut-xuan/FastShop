@@ -131,7 +131,7 @@ def register(email: str, password: str, profile: UserProfile) -> None:
             hash_with_sha512(password),
             profile.firstname,
             profile.lastname,
-            profile.gender,
+            int(profile.gender),
             profile.birthday,
         ),
     )

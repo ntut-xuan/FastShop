@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-import sqlite3
 from typing import TYPE_CHECKING, Any, no_type_check
-from flask import current_app
 import pymysql
 
 import pytest
@@ -30,10 +28,7 @@ def test_connection_should_close_automatically_at_the_end_of_request(
     app: Flask,
 ) -> None:
     with app.app_context():
-        if current_app.config["TESTING"] is True:
-            db: sqlite3.Connection = get_database()  # type: ignore  # sqlite in test environment
-        else:
-            db: pymysql.Connection = get_database()
+        db = get_database()
 
     with pytest.raises(pymysql.InterfaceError, match="0"):
         with db.cursor() as cursor:
@@ -62,7 +57,7 @@ def test_get_results_mapped_by_field_name(
 ) -> None:
     with app.app_context():
         conn: pymysql.Connection = get_database()
-        cursor: pymysql.cursors.Cursor = conn.cursor()
+        cursor = conn.cursor()
         cursor.execute("SELECT 'user' as `name`, 'user@email.com' as `e-mail`")
 
         (named_result,) = get_results_mapped_by_field_name(cursor)  # type: ignore

@@ -52,13 +52,14 @@ class TestRegisterRoute:
 
             with db.cursor() as cursor:
                 cursor.execute(
-                    "SELECT * FROM user WHERE email = %s", ("new@gmail.com",)
+                    "SELECT `firstname`, `lastname`, `gender` FROM `user` WHERE `email` = %s",
+                    ("new@gmail.com",),
                 )
                 user_data = cursor.fetchone()
 
-            assert user_data[5] == "new_firstname"
-            assert user_data[6] == "new_lastname"
-            assert user_data[11] == Gender.FEMALE.value
+            assert user_data[0] == "new_firstname"
+            assert user_data[1] == "new_lastname"
+            assert user_data[2] == Gender.FEMALE.value
             # birthday and password are stored in different format,
             # not to bother with them here.
 
