@@ -14,7 +14,9 @@ if TYPE_CHECKING:
 
 @pytest.fixture
 def app() -> Generator[Flask, None, None]:
-    app: Flask = create_app({"TESTING": False})
+    app: Flask = create_app(
+        {"TESTING": False}  # integration test, be real with MariaDB
+    )
 
     with app.app_context():
         create_database()
