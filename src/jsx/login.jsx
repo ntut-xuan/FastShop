@@ -5,14 +5,14 @@ class LoginPlatform extends React.Component{
             <div className="bg-orange-100 w-screen h-screen">
                 <div className="w-[600px] max-h-[74vh] bg-white p-10 rounded-lg absolute left-[50%] top-[65%] translate-x-[-50%] translate-y-[-65%] shadow-lg overflow-y-auto">
                     <div id="title" className="pb-10">
-                        <p className="text-center text-2xl"> 登入 </p>
+                        <p className="text-center text-2xl"> 登入 </p> 
                     </div>
                     <div id="input_group" className="">
                         <input type="text" className="w-full p-3 border-2 border-gray-400 text-xs mb-4 outline-none" placeholder="電子郵件地址"></input>
                         <input type="password" className="w-full p-3 border-2 border-gray-400 text-xs mb-4 outline-none" placeholder="密碼"></input>
                     </div>
                     <div id="forgot_password" className="">
-                        <p className="text-sm underline underline-offset-2 cursor-pointer"> 忘記密碼？ </p>
+                        <p className="text-sm underline underline-offset-2 cursor-pointer"> 忘記密碼？ </p> 
                     </div>
                     <div id="button_group" className="pt-10">
                         <button className="bg-black text-white w-full p-2 my-2"> 登入 </button>
