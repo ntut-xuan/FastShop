@@ -1,39 +1,5 @@
 
 class LoginPlatform extends React.Component{
-    constructor(props){
-        super(props)
-        this.state = {email: "", password: ""}
-        this.handleAccountChange = this.handleAccountChange.bind(this);
-        this.handlePasswordChange = this.handlePasswordChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-    }
-    handleAccountChange(event){
-        this.setState({email: event.target.value})
-    }
-    handlePasswordChange(event){
-        this.setState({password: event.target.value})
-    }
-    handleSubmit(event){
-        let {email, password} = this.state
-        event.preventDefault();
-        $.ajax({
-            url: "/login",
-            type: "POST",
-            data: JSON.stringify({"e-mail": email, "password": password}),
-            dataType: "json",
-            contentType: "application/json",
-            success(data, status, xhr){
-                success_swal("登入成功").then(() => {window.location.href = "/"})
-            },
-            error(xhr, status, error){
-                if (xhr.status === "403"){
-                    error_swal("登入失敗", "帳號或密碼錯誤");
-                }else if(xhr.status === "422" || xhr.status === "400"){
-                    error_swal("登入失敗", "登入欄位錯誤，請聯繫管理員");
-                }
-            }
-        })
-    }
     render(){
         return (
             <div className="bg-orange-100 w-screen h-screen">
