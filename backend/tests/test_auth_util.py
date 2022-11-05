@@ -1,11 +1,11 @@
 from __future__ import annotations
 
+import sqlite3
 from datetime import timedelta
 from typing import TYPE_CHECKING, ClassVar
 
 import freezegun
 import jwt
-import pymysql
 import pytest
 
 from auth.exception import (
@@ -182,17 +182,14 @@ class TestRegister:
 
             register(email, password, some_user_profile)
 
-            db: pymysql.Connection = get_database()  # type: ignore
-            with db.cursor() as cursor:
-                cursor.execute(
-                    "SELECT `firstname`, `lastname`, `gender` FROM user WHERE email = %s",
-                    (email,),
-                )
-                user_data: tuple = cursor.fetchone()
-
-            assert user_data[0] == some_user_profile.firstname
-            assert user_data[1] == some_user_profile.lastname
-            assert user_data[2] == some_user_profile.gender
+            db: sqlite3.Connection = get_database()  # type: ignore
+            db.row_factory = sqlite3.Row
+            user_data: sqlite3.Row = db.execute(
+                "SELECT * FROM user WHERE email = ?", (email,)
+            ).fetchone()
+            assert user_data["firstname"] == some_user_profile.firstname
+            assert user_data["lastname"] == some_user_profile.lastname
+            assert user_data["gender"] == some_user_profile.gender
 
 
 class TestFetchUserProfile:
