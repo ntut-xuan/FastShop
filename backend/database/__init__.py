@@ -18,7 +18,7 @@ def connect_database_for_app(app: Flask) -> None:
 def create_database() -> None:
     db: pymysql.Connection = get_database()
     with current_app.open_resource("schema.sql") as f:
-        db.cursor().executescript(f.read().decode("utf-8"))  # type: ignore # f.read() is "bytes", not "str"
+        db.cursor().execute(f.read().decode("utf-8"))  # type: ignore # f.read() is "bytes", not "str"
         db.commit()
 
 

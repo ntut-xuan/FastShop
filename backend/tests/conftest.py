@@ -7,10 +7,10 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Generator
 
 import pytest
-from flask import g
+from flask import current_app, g
 
 from app import create_app
-from database import create_database, get_database
+from database import get_database
 
 if TYPE_CHECKING:
     from flask import Flask
@@ -26,7 +26,7 @@ def app(monkeypatch: pytest.MonkeyPatch) -> Generator[Flask, None, None]:
     )
     app: Flask = create_app({"TESTING": True})
     with app.app_context():
-        create_database()
+        create_sqlite_database()
         insert_test_data()
 
     yield app
@@ -43,6 +43,13 @@ def client(app: Flask) -> FlaskClient:
 def insert_test_data() -> None:
     data_sql: str = (Path(__file__).parent / "data.sql").read_text("utf-8")
     get_database().cursor().executescript(data_sql)
+
+
+def create_sqlite_database() -> None:
+    db = get_database()
+    with current_app.open_resource("schema.test.sql") as f:
+        db.cursor().executescript(f.read().decode("utf-8"))  # type: ignore # f.read() is "bytes", not "str"
+        db.commit()
 
 
 def connect_sqlite_database(db_path: str) -> None:

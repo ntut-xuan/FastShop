@@ -1,7 +1,7 @@
--- syntax of MariaDB
+-- syntax of SQLite
 
 CREATE TABLE IF NOT EXISTS `user` (
-  `uid` INTEGER PRIMARY KEY AUTO_INCREMENT,
+  `uid` INTEGER PRIMARY KEY AUTOINCREMENT,
   `email` TEXT NOT NULL,
   `password` TEXT NOT NULL,
   `firstname` TEXT NOT NULL,

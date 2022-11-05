@@ -2,11 +2,20 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Iterable
 
+from flask import current_app
+
 from database import get_database
 
 if TYPE_CHECKING:
     import pymysql
     from pymysql.cursors import Cursor
+
+
+def get_placeholder_for_sqlite_if_testing_else_mariadb() -> str:
+    """Returns "?" for SQLite if testing, otherwise "%s" for MariaDB."""
+    if current_app.config["TESTING"] is True:
+        return "?"
+    return "%s"
 
 
 def execute_command(command: str, paramter: tuple) -> list[dict[str, Any]]:
