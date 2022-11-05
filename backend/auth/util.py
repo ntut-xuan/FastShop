@@ -6,14 +6,16 @@ from enum import IntEnum
 from typing import Any, Final
 
 import jwt
-from flask import current_app
 
 from auth.exception import (
     EmailAlreadyRegisteredError,
     IncorrectEmailOrPasswordError,
     UserNotFoundError,
 )
-from database.util import execute_command
+from database.util import (
+    execute_command,
+    get_placeholder_for_sqlite_if_testing_else_mariadb,
+)
 
 EMAIL_REGEX: Final[str] = r"^[A-Za-z0-9_]+([.-]?[A-Za-z0-9_]+)*@[A-Za-z0-9_]+([.-]?[A-Za-z0-9_]+)*(\.[A-Za-z0-9_]{2,3})+$"  # fmt: skip
 BIRTHDAY_FORMAT: Final[str] = "%Y-%m-%d"
@@ -113,16 +115,13 @@ def register(email: str, password: str, profile: UserProfile) -> None:
     if is_registered(email):
         raise EmailAlreadyRegisteredError
 
-    if current_app.config["TESTING"] is True:
-        stmt_to_insert_new_user: str = """
-            INSERT INTO `user`(`email`, `password`, `firstname`, `lastname`, `gender`, `birthday`)
-                VALUES(?, ?, ?, ?, ?, ?)
-        """
-    else:
-        stmt_to_insert_new_user = """
-            INSERT INTO `user`(`email`, `password`, `firstname`, `lastname`, `gender`, `birthday`)
-                VALUES(%s, %s, %s, %s, %s, %s)
-        """
+    placeholder: str = get_placeholder_for_sqlite_if_testing_else_mariadb()
+    stmt_to_insert_new_user: str = """
+        INSERT INTO `user`(`email`, `password`, `firstname`, `lastname`, `gender`, `birthday`)
+            VALUES({p}, {p}, {p}, {p}, {p}, {p})
+    """.format(
+        p=placeholder
+    )
 
     execute_command(
         stmt_to_insert_new_user,
@@ -140,12 +139,11 @@ def register(email: str, password: str, profile: UserProfile) -> None:
 def is_correct_password(registered_email: str, password_to_check: str) -> bool:
     """The `registered_email` should be already registered, otherwise Exception raised by the database."""
 
-    if current_app.config["TESTING"] is True:
-        database_execute_command = "SELECT `password` FROM `user` WHERE `email` = ?"
-    else:
-        database_execute_command = "SELECT `password` FROM `user` WHERE `email` = %s"
-
-    hashed_password_to_check = hash_with_sha512(password_to_check)
+    placeholder: str = get_placeholder_for_sqlite_if_testing_else_mariadb()
+    database_execute_command: str = (
+        f"SELECT `password` FROM `user` WHERE `email` = {placeholder}"
+    )
+    hashed_password_to_check: str = hash_with_sha512(password_to_check)
     hashed_user_password: int = execute_command(
         database_execute_command,
         (registered_email,),
@@ -156,15 +154,10 @@ def is_correct_password(registered_email: str, password_to_check: str) -> bool:
 
 def is_registered(email: str) -> bool:
     """Returns whether the email is aldready used."""
-
-    if current_app.config["TESTING"] is True:
-        database_execute_command = (
-            "SELECT COUNT(*) as `user_count` FROM `user` WHERE `email` = ?"
-        )
-    else:
-        database_execute_command = (
-            "SELECT COUNT(*) as `user_count` FROM `user` WHERE `email` = %s"
-        )
+    placeholder: str = get_placeholder_for_sqlite_if_testing_else_mariadb()
+    database_execute_command: str = (
+        f"SELECT COUNT(*) as `user_count` FROM `user` WHERE `email` = {placeholder}"
+    )
 
     user_count: int = execute_command(database_execute_command, (email,),)[
         0
@@ -182,15 +175,11 @@ def fetch_user_profile(email: str) -> dict[str, Any]:
     Raises:
         UserNotFoundError: No registered user with email `email`.
     """
-
-    if current_app.config["TESTING"] is True:
-        database_execute_command = "SELECT `firstname`, `lastname`, `gender`, `birthday` FROM `user` WHERE `email` = ?"
-    else:
-        database_execute_command = "SELECT `firstname`, `lastname`, `gender`, `birthday` FROM `user` WHERE `email` = %s"
-
     if not is_registered(email):
         raise UserNotFoundError
 
+    placeholder: str = get_placeholder_for_sqlite_if_testing_else_mariadb()
+    database_execute_command: str = f"SELECT `firstname`, `lastname`, `gender`, `birthday` FROM `user` WHERE `email` = {placeholder}"
     return execute_command(
         database_execute_command,
         (email,),

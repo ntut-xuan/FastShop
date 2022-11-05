@@ -8,6 +8,7 @@ from database import get_database
 from database.util import (
     _map_names_to_values,
     execute_command,
+    get_placeholder_for_sqlite_if_testing_else_mariadb,
     get_results_mapped_by_field_name,
 )
 
@@ -109,3 +110,19 @@ def test_execute_command_on_create_should_have_empty_result(app: Flask) -> None:
         results: list[dict[str, Any]] = execute_command(create_stmt, ())
 
     assert len(results) == 0
+
+
+class TestGetPlaceholderForSqliteIfTestingElseMariadb:
+    def test_when_testing_should_be_question_mark(self, app: Flask) -> None:
+        with app.app_context():
+            placeholder: str = get_placeholder_for_sqlite_if_testing_else_mariadb()
+
+        assert placeholder == "?"
+
+    def test_when_not_testing_should_be_percent_s(self, app: Flask) -> None:
+        app.config["TESTING"] = False
+
+        with app.app_context():
+            placeholder: str = get_placeholder_for_sqlite_if_testing_else_mariadb()
+
+        assert placeholder == "%s"
