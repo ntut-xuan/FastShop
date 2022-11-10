@@ -52,17 +52,17 @@ def clean_test_data() -> None:
 
 
 def executescript(conn: pymysql.Connection, script: str) -> None:
-    stmts: list[str] = split_sql_script_into_stmts(script)
+    stmts: tuple[str, ...] = split_sql_script_into_stmts(script)
     for stmt in stmts:
         conn.cursor().execute(stmt)
         conn.commit()
 
 
-def split_sql_script_into_stmts(sql_script: str) -> tuple[str]:
+def split_sql_script_into_stmts(sql_script: str) -> tuple[str, ...]:
     """Splits the `sql_script` of multiple semi-colon-delimited (;) statements into tuple of statements."""
     stmts: list[str] = sql_script.split(";")
     return tuple(filter(is_not_empty_stmt, stmts))
 
 
 def is_not_empty_stmt(stmt: str) -> bool:
-    return stmt and stmt != "\n"
+    return bool(stmt and stmt != "\n")
