@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Generator
+from typing import TYPE_CHECKING, Any, Generator
 
 import pytest
 
@@ -11,12 +11,18 @@ if TYPE_CHECKING:
     from flask import Flask
     from flask.testing import FlaskClient
 
+test_cofig: dict[str, Any] = {
+    "TESTING": False,  # integration test, be real with MariaDB
+    "MARIADB_USER": "fsta",
+    "MARIADB_PASSWORD": "@fsta2022",
+    "MARIADB_DATABASE": "fastshop-test",
+    "MARIADB_HOST": "fastshop-mariadb-test-1",
+}
+
 
 @pytest.fixture
 def app() -> Generator[Flask, None, None]:
-    app: Flask = create_app(
-        {"TESTING": False}  # integration test, be real with MariaDB
-    )
+    app: Flask = create_app(test_cofig)
 
     with app.app_context():
         create_database()
