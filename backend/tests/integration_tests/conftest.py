@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from flask import Flask
     from flask.testing import FlaskClient
 
-test_cofig: Final[dict[str, Any]] = {
+test_config: Final[dict[str, Any]] = {
     "TESTING": False,  # integration test, be real with MariaDB
     "MARIADB_USER": "fsta",
     "MARIADB_PASSWORD": "@fsta2022",
@@ -24,7 +24,7 @@ test_cofig: Final[dict[str, Any]] = {
 
 @pytest.fixture
 def app() -> Generator[Flask, None, None]:
-    app: Flask = create_app(test_cofig)
+    app: Flask = create_app(test_config)
 
     with app.app_context():
         create_database()
