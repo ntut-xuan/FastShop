@@ -1,7 +1,3 @@
-DROP TABLE IF EXISTS `test_table`;
-DROP TABLE IF EXISTS `new_table`;
-DROP TABLE IF EXISTS `user`;
-
 INSERT INTO `user` (`email`, `password`, `firstname`, `lastname`, `gender`, `birthday`)
 VALUES (
     'test@email.com',

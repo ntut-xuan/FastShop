@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final, Generator
 
+import pymysql
 import pytest
 
 from app import create_app
@@ -20,8 +21,6 @@ test_cofig: Final[dict[str, Any]] = {
     "MARIADB_HOST": "fastshop-mariadb-test-1",
 }
 
-_data_sql: Final[str] = (Path(__file__).parent / "data.sql").read_text("utf-8")
-
 
 @pytest.fixture
 def app() -> Generator[Flask, None, None]:
@@ -33,6 +32,9 @@ def app() -> Generator[Flask, None, None]:
 
     yield app
 
+    with app.app_context():
+        clean_test_data()
+
 
 @pytest.fixture
 def client(app: Flask) -> FlaskClient:
@@ -40,11 +42,20 @@ def client(app: Flask) -> FlaskClient:
 
 
 def insert_test_data() -> None:
-    stmts: list[str] = split_sql_script_into_stmts(_data_sql)
-    db = get_database()
+    data_sql: Final[str] = (Path(__file__).parent / "data.sql").read_text("utf-8")
+    executescript(get_database(), data_sql)
+
+
+def clean_test_data() -> None:
+    clean_sql: Final[str] = (Path(__file__).parent / "clean.sql").read_text("utf-8")
+    executescript(get_database(), clean_sql)
+
+
+def executescript(conn: pymysql.Connection, script: str) -> None:
+    stmts: list[str] = split_sql_script_into_stmts(script)
     for stmt in stmts:
-        db.cursor().execute(stmt)
-        db.commit()
+        conn.cursor().execute(stmt)
+        conn.commit()
 
 
 def split_sql_script_into_stmts(sql_script: str) -> tuple[str]:
