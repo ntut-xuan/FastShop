@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from database import get_database
 from typing import TYPE_CHECKING, Any
 
+from database import get_database
 from database.util import execute_command
 
 if TYPE_CHECKING:
@@ -60,6 +60,7 @@ class TestExecuteCommand:
                 conn: pymysql.Connection = get_database()
                 conn.cursor().execute("DROP TABLE IF EXISTS `new_table`;")
                 conn.commit()
+
         request.addfinalizer(
             drop_new_table
         )  # tears down even though the assertion fails
