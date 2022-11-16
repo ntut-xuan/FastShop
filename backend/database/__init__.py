@@ -1,12 +1,15 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Final, cast
 
 import pymysql
 from flask import current_app, g
+from flask_sqlalchemy import SQLAlchemy
 
 if TYPE_CHECKING:
     from flask import Flask
+
+db: Final[SQLAlchemy] = SQLAlchemy()
 
 
 def connect_database_for_app(app: Flask) -> None:
