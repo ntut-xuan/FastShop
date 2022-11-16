@@ -1,3 +1,2 @@
 DROP TABLE IF EXISTS `test_table`;
-DROP TABLE IF EXISTS `new_table`;
 DROP TABLE IF EXISTS `user`;
