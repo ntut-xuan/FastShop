@@ -12,6 +12,10 @@ if TYPE_CHECKING:
 
 db: Final[SQLAlchemy] = SQLAlchemy()
 
+# For SQLAlchemy.create_all to know what to create.
+# NOTE: imports after the creation of "db" to resolve circular import
+from models import *
+
 
 @click.command("create-db")
 def create_db_command() -> None:
