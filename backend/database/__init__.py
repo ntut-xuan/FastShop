@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Final, cast
 
+import click
 import pymysql
 from flask import current_app, g
 from flask_sqlalchemy import SQLAlchemy
@@ -10,6 +11,19 @@ if TYPE_CHECKING:
     from flask import Flask
 
 db: Final[SQLAlchemy] = SQLAlchemy()
+
+
+@click.command("create-db")
+def create_db_command() -> None:
+    """For flask-sqlalchemy."""
+    create_db()
+    click.echo("Created the database.")
+
+
+def create_db() -> None:
+    """For flask-sqlalchemy."""
+    with current_app.app_context():
+        db.create_all()
 
 
 def connect_database_for_app(app: Flask) -> None:
