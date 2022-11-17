@@ -111,15 +111,15 @@ def register(email: str, password: str, profile: UserProfile) -> None:
     """
 
     if is_registered(email):
-        raise EmailAlreadyRegisteredError
+        raise EmailAlreadyRegisteredError(email)
 
-    stmt_to_insert_new_user: str = """
+    insert_new_user_stmt: str = """
         INSERT INTO `user`(`email`, `password`, `firstname`, `lastname`, `gender`, `birthday`)
-            VALUES(:email, :password, :firstname, :lastname, gender, birthday)
+            VALUES(:email, :password, :firstname, :lastname, :gender, :birthday)
     """
 
     db.session.execute(
-        db.text(stmt_to_insert_new_user),
+        db.text(insert_new_user_stmt),
         {
             "email": email,
             "password": hash_with_sha512(password),
@@ -145,9 +145,7 @@ def is_registered(email: str) -> bool:
     """Returns whether the email is aldready used."""
     select_user_with_email_stmt = db.select(User).where(User.email == email)
 
-    user_count: int = len(
-        db.session.execute(select_user_with_email_stmt).scalars().all()
-    )
+    user_count: int = len(db.session.execute(select_user_with_email_stmt).all())
     return user_count != 0
 
 
@@ -164,6 +162,6 @@ def fetch_user_profile(email: str) -> dict[str, Any]:
         raise UserNotFoundError
 
     select_user_profile_with_email = db.select(
-        [User.firstname, User.lastname, User.gender, User.birthday]
+        User.firstname, User.lastname, User.gender, User.birthday
     ).where(User.email == email)
     return UserProfile(db.session.execute(select_user_profile_with_email).scalar_one())
