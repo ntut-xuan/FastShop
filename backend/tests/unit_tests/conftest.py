@@ -21,13 +21,13 @@ def app() -> Generator[Flask, None, None]:
     app: Flask = create_app(
         {
             "TESTING": True,
-            "SQLALCHEMY_DATABASE_URI": "sqlite:///db_path",
+            "SQLALCHEMY_DATABASE_URI": f"sqlite:///{db_path}",
             "SQLALCHEMY_ECHO": True,
         }
     )
     with app.app_context():
         create_db()
-        # insert_test_data()
+        insert_test_data()
 
     yield app
 
