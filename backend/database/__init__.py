@@ -32,10 +32,10 @@ def get_database() -> pymysql.Connection:
 
 def connect_database() -> None:
     g.db = pymysql.connect(
-        host="fastshop-mariadb-1",
-        user="fsa",
-        password="@fsa2022",
-        database="fastshop",
+        host=current_app.config["MARIADB_HOST"],
+        user=current_app.config["MARIADB_USER"],
+        password=current_app.config["MARIADB_PASSWORD"],
+        database=current_app.config["MARIADB_DATABASE"],
     )
 
 
