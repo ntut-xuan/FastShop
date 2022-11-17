@@ -2,10 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from database import get_database
 from database.util import execute_command
 
 if TYPE_CHECKING:
+    import pymysql
     from flask import Flask
+    from pytest import FixtureRequest
 
 
 class TestExecuteCommand:
@@ -49,7 +52,19 @@ class TestExecuteCommand:
 
         assert len(results) == 0
 
-    def test_on_create_should_have_empty_result(self, app: Flask) -> None:
+    def test_on_create_should_have_empty_result(
+        self, app: Flask, request: FixtureRequest
+    ) -> None:
+        def drop_new_table() -> None:
+            with app.app_context():
+                conn: pymysql.Connection = get_database()
+                conn.cursor().execute("DROP TABLE IF EXISTS `new_table`;")
+                conn.commit()
+
+        request.addfinalizer(
+            drop_new_table
+        )  # tears down even though the assertion fails
+
         create_stmt: str = "CREATE TABLE `new_table` (`id` INT PRIMARY KEY);"
 
         with app.app_context():
