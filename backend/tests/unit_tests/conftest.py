@@ -1,16 +1,12 @@
 from __future__ import annotations
 
-import os
-import sqlite3
-import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING, Generator
 
 import pytest
-from flask import current_app, g
 
 from app import create_app
-from database import get_database
+from database import create_db, db
 
 if TYPE_CHECKING:
     from flask import Flask
@@ -18,21 +14,19 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture
-def app(monkeypatch: pytest.MonkeyPatch) -> Generator[Flask, None, None]:
-    db_fd, db_path = tempfile.mkstemp()
-    monkeypatch.setattr(
-        "database.connect_database",
-        lambda: connect_sqlite_database(db_path),
+def app() -> Generator[Flask, None, None]:
+    app: Flask = create_app(
+        {
+            "TESTING": True,
+            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+            "SQLALCHEMY_ECHO": True,
+        }
     )
-    app: Flask = create_app({"TESTING": True})
     with app.app_context():
-        create_sqlite_database()
+        create_db()
         insert_test_data()
 
     yield app
-
-    os.close(db_fd)
-    os.unlink(db_path)
 
 
 @pytest.fixture
@@ -42,15 +36,20 @@ def client(app: Flask) -> FlaskClient:
 
 def insert_test_data() -> None:
     data_sql: str = (Path(__file__).parent / "data.sql").read_text("utf-8")
-    get_database().cursor().executescript(data_sql)
+    executescript(db.session, data_sql)
 
 
-def create_sqlite_database() -> None:
-    db = get_database()
-    with current_app.open_resource("schema.test.sql") as f:
-        db.cursor().executescript(f.read().decode("utf-8"))  # type: ignore # f.read() is "bytes", not "str"
-        db.commit()
+def executescript(session, script: str) -> None:
+    stmts: tuple[str, ...] = split_sql_script_into_stmts(script)
+    for stmt in stmts:
+        session.execute(stmt)
 
 
-def connect_sqlite_database(db_path: str) -> None:
-    g.db = sqlite3.connect(db_path)
+def split_sql_script_into_stmts(sql_script: str) -> tuple[str, ...]:
+    """Splits the `sql_script` of multiple semi-colon-delimited (;) statements into tuple of statements."""
+    stmts: list[str] = sql_script.split(";")
+    return tuple(filter(is_not_empty_stmt, stmts))
+
+
+def is_not_empty_stmt(stmt: str) -> bool:
+    return bool(stmt and stmt != "\n")
