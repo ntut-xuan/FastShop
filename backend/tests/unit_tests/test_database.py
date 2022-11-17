@@ -15,6 +15,8 @@ from database.util import (
 if TYPE_CHECKING:
     from flask import Flask
 
+pytest.skip(allow_module_level=True)
+
 
 @no_type_check
 def test_connection_gotten_during_a_request_should_be_the_same(app: Flask) -> None:

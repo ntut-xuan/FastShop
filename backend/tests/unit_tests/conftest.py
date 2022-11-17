@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING, Generator
 
@@ -15,18 +17,22 @@ if TYPE_CHECKING:
 
 @pytest.fixture
 def app() -> Generator[Flask, None, None]:
+    db_fp, db_path = tempfile.mkstemp()
     app: Flask = create_app(
         {
             "TESTING": True,
-            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+            "SQLALCHEMY_DATABASE_URI": "sqlite:///db_path",
             "SQLALCHEMY_ECHO": True,
         }
     )
     with app.app_context():
         create_db()
-        insert_test_data()
+        # insert_test_data()
 
     yield app
+
+    os.close(db_fp)
+    os.unlink(db_path)
 
 
 @pytest.fixture
@@ -36,13 +42,14 @@ def client(app: Flask) -> FlaskClient:
 
 def insert_test_data() -> None:
     data_sql: str = (Path(__file__).parent / "data.sql").read_text("utf-8")
-    executescript(db.session, data_sql)
+    executescript(db, data_sql)
 
 
-def executescript(session, script: str) -> None:
+def executescript(db_, script: str) -> None:
     stmts: tuple[str, ...] = split_sql_script_into_stmts(script)
     for stmt in stmts:
-        session.execute(stmt)
+        db_.session.execute(db_.text(stmt))
+        db_.session.commit()
 
 
 def split_sql_script_into_stmts(sql_script: str) -> tuple[str, ...]:

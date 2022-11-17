@@ -6,7 +6,7 @@ from urllib.parse import quote
 from flask import Flask
 
 from auth.route import auth_bp
-from database import connect_database_for_app, create_db_command, db
+from database import create_db_command, db
 from util import fetch_page
 
 
@@ -34,8 +34,6 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     @app.route("/", methods=["GET"])
     def index() -> str:
         return fetch_page("index")
-
-    connect_database_for_app(app)
 
     return app
 

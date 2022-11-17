@@ -12,10 +12,8 @@ from auth.exception import (
     IncorrectEmailOrPasswordError,
     UserNotFoundError,
 )
-from database.util import (
-    execute_command,
-    get_placeholder_for_sqlite_if_testing_else_mariadb,
-)
+from database import db
+from models import User
 
 EMAIL_REGEX: Final[str] = r"^[A-Za-z0-9_]+([.-]?[A-Za-z0-9_]+)*@[A-Za-z0-9_]+([.-]?[A-Za-z0-9_]+)*(\.[A-Za-z0-9_]{2,3})+$"  # fmt: skip
 BIRTHDAY_FORMAT: Final[str] = "%Y-%m-%d"
@@ -115,54 +113,41 @@ def register(email: str, password: str, profile: UserProfile) -> None:
     if is_registered(email):
         raise EmailAlreadyRegisteredError
 
-    placeholder: str = get_placeholder_for_sqlite_if_testing_else_mariadb()
     stmt_to_insert_new_user: str = """
         INSERT INTO `user`(`email`, `password`, `firstname`, `lastname`, `gender`, `birthday`)
-            VALUES({p}, {p}, {p}, {p}, {p}, {p})
-    """.format(
-        p=placeholder
-    )
+            VALUES(:email, :password, :firstname, :lastname, gender, birthday)
+    """
 
-    execute_command(
-        stmt_to_insert_new_user,
-        (
-            email,
-            hash_with_sha512(password),
-            profile.firstname,
-            profile.lastname,
-            int(profile.gender),
-            profile.birthday,
-        ),
+    db.session.execute(
+        db.text(stmt_to_insert_new_user),
+        {
+            "email": email,
+            "password": hash_with_sha512(password),
+            "firstname": profile.firstname,
+            "lastname": profile.lastname,
+            "gender": int(profile.gender),
+            "birthday": profile.birthday,
+        },
     )
 
 
 def is_correct_password(registered_email: str, password_to_check: str) -> bool:
     """The `registered_email` should be already registered, otherwise Exception raised by the database."""
-
-    placeholder: str = get_placeholder_for_sqlite_if_testing_else_mariadb()
-    database_execute_command: str = (
-        f"SELECT `password` FROM `user` WHERE `email` = {placeholder}"
+    select_password_with_email_stmt = db.select(User.password).where(
+        User.email == registered_email
     )
-    hashed_password_to_check: str = hash_with_sha512(password_to_check)
-    hashed_user_password: int = execute_command(
-        database_execute_command,
-        (registered_email,),
-    )[0]["password"]
+    password: str = db.session.execute(select_password_with_email_stmt).scalar_one()
 
-    return hashed_password_to_check == hashed_user_password
+    return hash_with_sha512(password_to_check) == password
 
 
 def is_registered(email: str) -> bool:
     """Returns whether the email is aldready used."""
-    placeholder: str = get_placeholder_for_sqlite_if_testing_else_mariadb()
-    database_execute_command: str = (
-        f"SELECT COUNT(*) as `user_count` FROM `user` WHERE `email` = {placeholder}"
+    select_user_with_email_stmt = db.select(User).where(User.email == email)
+
+    user_count: int = len(
+        db.session.execute(select_user_with_email_stmt).scalars().all()
     )
-
-    user_count: int = execute_command(database_execute_command, (email,),)[
-        0
-    ]["user_count"]
-
     return user_count != 0
 
 
@@ -178,9 +163,7 @@ def fetch_user_profile(email: str) -> dict[str, Any]:
     if not is_registered(email):
         raise UserNotFoundError
 
-    placeholder: str = get_placeholder_for_sqlite_if_testing_else_mariadb()
-    database_execute_command: str = f"SELECT `firstname`, `lastname`, `gender`, `birthday` FROM `user` WHERE `email` = {placeholder}"
-    return execute_command(
-        database_execute_command,
-        (email,),
-    )[0]
+    select_user_profile_with_email = db.select(
+        [User.firstname, User.lastname, User.gender, User.birthday]
+    ).where(User.email == email)
+    return UserProfile(db.session.execute(select_user_profile_with_email).scalar_one())
