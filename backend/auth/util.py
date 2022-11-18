@@ -3,7 +3,7 @@ import re
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from enum import IntEnum
-from typing import Any, Final
+from typing import TYPE_CHECKING, Any, Final
 
 import jwt
 from sqlalchemy import select
@@ -15,6 +15,11 @@ from auth.exception import (
 )
 from database import db
 from models import User
+
+if TYPE_CHECKING:
+    from sqlalchemy.engine.row import Row
+    from sqlalchemy.sql.dml import Insert
+    from sqlalchemy.sql.selectable import Select
 
 EMAIL_REGEX: Final[str] = r"^[A-Za-z0-9_]+([.-]?[A-Za-z0-9_]+)*@[A-Za-z0-9_]+([.-]?[A-Za-z0-9_]+)*(\.[A-Za-z0-9_]{2,3})+$"  # fmt: skip
 BIRTHDAY_FORMAT: Final[str] = "%Y-%m-%d"
@@ -114,27 +119,20 @@ def register(email: str, password: str, profile: UserProfile) -> None:
     if is_registered(email):
         raise EmailAlreadyRegisteredError(email)
 
-    insert_new_user_stmt: str = """
-        INSERT INTO `user`(`email`, `password`, `firstname`, `lastname`, `gender`, `birthday`)
-            VALUES(:email, :password, :firstname, :lastname, :gender, :birthday)
-    """
-
-    db.session.execute(
-        db.text(insert_new_user_stmt),
-        {
-            "email": email,
-            "password": hash_with_sha512(password),
-            "firstname": profile.firstname,
-            "lastname": profile.lastname,
-            "gender": int(profile.gender),
-            "birthday": profile.birthday,
-        },
+    insert_new_user_stmt: Insert = db.insert(User).values(
+        email=email,
+        password=hash_with_sha512(password),
+        firstname=profile.firstname,
+        lastname=profile.lastname,
+        gender=profile.gender,
+        birthday=profile.birthday,
     )
+    db.session.execute(insert_new_user_stmt)
 
 
 def is_correct_password(registered_email: str, password_to_check: str) -> bool:
     """The `registered_email` should be already registered, otherwise Exception raised by the database."""
-    select_password_with_email_stmt = db.select(User.password).where(
+    select_password_with_email_stmt: Select = db.select(User.password).where(
         User.email == registered_email
     )
     password: str = db.session.execute(select_password_with_email_stmt).scalar_one()
@@ -144,7 +142,7 @@ def is_correct_password(registered_email: str, password_to_check: str) -> bool:
 
 def is_registered(email: str) -> bool:
     """Returns whether the email is aldready used."""
-    select_user_with_email_stmt = db.select(User).where(User.email == email)
+    select_user_with_email_stmt: Select = db.select(User).where(User.email == email)
 
     user_count: int = len(db.session.execute(select_user_with_email_stmt).all())
     return user_count != 0
@@ -162,12 +160,10 @@ def fetch_user_profile(email: str) -> dict[str, Any]:
     if not is_registered(email):
         raise UserNotFoundError
 
-    # XXX: though I select() multiple columns, other the 1st indicated is returned
-    select_user_profile_with_email = select(User).where(User.email == email)
-    user_profile = db.session.execute(select_user_profile_with_email).scalar_one()
-    return {
-        "firstname": user_profile.firstname,
-        "lastname": user_profile.lastname,
-        "gender": user_profile.gender,
-        "birthday": user_profile.birthday,
-    }
+    select_user_profile_with_email_stmt: Select = select(
+        User.firstname, User.lastname, User.gender, User.birthday
+    ).where(User.email == email)
+    user_profile: Row = db.session.execute(
+        select_user_profile_with_email_stmt
+    ).fetchone()
+    return dict(user_profile)
