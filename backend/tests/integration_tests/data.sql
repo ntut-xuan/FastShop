@@ -17,13 +17,3 @@ VALUES (
     0,
     1666604387 -- 2002-06-25
   );
-
-CREATE TABLE `test_table` (
-  `id` INTEGER PRIMARY KEY AUTO_INCREMENT,
-  `account` TEXT NOT NULL UNIQUE,
-  `password` TEXT NOT NULL
-);
-
-INSERT INTO `test_table` (`account`, `password`)
-VALUES ('my_account', '#my_password'),
-  ('other_account', '#other_password');

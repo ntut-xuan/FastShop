@@ -6,6 +6,7 @@ from enum import IntEnum
 from typing import Any, Final
 
 import jwt
+from sqlalchemy import select
 
 from auth.exception import (
     EmailAlreadyRegisteredError,
@@ -161,7 +162,12 @@ def fetch_user_profile(email: str) -> dict[str, Any]:
     if not is_registered(email):
         raise UserNotFoundError
 
-    select_user_profile_with_email = db.select(
-        User.firstname, User.lastname, User.gender, User.birthday
-    ).where(User.email == email)
-    return UserProfile(db.session.execute(select_user_profile_with_email).scalar_one())
+    # XXX: though I select() multiple columns, other the 1st indicated is returned
+    select_user_profile_with_email = select(User).where(User.email == email)
+    user_profile = db.session.execute(select_user_profile_with_email).scalar_one()
+    return {
+        "firstname": user_profile.firstname,
+        "lastname": user_profile.lastname,
+        "gender": user_profile.gender,
+        "birthday": user_profile.birthday,
+    }
