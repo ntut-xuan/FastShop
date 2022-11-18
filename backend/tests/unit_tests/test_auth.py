@@ -10,96 +10,100 @@ import pytest
 
 from auth.util import Gender, JWTCodec
 from database import db
+from models import User
 
 if TYPE_CHECKING:
     from flask.testing import FlaskClient
+    from sqlalchemy.engine.row import Row
+    from sqlalchemy.sql.selectable import Select
     from werkzeug.test import TestResponse
 
 
-# class TestRegisterRoute:
-#     @pytest.fixture
-#     def new_data(self) -> dict[str, Any]:
-#         return {
-#             "e-mail": "new@gmail.com",
-#             "password": "abc",
-#             "firstname": "new_firstname",
-#             "lastname": "new_lastname",
-#             "gender": 1,
-#             "birthday": "2001-01-01",
-#         }
+class TestRegisterRoute:
+    @pytest.fixture
+    def new_data(self) -> dict[str, Any]:
+        return {
+            "e-mail": "new@gmail.com",
+            "password": "abc",
+            "firstname": "new_firstname",
+            "lastname": "new_lastname",
+            "gender": 1,
+            "birthday": "2001-01-01",
+        }
 
-#     def test_get_should_response_content_of_register_html(
-#         self, client: FlaskClient
-#     ) -> None:
-#         resp: TestResponse = client.get("/register")
+    def test_get_should_response_content_of_register_html(
+        self, client: FlaskClient
+    ) -> None:
+        resp: TestResponse = client.get("/register")
 
-#         assert b"<!-- register.html (a marker for API test) -->" in resp.data
+        assert b"<!-- register.html (a marker for API test) -->" in resp.data
 
-#     def test_post_with_correct_data_should_have_code_ok(
-#         self, client: FlaskClient, new_data: dict[str, Any]
-#     ) -> None:
-#         resp: TestResponse = client.post("/register", json=new_data)
+    def test_post_with_correct_data_should_have_code_ok(
+        self, client: FlaskClient, new_data: dict[str, Any]
+    ) -> None:
+        resp: TestResponse = client.post("/register", json=new_data)
 
-#         assert resp.status_code == HTTPStatus.OK
+        assert resp.status_code == HTTPStatus.OK
 
-#     def test_post_with_correct_data_should_store_into_database(
-#         self, client: FlaskClient, new_data: dict[str, Any]
-#     ) -> None:
-#         with client.application.app_context():
-#             client.post("/register", json=new_data)
+    def test_post_with_correct_data_should_store_into_database(
+        self, client: FlaskClient, new_data: dict[str, Any]
+    ) -> None:
+        with client.application.app_context():
 
-#             user_data = db.session.execute(
-#                 "SELECT * FROM user WHERE email = :email", {"email": "new@gmail.com"}
-#             ).scalar_one()
-#             print(type(user_data))
-#             assert user_data.firstname == "new_firstname"
-#             assert user_data.lastname == "new_lastname"
-#             assert user_data.gender == Gender.FEMALE
-#             # birthday and password are stored in different format,
-#             # not to bother with them here.
+            client.post("/register", json=new_data)
 
-# def test_post_with_registered_data_should_be_forbidden(
-#     self, client: FlaskClient
-# ) -> None:
-#     data: dict[str, Any] = {
-#         "e-mail": "test@email.com",
-#         "password": "test",
-#         "firstname": "Han-Xuan",
-#         "lastname": "Huang",
-#         "gender": 0,
-#         "birthday": "2002-06-25",
-#     }
+            stmt: Select = db.select(User.firstname, User.lastname, User.gender).where(
+                User.email == "new@gmail.com"
+            )
+            user: Row = db.session.execute(stmt).fetchone()
+            assert user.firstname == "new_firstname"
+            assert user.lastname == "new_lastname"
+            assert user.gender == Gender.FEMALE
+            # birthday and password are stored in different format,
+            # not to bother with them here.
 
-#     resp: TestResponse = client.post("/register", json=data)
+    def test_post_with_registered_data_should_be_forbidden(
+        self, client: FlaskClient
+    ) -> None:
+        data: dict[str, Any] = {
+            "e-mail": "test@email.com",
+            "password": "test",
+            "firstname": "Han-Xuan",
+            "lastname": "Huang",
+            "gender": 0,
+            "birthday": "2002-06-25",
+        }
 
-#     assert resp.status_code == HTTPStatus.FORBIDDEN
+        resp: TestResponse = client.post("/register", json=data)
 
-# def test_post_with_incorrect_data_should_be_bad_request(
-#     self, client: FlaskClient
-# ) -> None:
-#     data: dict[str, str] = {"uriah": "garbage"}
+        assert resp.status_code == HTTPStatus.FORBIDDEN
 
-#     resp: TestResponse = client.post("/register", json=data)
+    def test_post_with_incorrect_data_should_be_bad_request(
+        self, client: FlaskClient
+    ) -> None:
+        data: dict[str, str] = {"uriah": "garbage"}
 
-#     assert resp.status_code == HTTPStatus.BAD_REQUEST
+        resp: TestResponse = client.post("/register", json=data)
 
-# def test_post_with_incorrect_date_format_should_be_unprocessable_entity(
-#     self, client: FlaskClient, new_data: dict[str, Any]
-# ) -> None:
-#     new_data["birthday"] = "2001/01/01"
+        assert resp.status_code == HTTPStatus.BAD_REQUEST
 
-#     resp: TestResponse = client.post("/register", json=new_data)
+    def test_post_with_incorrect_date_format_should_be_unprocessable_entity(
+        self, client: FlaskClient, new_data: dict[str, Any]
+    ) -> None:
+        new_data["birthday"] = "2001/01/01"
 
-#     assert resp.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+        resp: TestResponse = client.post("/register", json=new_data)
 
-# def test_post_with_incorrect_email_format_should_be_unprocessable_entity(
-#     self, client: FlaskClient, new_data: dict[str, Any]
-# ) -> None:
-#     new_data["e-mail"] = "test@email@com"
+        assert resp.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
-#     resp: TestResponse = client.post("/register", json=new_data)
+    def test_post_with_incorrect_email_format_should_be_unprocessable_entity(
+        self, client: FlaskClient, new_data: dict[str, Any]
+    ) -> None:
+        new_data["e-mail"] = "test@email@com"
 
-#     assert resp.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+        resp: TestResponse = client.post("/register", json=new_data)
+
+        assert resp.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
 
 # class TestLoginRoute:
