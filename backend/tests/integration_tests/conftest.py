@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Final, Generator
+from typing import TYPE_CHECKING, Generator
 from urllib.parse import quote
 
 import pytest
@@ -15,13 +15,7 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture
-def app(request: pytest.FixtureRequest) -> Generator[Flask, None, None]:
-    def clean() -> None:
-        with app.app_context():
-            clean_test_data()
-
-    request.addfinalizer(clean)  # cleaned even though the test failed
-
+def app() -> Generator[Flask, None, None]:
     app: Flask = create_app(
         {
             "TESTING": False,  # integration test, be real with MariaDB
@@ -37,6 +31,9 @@ def app(request: pytest.FixtureRequest) -> Generator[Flask, None, None]:
 
     yield app
 
+    with app.app_context():
+        db.drop_all()
+
 
 @pytest.fixture
 def client(app: Flask) -> FlaskClient:
@@ -46,11 +43,6 @@ def client(app: Flask) -> FlaskClient:
 def insert_test_data() -> None:
     data_sql: str = (Path(__file__).parent / "data.sql").read_text("utf-8")
     executescript(db, data_sql)
-
-
-def clean_test_data() -> None:
-    clean_sql: Final[str] = (Path(__file__).parent / "clean.sql").read_text("utf-8")
-    executescript(db, clean_sql)
 
 
 def executescript(db_, script: str) -> None:
