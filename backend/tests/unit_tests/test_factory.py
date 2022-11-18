@@ -11,7 +11,9 @@ if TYPE_CHECKING:
 
 def test_test_config_should_be_loaded() -> None:
     assert not create_app().testing
-    assert create_app(test_config={"TESTING": True}).testing
+    assert create_app(
+        test_config={"TESTING": True, "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:"}
+    ).testing
 
 
 def test_get_index_should_response_content_of_index_html(client: FlaskClient) -> None:
