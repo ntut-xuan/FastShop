@@ -9,9 +9,12 @@ import pytest
 
 from auth.util import Gender, JWTCodec
 from database import db
+from models import User
 
 if TYPE_CHECKING:
     from flask.testing import FlaskClient
+    from sqlalchemy.engine.row import Row
+    from sqlalchemy.sql.selectable import Select
     from werkzeug.test import TestResponse
 
 
@@ -45,16 +48,16 @@ class TestRegisterRoute:
         self, client: FlaskClient, new_data: dict[str, Any]
     ) -> None:
         with client.application.app_context():
+
             client.post("/register", json=new_data)
 
-            user = db.session.execute(
-                "SELECT `firstname`, `lastname`, `gender` FROM `user` WHERE `email` = :email",
-                {"email": "new@gmail.com"},
-            ).fetchone()
-
+            stmt: Select = db.select(User.firstname, User.lastname, User.gender).where(
+                User.email == "new@gmail.com"
+            )
+            user: Row = db.session.execute(stmt).fetchone()
             assert user.firstname == "new_firstname"
             assert user.lastname == "new_lastname"
-            assert user.gender == Gender.FEMALE.value
+            assert user.gender == Gender.FEMALE
             # birthday and password are stored in different format,
             # not to bother with them here.
 
