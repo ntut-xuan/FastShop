@@ -21,14 +21,9 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     db.init_app(app)
     app.cli.add_command(create_db_command)
     app.register_blueprint(auth_bp)
-    _create_path_if_not_exist(app.instance_path)
 
     @app.route("/", methods=["GET"])
     def index() -> str:
         return fetch_page("index")
 
     return app
-
-
-def _create_path_if_not_exist(path: str) -> None:
-    Path(path).mkdir(exist_ok=True)
