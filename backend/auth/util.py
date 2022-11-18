@@ -37,9 +37,9 @@ def is_valid_birthday(birthday: str) -> bool:
     """Returns whether `birthday` is in format "%Y-%m-%d" and the day exists."""
     try:
         datetime.strptime(birthday, BIRTHDAY_FORMAT)
-        return True
     except ValueError:
         return False
+    return True
 
 
 def login(email: str, password: str) -> None:
@@ -105,9 +105,9 @@ class JWTCodec:
         """Returns False if the expiration time (exp) is in the past or it failed validation."""
         try:
             self.decode(token)
-            return True
         except (jwt.exceptions.DecodeError, jwt.exceptions.ExpiredSignatureError):
             return False
+        return True
 
 
 def register(email: str, password: str, profile: UserProfile) -> None:
