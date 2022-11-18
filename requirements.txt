@@ -36,6 +36,7 @@ sqlalchemy-stubs==0.4
 toml==0.10.2
 tomli==2.0.1
 types-PyMySQL==1.0.19
+types-setuptools==65.5.0.3
 typing_extensions==4.3.0
 virtualenv==20.16.5
 Werkzeug==2.2.2
