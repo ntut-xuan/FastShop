@@ -3,16 +3,23 @@ import re
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from enum import IntEnum
-from typing import Any, Final
+from typing import TYPE_CHECKING, Any, Final
 
 import jwt
+from sqlalchemy import select
 
 from auth.exception import (
     EmailAlreadyRegisteredError,
     IncorrectEmailOrPasswordError,
     UserNotFoundError,
 )
-from database.util import execute_command
+from database import db
+from models import User
+
+if TYPE_CHECKING:
+    from sqlalchemy.engine.row import Row
+    from sqlalchemy.sql.dml import Insert
+    from sqlalchemy.sql.selectable import Select
 
 EMAIL_REGEX: Final[str] = r"^[A-Za-z0-9_]+([.-]?[A-Za-z0-9_]+)*@[A-Za-z0-9_]+([.-]?[A-Za-z0-9_]+)*(\.[A-Za-z0-9_]{2,3})+$"  # fmt: skip
 BIRTHDAY_FORMAT: Final[str] = "%Y-%m-%d"
@@ -30,9 +37,9 @@ def is_valid_birthday(birthday: str) -> bool:
     """Returns whether `birthday` is in format "%Y-%m-%d" and the day exists."""
     try:
         datetime.strptime(birthday, BIRTHDAY_FORMAT)
-        return True
     except ValueError:
         return False
+    return True
 
 
 def login(email: str, password: str) -> None:
@@ -98,9 +105,9 @@ class JWTCodec:
         """Returns False if the expiration time (exp) is in the past or it failed validation."""
         try:
             self.decode(token)
-            return True
         except (jwt.exceptions.DecodeError, jwt.exceptions.ExpiredSignatureError):
             return False
+        return True
 
 
 def register(email: str, password: str, profile: UserProfile) -> None:
@@ -110,43 +117,34 @@ def register(email: str, password: str, profile: UserProfile) -> None:
     """
 
     if is_registered(email):
-        raise EmailAlreadyRegisteredError
+        raise EmailAlreadyRegisteredError(email)
 
-    stmt_to_insert_new_user: str = """
-        INSERT INTO `user`(`email`, `password`, `firstname`, `lastname`, `gender`, `birthday`)
-            VALUES(?, ?, ?, ?, ?, ?)
-    """
-    execute_command(
-        stmt_to_insert_new_user,
-        (
-            email,
-            hash_with_sha512(password),
-            profile.firstname,
-            profile.lastname,
-            profile.gender,
-            profile.birthday,
-        ),
+    insert_new_user_stmt: Insert = db.insert(User).values(
+        email=email,
+        password=hash_with_sha512(password),
+        firstname=profile.firstname,
+        lastname=profile.lastname,
+        gender=profile.gender,
+        birthday=profile.birthday,
     )
+    db.session.execute(insert_new_user_stmt)
 
 
 def is_correct_password(registered_email: str, password_to_check: str) -> bool:
     """The `registered_email` should be already registered, otherwise Exception raised by the database."""
-    hashed_password_to_check = hash_with_sha512(password_to_check)
-    hashed_user_password: int = execute_command(
-        "SELECT `password` FROM `user` WHERE `email` = ?",
-        (registered_email,),
-    )[0]["password"]
+    select_password_with_email_stmt: Select = db.select(User.password).where(
+        User.email == registered_email
+    )
+    password: str = db.session.execute(select_password_with_email_stmt).scalar_one()
 
-    return hashed_password_to_check == hashed_user_password
+    return hash_with_sha512(password_to_check) == password
 
 
 def is_registered(email: str) -> bool:
     """Returns whether the email is aldready used."""
-    user_count: int = execute_command(
-        "SELECT COUNT(*) as `user_count` FROM `user` WHERE `email` = ?",
-        (email,),
-    )[0]["user_count"]
+    select_user_with_email_stmt: Select = db.select(User).where(User.email == email)
 
+    user_count: int = len(db.session.execute(select_user_with_email_stmt).all())
     return user_count != 0
 
 
@@ -159,11 +157,13 @@ def fetch_user_profile(email: str) -> dict[str, Any]:
     Raises:
         UserNotFoundError: No registered user with email `email`.
     """
-
     if not is_registered(email):
         raise UserNotFoundError
 
-    return execute_command(
-        "SELECT `firstname`, `lastname`, `gender`, `birthday` FROM `user` WHERE `email` = ?",
-        (email,),
-    )[0]
+    select_user_profile_with_email_stmt: Select = select(
+        User.firstname, User.lastname, User.gender, User.birthday
+    ).where(User.email == email)
+    user_profile: Row = db.session.execute(
+        select_user_profile_with_email_stmt
+    ).fetchone()
+    return dict(user_profile)

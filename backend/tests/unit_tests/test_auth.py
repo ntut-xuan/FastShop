@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sqlite3
 from contextlib import contextmanager
 from http import HTTPStatus
 from http.cookiejar import Cookie, CookieJar
@@ -9,10 +8,13 @@ from typing import TYPE_CHECKING, Any
 import pytest
 
 from auth.util import Gender, JWTCodec
-from database import get_database
+from database import db
+from models import User
 
 if TYPE_CHECKING:
     from flask.testing import FlaskClient
+    from sqlalchemy.engine.row import Row
+    from sqlalchemy.sql.selectable import Select
     from werkzeug.test import TestResponse
 
 
@@ -46,17 +48,16 @@ class TestRegisterRoute:
         self, client: FlaskClient, new_data: dict[str, Any]
     ) -> None:
         with client.application.app_context():
-            db: sqlite3.Connection = get_database()  # type: ignore
-            db.row_factory = sqlite3.Row
 
             client.post("/register", json=new_data)
 
-            user_data: sqlite3.Row = db.execute(
-                "SELECT * FROM user WHERE email = ?", ("new@gmail.com",)
-            ).fetchone()
-            assert user_data["firstname"] == "new_firstname"
-            assert user_data["lastname"] == "new_lastname"
-            assert user_data["gender"] == Gender.FEMALE
+            stmt: Select = db.select(User.firstname, User.lastname, User.gender).where(
+                User.email == "new@gmail.com"
+            )
+            user: Row = db.session.execute(stmt).fetchone()
+            assert user.firstname == "new_firstname"
+            assert user.lastname == "new_lastname"
+            assert user.gender == Gender.FEMALE
             # birthday and password are stored in different format,
             # not to bother with them here.
 
@@ -159,7 +160,11 @@ class TestLoginRoute:
         resp: TestResponse = client.post("/login", json=email_and_password)
 
         assert resp.is_json
-        assert resp.json is not None and resp.json["message"] == "Failed"
+        assert (
+            resp.json is not None
+            and resp.json["message"]
+            == "The email or password that the user posted does not match any account."
+        )
 
     def test_post_with_invalid_data_should_have_code_bad_request(
         self,
@@ -180,7 +185,11 @@ class TestLoginRoute:
         resp: TestResponse = client.post("/login", json=invalid_data)
 
         assert resp.is_json
-        assert resp.json is not None and resp.json["message"] == "Failed"
+        assert (
+            resp.json is not None
+            and resp.json["message"]
+            == "The data has the wrong format and the server can't understand it."
+        )
 
     def test_post_with_invalid_email_should_have_code_unprocessable_entity(
         self,
@@ -203,7 +212,11 @@ class TestLoginRoute:
         resp: TestResponse = client.post("/login", json=data)
 
         assert resp.is_json
-        assert resp.json is not None and resp.json["message"] == "Failed"
+        assert (
+            resp.json is not None
+            and resp.json["message"]
+            == "The posted data has the correct format, but the data is invalid."
+        )
 
     def test_post_with_existing_email_and_password_should_exist_jwt_cookie(
         self,
