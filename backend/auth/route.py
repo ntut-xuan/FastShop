@@ -18,7 +18,7 @@ from auth.util import (
     register,
 )
 from response_message import (
-    DUPLICATED_ACCOUNT,
+    DUPLICATE_ACCOUNT,
     INCORRECT_EMAIL_OR_PASSWORD,
     INVALID_DATA,
     WRONG_DATA_FORMAT,
@@ -100,7 +100,7 @@ def register_route() -> Response | str:
             register(data["e-mail"], data["password"], profile)
         except EmailAlreadyRegisteredError:
             return _make_single_message_response(
-                HTTPStatus.FORBIDDEN, message=DUPLICATED_ACCOUNT
+                HTTPStatus.FORBIDDEN, message=DUPLICATE_ACCOUNT
             )
         else:
             return _make_single_message_response(HTTPStatus.OK)
