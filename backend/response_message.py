@@ -1,4 +1,4 @@
-DUPLICATE_ACCOUNT = "The email and password user post already exist."
-INCORRECT_EMAIL_OR_PASSWORD = "The email and password user post are not match."
-INVALID_DATA = "The data format user post is correct, but the data is invalid."
-WRONG_DATA_FORMAT = "The wrong format of data, the server can't understand the data."
+DUPLICATE_ACCOUNT = "The posted email already exist."
+INCORRECT_EMAIL_OR_PASSWORD = "The email or password that the user posted does not match any account."
+INVALID_DATA = "The posted data has the correct format, but the data is invalid."
+WRONG_DATA_FORMAT = "The data has the wrong format and the server can't understand it."
