@@ -162,7 +162,11 @@ class TestLoginRoute:
         resp: TestResponse = client.post("/login", json=email_and_password)
 
         assert resp.is_json
-        assert resp.json is not None and resp.json["message"] == "Failed"
+        assert (
+            resp.json is not None
+            and resp.json["message"]
+            == "The email or password that the user posted does not match any account."
+        )
 
     def test_post_with_invalid_data_should_have_code_bad_request(
         self,
@@ -183,7 +187,11 @@ class TestLoginRoute:
         resp: TestResponse = client.post("/login", json=invalid_data)
 
         assert resp.is_json
-        assert resp.json is not None and resp.json["message"] == "Failed"
+        assert (
+            resp.json is not None
+            and resp.json["message"]
+            == "The data has the wrong format and the server can't understand it."
+        )
 
     def test_post_with_invalid_email_should_have_code_unprocessable_entity(
         self,
@@ -206,7 +214,11 @@ class TestLoginRoute:
         resp: TestResponse = client.post("/login", json=data)
 
         assert resp.is_json
-        assert resp.json is not None and resp.json["message"] == "Failed"
+        assert (
+            resp.json is not None
+            and resp.json["message"]
+            == "The posted data has the correct format, but the data is invalid."
+        )
 
     def test_post_with_existing_email_and_password_should_exist_jwt_cookie(
         self,

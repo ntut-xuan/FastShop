@@ -40,13 +40,3 @@ class TestSingleMessageStatus:
         status = SingleMessageStatus(status_code)
 
         assert status.message["message"] == "OK"
-
-    @pytest.mark.parametrize(
-        argnames=("status_code",), argvalues=((400,), (451,), (500,), (511,))
-    )
-    def test_default_message_on_error_status_code_should_be_failed(
-        self, status_code: int
-    ) -> None:
-        status = SingleMessageStatus(status_code)
-
-        assert status.message["message"] == "Failed"
