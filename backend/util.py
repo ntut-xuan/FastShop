@@ -30,7 +30,7 @@ class SingleMessageStatus:
                 HTTP status code.
             message:
                 The response message to be wrapped into the message dict.
-                Default to "OK" if code is lower than 400, otherwise, a empty message.
+                Default to "OK" if code is lower than 400, otherwise, an empty message.
         """
         self.code: int = code
         if message is None:
