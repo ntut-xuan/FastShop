@@ -17,6 +17,12 @@ from auth.util import (
     login,
     register,
 )
+from response_message import (
+    DUPLICATED_ACCOUNT,
+    INCORRECT_EMAIL_OR_PASSWORD,
+    INVALID_DATA,
+    WRONG_DATA_FORMAT,
+)
 from util import SingleMessageStatus, fetch_page
 
 if TYPE_CHECKING:
@@ -31,14 +37,20 @@ def login_route() -> Response | str:
         data = request.json
 
         if data is None or not _has_required_login_data(data):
-            return _make_single_message_response(HTTPStatus.BAD_REQUEST)
+            return _make_single_message_response(
+                HTTPStatus.BAD_REQUEST, message=WRONG_DATA_FORMAT
+            )
         if not is_valid_email(data["e-mail"]):
-            return _make_single_message_response(HTTPStatus.UNPROCESSABLE_ENTITY)
+            return _make_single_message_response(
+                HTTPStatus.UNPROCESSABLE_ENTITY, message=INVALID_DATA
+            )
 
         try:
             login(data["e-mail"], data["password"])
         except IncorrectEmailOrPasswordError:
-            return _make_single_message_response(HTTPStatus.FORBIDDEN, message="The email and password user post are not match.")
+            return _make_single_message_response(
+                HTTPStatus.FORBIDDEN, message=INCORRECT_EMAIL_OR_PASSWORD
+            )
         else:
             response: Response = _make_single_message_response(HTTPStatus.OK)
 
@@ -68,9 +80,13 @@ def register_route() -> Response | str:
             "password",
         ]
         if not _has_required_columns(data, required_columns):
-            return _make_single_message_response(HTTPStatus.BAD_REQUEST)
+            return _make_single_message_response(
+                HTTPStatus.BAD_REQUEST, message=WRONG_DATA_FORMAT
+            )
         if not _has_valid_register_data_format(data):
-            return _make_single_message_response(HTTPStatus.UNPROCESSABLE_ENTITY)
+            return _make_single_message_response(
+                HTTPStatus.UNPROCESSABLE_ENTITY, message=INVALID_DATA
+            )
 
         profile = UserProfile(
             firstname=data["firstname"],
@@ -83,10 +99,12 @@ def register_route() -> Response | str:
         try:
             register(data["e-mail"], data["password"], profile)
         except EmailAlreadyRegisteredError:
-            return _make_single_message_response(HTTPStatus.FORBIDDEN, message="The email and password user post already exist.")
+            return _make_single_message_response(
+                HTTPStatus.FORBIDDEN, message=DUPLICATED_ACCOUNT
+            )
         else:
             return _make_single_message_response(HTTPStatus.OK)
-        
+
     return fetch_page("register")
 
 
