@@ -1,18 +1,20 @@
 from __future__ import annotations
 
-from contextlib import contextmanager
 from http import HTTPStatus
 from http.cookiejar import Cookie, CookieJar
 from typing import TYPE_CHECKING, Any
 
 import pytest
-import pymysql
 
 from auth.util import Gender, JWTCodec
-from database import get_database
+from database import db
+from models import User
+from tests.util import assert_not_raise
 
 if TYPE_CHECKING:
     from flask.testing import FlaskClient
+    from sqlalchemy.engine.row import Row
+    from sqlalchemy.sql.selectable import Select
     from werkzeug.test import TestResponse
 
 
@@ -46,20 +48,16 @@ class TestRegisterRoute:
         self, client: FlaskClient, new_data: dict[str, Any]
     ) -> None:
         with client.application.app_context():
-            db: pymysql.Connection = get_database()  # type: ignore
 
             client.post("/register", json=new_data)
 
-            with db.cursor() as cursor:
-                cursor.execute(
-                    "SELECT `firstname`, `lastname`, `gender` FROM `user` WHERE `email` = %s",
-                    ("new@gmail.com",),
-                )
-                user_data = cursor.fetchone()
-
-            assert user_data[0] == "new_firstname"
-            assert user_data[1] == "new_lastname"
-            assert user_data[2] == Gender.FEMALE.value
+            stmt: Select = db.select(User.firstname, User.lastname, User.gender).where(
+                User.email == "new@gmail.com"
+            )
+            user: Row = db.session.execute(stmt).fetchone()
+            assert user.firstname == "new_firstname"
+            assert user.lastname == "new_lastname"
+            assert user.gender == Gender.FEMALE
             # birthday and password are stored in different format,
             # not to bother with them here.
 
@@ -228,7 +226,7 @@ class TestLoginRoute:
         client.post("/login", json=new_data)
 
         cookies: tuple[Cookie, ...] = _get_cookies(client.cookie_jar)
-        with _assert_not_raise(ValueError):
+        with assert_not_raise(ValueError):
             (jwt_cookie,) = tuple(filter(lambda x: x.name == "jwt", cookies))
 
     def test_post_with_correct_data_should_have_correct_jwt_token_attribute(
@@ -255,11 +253,3 @@ def _get_cookies(cookie_jar: CookieJar | None) -> tuple[Cookie, ...]:
     if cookie_jar is None:
         return tuple()
     return tuple(cookie for cookie in cookie_jar)
-
-
-@contextmanager
-def _assert_not_raise(exception):
-    try:
-        yield
-    except exception:
-        pytest.fail(f"DID RAISE {exception}")

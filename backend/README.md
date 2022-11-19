@@ -10,6 +10,12 @@ If you're in the `backend/` directory, the following command starts the applicat
 flask run --host 0.0.0.0 --port 8080
 ```
 
+> You have to create database tables for the first time.
+>
+> ```bash
+> flask create-db
+> ```
+
 If in the `fastshop/` directory or anywhere else, specifying the path of factory function (`create_app`) will do the work.
 
 ```bash

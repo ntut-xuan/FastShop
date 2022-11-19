@@ -1,16 +1,15 @@
 from __future__ import annotations
 
 import os
-import sqlite3
 import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING, Generator
 
 import pytest
-from flask import current_app, g
 
 from app import create_app
-from database import get_database
+from database import create_db, db
+from tests.util import executescript
 
 if TYPE_CHECKING:
     from flask import Flask
@@ -18,20 +17,21 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture
-def app(monkeypatch: pytest.MonkeyPatch) -> Generator[Flask, None, None]:
-    db_fd, db_path = tempfile.mkstemp()
-    monkeypatch.setattr(
-        "database.connect_database",
-        lambda: connect_sqlite_database(db_path),
+def app() -> Generator[Flask, None, None]:
+    db_fp, db_path = tempfile.mkstemp()
+    app: Flask = create_app(
+        {
+            "TESTING": True,
+            "SQLALCHEMY_DATABASE_URI": f"sqlite:///{db_path}",
+        }
     )
-    app: Flask = create_app({"TESTING": True})
     with app.app_context():
-        create_sqlite_database()
+        create_db()
         insert_test_data()
 
     yield app
 
-    os.close(db_fd)
+    os.close(db_fp)
     os.unlink(db_path)
 
 
@@ -42,15 +42,4 @@ def client(app: Flask) -> FlaskClient:
 
 def insert_test_data() -> None:
     data_sql: str = (Path(__file__).parent / "data.sql").read_text("utf-8")
-    get_database().cursor().executescript(data_sql)
-
-
-def create_sqlite_database() -> None:
-    db = get_database()
-    with current_app.open_resource("schema.test.sql") as f:
-        db.cursor().executescript(f.read().decode("utf-8"))  # type: ignore # f.read() is "bytes", not "str"
-        db.commit()
-
-
-def connect_sqlite_database(db_path: str) -> None:
-    g.db = sqlite3.connect(db_path)
+    executescript(db, data_sql)

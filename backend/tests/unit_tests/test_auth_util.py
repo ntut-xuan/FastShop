@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sqlite3
 from datetime import timedelta
 from typing import TYPE_CHECKING, ClassVar
 
@@ -25,7 +24,8 @@ from auth.util import (
     login,
     register,
 )
-from database import get_database
+from database import db
+from models import User
 
 if TYPE_CHECKING:
     from flask import Flask
@@ -182,14 +182,12 @@ class TestRegister:
 
             register(email, password, some_user_profile)
 
-            db: sqlite3.Connection = get_database()  # type: ignore
-            db.row_factory = sqlite3.Row
-            user_data: sqlite3.Row = db.execute(
-                "SELECT * FROM user WHERE email = ?", (email,)
-            ).fetchone()
-            assert user_data["firstname"] == some_user_profile.firstname
-            assert user_data["lastname"] == some_user_profile.lastname
-            assert user_data["gender"] == some_user_profile.gender
+            user: User = db.session.execute(
+                db.select(User).where(User.email == email)
+            ).scalar_one()
+            assert user.firstname == some_user_profile.firstname
+            assert user.lastname == some_user_profile.lastname
+            assert user.gender == some_user_profile.gender
 
 
 class TestFetchUserProfile:
