@@ -9,6 +9,7 @@ import pytest
 
 from app import create_app
 from database import create_db, db
+from tests.util import executescript
 
 if TYPE_CHECKING:
     from flask import Flask
@@ -42,20 +43,3 @@ def client(app: Flask) -> FlaskClient:
 def insert_test_data() -> None:
     data_sql: str = (Path(__file__).parent / "data.sql").read_text("utf-8")
     executescript(db, data_sql)
-
-
-def executescript(db_, script: str) -> None:
-    stmts: tuple[str, ...] = split_sql_script_into_stmts(script)
-    for stmt in stmts:
-        db_.session.execute(db_.text(stmt))
-        db_.session.commit()
-
-
-def split_sql_script_into_stmts(sql_script: str) -> tuple[str, ...]:
-    """Splits the `sql_script` of multiple semi-colon-delimited (;) statements into tuple of statements."""
-    stmts: list[str] = sql_script.split(";")
-    return tuple(filter(is_not_empty_stmt, stmts))
-
-
-def is_not_empty_stmt(stmt: str) -> bool:
-    return bool(stmt and stmt != "\n")
