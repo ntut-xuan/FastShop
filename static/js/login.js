@@ -51,8 +51,14 @@ var LoginPlatform = function (_React$Component) {
                     });
                 },
                 error: function error(xhr, status, _error) {
-                    var data = eval("(" + xhr.responseText + ")");
-                    error_swal("登入失敗", data["code"]);
+                    console.log(_error);
+                    if (_error == "FORBIDDEN") {
+                        error_swal("登入失敗", "帳號或密碼錯誤");
+                    } else if (_error === "UNPROCESSABLE ENTITY") {
+                        error_swal("登入失敗", "信箱格式錯誤");
+                    } else {
+                        error_swal("登入失敗", "登入 Payload 格式錯誤，請聯繫管理員");
+                    }
                 }
             });
         }

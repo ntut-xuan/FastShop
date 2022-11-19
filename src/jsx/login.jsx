@@ -26,8 +26,14 @@ class LoginPlatform extends React.Component{
                 success_swal("登入成功").then(() => {window.location.href = "/"})
             },
             error(xhr, status, error){
-                var data = eval("(" + xhr.responseText + ")");
-                error_swal("登入失敗", data["code"]);
+                console.log(error)
+                if(error == "FORBIDDEN"){
+                    error_swal("登入失敗", "帳號或密碼錯誤");
+                }else if(error === "UNPROCESSABLE ENTITY"){
+                    error_swal("登入失敗", "信箱格式錯誤");
+                }else{
+                    error_swal("登入失敗", "登入 Payload 格式錯誤，請聯繫管理員");
+                }
             }
         })
     }
@@ -36,14 +42,14 @@ class LoginPlatform extends React.Component{
             <div className="bg-orange-100 w-screen h-screen">
                 <form className="w-[600px] max-h-[74vh] bg-white p-10 rounded-lg absolute left-[50%] top-[65%] translate-x-[-50%] translate-y-[-65%] shadow-lg overflow-y-auto" onSubmit={this.handleSubmit}>
                     <div id="title" className="pb-10">
-                        <p className="text-center text-2xl"> 登入 </p> 
+                        <p className="text-center text-2xl"> 登入 </p>
                     </div>
                     <div id="input_group" className="">
                         <input type="text" className="w-full p-3 border-2 border-gray-400 text-xs mb-4 outline-none" placeholder="電子郵件地址" onChange={this.handleAccountChange}></input>
                         <input type="password" className="w-full p-3 border-2 border-gray-400 text-xs mb-4 outline-none" placeholder="密碼" onChange={this.handlePasswordChange}></input>
                     </div>
                     <div id="forgot_password" className="">
-                        <p className="text-sm underline underline-offset-2 cursor-pointer"> 忘記密碼？ </p> 
+                        <p className="text-sm underline underline-offset-2 cursor-pointer"> 忘記密碼？ </p>
                     </div>
                     <div id="button_group" className="pt-10">
                         <button className="bg-black text-white w-full p-2 my-2"> 登入 </button>
