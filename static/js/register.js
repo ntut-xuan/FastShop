@@ -9,21 +9,114 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var RegisterPlatform = function (_React$Component) {
     _inherits(RegisterPlatform, _React$Component);
 
-    function RegisterPlatform() {
+    function RegisterPlatform(props) {
         _classCallCheck(this, RegisterPlatform);
 
-        return _possibleConstructorReturn(this, (RegisterPlatform.__proto__ || Object.getPrototypeOf(RegisterPlatform)).apply(this, arguments));
+        var _this = _possibleConstructorReturn(this, (RegisterPlatform.__proto__ || Object.getPrototypeOf(RegisterPlatform)).call(this, props));
+
+        _this.state = { firstname: "", lastname: "", gender: -1, birthday: "", email: "", password: "" };
+        _this.handleFirstnameChange = _this.handleFirstnameChange.bind(_this);
+        _this.handleLastnameChange = _this.handleLastnameChange.bind(_this);
+        _this.handleGenderChange = _this.handleGenderChange.bind(_this);
+        _this.handleEmailChange = _this.handleEmailChange.bind(_this);
+        _this.handlePasswordChange = _this.handlePasswordChange.bind(_this);
+        _this.handleSubmit = _this.handleSubmit.bind(_this);
+        return _this;
     }
 
     _createClass(RegisterPlatform, [{
+        key: "handleFirstnameChange",
+        value: function handleFirstnameChange(event) {
+            this.setState({ firstname: event.target.value });
+        }
+    }, {
+        key: "handleLastnameChange",
+        value: function handleLastnameChange(event) {
+            this.setState({ lastname: event.target.value });
+        }
+    }, {
+        key: "handleGenderChange",
+        value: function handleGenderChange(event) {
+            this.setState({ gender: event.target.value });
+        }
+    }, {
+        key: "handleEmailChange",
+        value: function handleEmailChange(event) {
+            this.setState({ email: event.target.value });
+        }
+    }, {
+        key: "handlePasswordChange",
+        value: function handlePasswordChange(event) {
+            this.setState({ password: event.target.value });
+        }
+    }, {
+        key: "handleSubmit",
+        value: function handleSubmit(event) {
+            var _state = this.state,
+                firstname = _state.firstname,
+                lastname = _state.lastname,
+                gender = _state.gender,
+                birthday = _state.birthday,
+                email = _state.email,
+                password = _state.password;
+
+            var payload = JSON.stringify({
+                "e-mail": email,
+                "password": password,
+                "firstname": firstname,
+                "lastname": lastname,
+                "gender": gender,
+                "birthday": birthday
+            });
+            console.log(payload);
+            event.preventDefault();
+            $.ajax({
+                url: "/register",
+                type: "POST",
+                data: payload,
+                dataType: "json",
+                contentType: "application/json",
+                success: function success(data, status, xhr) {
+                    success_swal("註冊成功").then(function () {
+                        window.location.href = "/";
+                    });
+                },
+                error: function error(xhr, status, _error) {
+                    console.log(_error);
+                    if (_error == "FORBIDDEN") {
+                        error_swal("註冊失敗", "帳號已存在");
+                    } else if (_error === "UNPROCESSABLE ENTITY") {
+                        error_swal("註冊失敗", "註冊資料格式錯誤");
+                    } else {
+                        error_swal("註冊失敗", "註冊 Payload 格式錯誤，請聯繫管理員");
+                    }
+                }
+            });
+        }
+    }, {
+        key: "componentDidMount",
+        value: function componentDidMount() {
+            $('[data-toggle="datepicker"]').datepicker({
+                onSelect: function (date) {
+                    this.setState({ birthday: date });
+                }.bind(this),
+                dateFormat: 'yy-mm-dd',
+                yearRange: "1900:2022",
+                changeYear: true,
+                changeMonth: true,
+                minDate: null,
+                maxDate: Date.now()
+            });
+        }
+    }, {
         key: "render",
         value: function render() {
             return React.createElement(
                 "div",
                 { className: "bg-blue-100 w-screen h-screen" },
                 React.createElement(
-                    "div",
-                    { className: "w-[600px] h-fit bg-white p-10 rounded-lg absolute left-[50%] top-[55%] translate-x-[-50%] translate-y-[-50%] shadow-lg" },
+                    "form",
+                    { className: "w-[600px] h-fit bg-white p-10 rounded-lg absolute left-[50%] top-[55%] translate-x-[-50%] translate-y-[-50%] shadow-lg", onSubmit: this.handleSubmit },
                     React.createElement(
                         "div",
                         { id: "title", className: "pb-10" },
@@ -39,15 +132,15 @@ var RegisterPlatform = function (_React$Component) {
                         React.createElement(
                             "div",
                             { className: "flex flex-row gap-3" },
-                            React.createElement("input", { type: "text", className: "w-full p-3 border-2 border-gray-400 text-xs outline-none", placeholder: "\u59D3\u6C0F" }),
-                            React.createElement("input", { type: "text", className: "w-full p-3 border-2 border-gray-400 text-xs outline-none", placeholder: "\u540D\u7A31" })
+                            React.createElement("input", { type: "text", className: "w-full p-3 border-2 border-gray-400 text-xs outline-none", placeholder: "\u59D3\u6C0F", onChange: this.handleFirstnameChange }),
+                            React.createElement("input", { type: "text", className: "w-full p-3 border-2 border-gray-400 text-xs outline-none", placeholder: "\u540D\u7A31", onChange: this.handleLastnameChange })
                         ),
                         React.createElement(
                             "div",
                             { className: "flex flex-row gap-3" },
                             React.createElement(
                                 "select",
-                                { className: "w-full p-3 border-2 border-gray-400 text-xs outline-none", defaultValue: "\u6027\u5225" },
+                                { className: "w-full p-3 border-2 border-gray-400 text-xs outline-none", defaultValue: "\u6027\u5225", onSelect: this.handleGenderChange },
                                 React.createElement(
                                     "option",
                                     { className: "w-full text-xs", disabled: "disabled" },
@@ -55,19 +148,19 @@ var RegisterPlatform = function (_React$Component) {
                                 ),
                                 React.createElement(
                                     "option",
-                                    { className: "w-full text-xs" },
+                                    { className: "w-full text-xs", value: "0" },
                                     "\u7537\u6027"
                                 ),
                                 React.createElement(
                                     "option",
-                                    { className: "w-full text-xs" },
+                                    { className: "w-full text-xs", value: "1" },
                                     "\u5973\u6027"
                                 )
                             ),
                             React.createElement("input", { type: "text", className: "w-full p-3 border-2 border-gray-400 text-xs outline-none", placeholder: "\u51FA\u751F\u65E5\u671F", "data-toggle": "datepicker" })
                         ),
-                        React.createElement("input", { type: "text", className: "w-full p-3 border-2 border-gray-400 text-xs outline-none", placeholder: "\u96FB\u5B50\u90F5\u4EF6\u5730\u5740" }),
-                        React.createElement("input", { type: "password", className: "w-full p-3 border-2 border-gray-400 text-xs outline-none", placeholder: "\u5BC6\u78BC" })
+                        React.createElement("input", { type: "text", className: "w-full p-3 border-2 border-gray-400 text-xs outline-none", placeholder: "\u96FB\u5B50\u90F5\u4EF6\u5730\u5740", onChange: this.handleEmailChange }),
+                        React.createElement("input", { type: "password", className: "w-full p-3 border-2 border-gray-400 text-xs outline-none", placeholder: "\u5BC6\u78BC", onChange: this.handlePasswordChange })
                     ),
                     React.createElement(
                         "div",
@@ -150,14 +243,6 @@ var App = function (_React$Component2) {
     }
 
     _createClass(App, [{
-        key: "componentDidMount",
-        value: function componentDidMount() {
-            $('[data-toggle="datepicker"]').datepicker({
-                format: 'yyyy-mm-dd',
-                endDate: Date.now()
-            });
-        }
-    }, {
         key: "render",
         value: function render() {
             return React.createElement(
