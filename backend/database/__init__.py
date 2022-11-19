@@ -16,12 +16,10 @@ from models import User
 
 @click.command("create-db")
 def create_db_command() -> None:
-    """For flask-sqlalchemy."""
     create_db()
     click.echo("Created the database.")
 
 
 def create_db() -> None:
-    """For flask-sqlalchemy."""
     with current_app.app_context():
         db.create_all()
