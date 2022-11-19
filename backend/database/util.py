@@ -1,43 +1,75 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, Iterable
 
-import pymysql
+from flask import current_app
 
-from flask import g
+from database import get_database
 
 if TYPE_CHECKING:
-    from flask import Flask
+    import pymysql
+    from pymysql.cursors import Cursor
 
 
-def connect_database_for_app(app: Flask) -> None:
-    with app.app_context():
-        connect_database()
-    app.teardown_appcontext(close_db)
+def get_placeholder_for_sqlite_if_testing_else_mariadb() -> str:
+    """Returns "?" for SQLite if testing, otherwise "%s" for MariaDB."""
+    if current_app.config["TESTING"] is True:
+        return "?"
+    return "%s"
 
 
-def get_database() -> pymysql.Connection:
-    if not _is_connected():
-        connect_database()
-    return cast(
-        pymysql.Connection, g.db
-    )  # we know the type should be `Connection` while inferred to `Any`
+def execute_command(command: str, paramter: tuple) -> list[dict[str, Any]]:
+    """Executes the command on the database of the current app context.
+
+    Returns:
+        A list of results. Each result is represented as a dict with its
+        field names being the keys.
+    """
+    conn: pymysql.Connection = get_database()
+    cursor: Cursor = conn.cursor()
+    cursor.execute(command, paramter)
+    conn.commit()
+
+    named_results: list[dict[str, Any]] = get_results_mapped_by_field_name(cursor)
+    cursor.close()
+
+    return named_results
 
 
-def connect_database() -> None:
-    g.db = pymysql.connect(
-        host="fastshop-mariadb-1",
-        user="fsa",
-        password="@fsa2022",
-        database="fastshop",
-    )
+def get_results_mapped_by_field_name(cursor: Cursor) -> list[dict[str, Any]]:
+    """
+    Returns:
+        A list of results held by the `cursor`. Each result is represented as a dict with its
+        field names being the keys. The list is empty for executions that do not return rows.
+    """
+    named_results: list[dict[str, Any]] = []
+    if _has_result(cursor):
+        field_names: list[str] = _get_field_names(cursor.description)
+        results: tuple[tuple, ...] = cursor.fetchall()
+        named_results = _map_names_to_values(field_names, results)
+    return named_results
 
 
-def close_db(error: BaseException | None = None) -> None:
-    if _is_connected():
-        db = g.pop("db")
-        db.close()
+def _get_field_names(cursor_description: tuple[str, ...]) -> list[str]:
+    """
+    DB API returns a 7-tuple for each column where the last six items of each tuple are None,
+    which is useless.
+    """
+    return [name[0] for name in cursor_description]
 
 
-def _is_connected() -> bool:
-    return "db" in g
+def _map_names_to_values(
+    names: Iterable[str], values: Iterable[Iterable[Any]]
+) -> list[dict[str, Any]]:
+    named_results: list[dict[str, Any]] = []
+    for data in values:
+        named_result: dict[str, Any] = dict(zip(names, list(data)))
+        named_results.append(named_result)
+    return named_results
+
+
+def _has_result(cursor: Cursor) -> bool:
+    """Returns whether the latest execution on `cursor` produces results."""
+    # cursor.desciption is None for executions that do not return rows
+    # or if the cursor has not had an execution invoked yet.
+    return cursor.description is not None
