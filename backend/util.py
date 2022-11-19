@@ -9,25 +9,6 @@ def fetch_page(page_name: str) -> str:
         return page.read()
 
 
-def get_failed_message_by_HTTP_status(code) -> str:
-    """This method can help you to get HTTP status message by HTTP status code.
-    
-    It can pass the failed message we wrote, otherwise, return the default description of HTTP status code.
-    
-    Attribute:
-        code: HTTP status code.
-    """
-    
-    failed_message_dict = {
-        HTTPStatus.BAD_REQUEST.value: "The wrong format of data, the server can't understand the data.",
-        HTTPStatus.UNPROCESSABLE_ENTITY.value: "The data format user post is correct, but the data is invalid.",
-    }
-    if code in failed_message_dict:
-        return failed_message_dict[code]
-    else:
-        return HTTPStatus(code).description
-
-
 @dataclass
 class SingleMessageStatus:
     """A convenient response status dataclass.
@@ -53,6 +34,5 @@ class SingleMessageStatus:
         """
         self.code: int = code
         if message is None:
-            message = "OK" if code < 400 else get_failed_message_by_HTTP_status(code)
+            message = "OK" if code < 400 else ""
         self.message = {"message": message}
-
