@@ -4,7 +4,7 @@ import pytest
 from http import HTTPStatus
 from typing import TYPE_CHECKING
 
-from util import SingleMessageStatus, fetch_page, get_failed_message_by_HTTP_status
+from util import SingleMessageStatus, fetch_page
 
 if TYPE_CHECKING:
     from flask.testing import FlaskClient
@@ -40,15 +40,3 @@ class TestSingleMessageStatus:
         status = SingleMessageStatus(status_code)
 
         assert status.message["message"] == "OK"
-
-    @pytest.mark.parametrize(
-        argnames=("status_code",), argvalues=((400,), (451,), (500,), (511,))
-    )
-    def test_default_message_on_error_status_code_should_be_have_correct_failed_message(
-        self, status_code: int
-    ) -> None:
-        status = SingleMessageStatus(status_code)
-
-        assert status.message["message"] == get_failed_message_by_HTTP_status(
-            status_code
-        )
