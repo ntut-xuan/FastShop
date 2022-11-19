@@ -49,3 +49,5 @@ public
 # Control package versions with Dockerfile
 package-lock.json
 package.json
+
+.env
