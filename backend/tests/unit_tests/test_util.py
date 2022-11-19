@@ -49,4 +49,6 @@ class TestSingleMessageStatus:
     ) -> None:
         status = SingleMessageStatus(status_code)
 
-        assert status.message["message"] == get_failed_message_by_HTTP_status(status_code)
+        assert status.message["message"] == get_failed_message_by_HTTP_status(
+            status_code
+        )
