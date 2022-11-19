@@ -38,7 +38,7 @@ def login_route() -> Response | str:
         try:
             login(data["e-mail"], data["password"])
         except IncorrectEmailOrPasswordError:
-            return _make_single_message_response(HTTPStatus.FORBIDDEN)
+            return _make_single_message_response(HTTPStatus.FORBIDDEN, message="The email and password user post are not match.")
         else:
             response: Response = _make_single_message_response(HTTPStatus.OK)
 
@@ -80,15 +80,13 @@ def register_route() -> Response | str:
                 datetime.strptime(data["birthday"], BIRTHDAY_FORMAT).timestamp()
             ),
         )
-        status_code: HTTPStatus
         try:
             register(data["e-mail"], data["password"], profile)
         except EmailAlreadyRegisteredError:
-            status_code = HTTPStatus.FORBIDDEN
+            return _make_single_message_response(HTTPStatus.FORBIDDEN, message="The email and password user post already exist.")
         else:
-            status_code = HTTPStatus.OK
-        return _make_single_message_response(status_code)
-
+            return _make_single_message_response(HTTPStatus.OK)
+        
     return fetch_page("register")
 
 
