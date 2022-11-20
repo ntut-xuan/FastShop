@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from contextlib import contextmanager
 from http import HTTPStatus
 from http.cookiejar import Cookie, CookieJar
 from typing import TYPE_CHECKING, Any
@@ -10,6 +9,7 @@ import pytest
 from auth.util import Gender, JWTCodec
 from database import db
 from models import User
+from tests.util import assert_not_raise
 
 if TYPE_CHECKING:
     from flask.testing import FlaskClient
@@ -226,7 +226,7 @@ class TestLoginRoute:
         client.post("/login", json=new_data)
 
         cookies: tuple[Cookie, ...] = _get_cookies(client.cookie_jar)
-        with _assert_not_raise(ValueError):
+        with assert_not_raise(ValueError):
             (jwt_cookie,) = tuple(filter(lambda x: x.name == "jwt", cookies))
 
     def test_post_with_correct_data_should_have_correct_jwt_token_attribute(
@@ -335,11 +335,3 @@ def _get_cookies(cookie_jar: CookieJar | None) -> tuple[Cookie, ...]:
     if cookie_jar is None:
         return tuple()
     return tuple(cookie for cookie in cookie_jar)
-
-
-@contextmanager
-def _assert_not_raise(exception):
-    try:
-        yield
-    except exception:
-        pytest.fail(f"DID RAISE {exception}")
