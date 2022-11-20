@@ -286,7 +286,7 @@ class TestJWTVerify:
         resp: TestResponse = client.post("/verify_jwt")
 
         assert resp.is_json
-        respones_payload: dict[str, str] = cast(dict[str, str], resp.json)
+        respones_payload: dict[str, Any] = cast(dict[str, Any], resp.json)
         assert respones_payload["data"]["e-mail"] == payload_data["e-mail"]
         assert respones_payload["data"]["password"] == payload_data["password"]
         assert respones_payload["data"]["firstname"] == payload_data["firstname"]
