@@ -116,7 +116,7 @@ def verify_jwt_route() -> Response:
     if "jwt" not in request.cookies:
         return _make_single_message_response(HTTPStatus.UNAUTHORIZED, ABSENT_COOKIE)
 
-    jwt_token = request.cookies.get("jwt")
+    jwt_token = request.cookies["jwt"]
     jwt_codec = JWTCodec()
 
     if not jwt_codec.is_valid_jwt(jwt_token):
