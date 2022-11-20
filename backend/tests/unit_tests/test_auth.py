@@ -274,7 +274,7 @@ class TestJWTVerify:
 
         assert resp.status_code == HTTPStatus.OK
 
-    def test_post_with_valid_jwt_cookie_should_return_jwt_payload_in_json(
+    def test_post_with_valid_jwt_cookie_should_return_payload_data_in_json(
         self,
         client: FlaskClient,
         payload_data: dict[str, Any],
