@@ -249,6 +249,96 @@ class TestLoginRoute:
         assert data["gender"] == new_data["gender"]
 
 
+class TestJWTVerify:
+    @pytest.fixture
+    def payload_data(self) -> dict[str, Any]:
+        return {
+            "e-mail": "test@email.com",
+            "password": "test",
+            "firstname": "Han-Xuan",
+            "lastname": "Huang",
+            "gender": 0,
+            "birthday": "2002-06-25",
+        }
+
+    def test_post_with_valid_jwt_cookie_should_have_code_http_ok(
+        self,
+        client: FlaskClient,
+        payload_data: dict[str, Any],
+    ) -> None:
+        codec = JWTCodec()
+        jwt_token = codec.encode(payload_data)
+
+        client.set_cookie("localhost", "jwt", jwt_token)
+        resp: TestResponse = client.post("/verify_jwt")
+
+        assert resp.status_code == HTTPStatus.OK
+
+    def test_post_with_valid_jwt_cookie_should_return_jwt_payload_in_json(
+        self,
+        client: FlaskClient,
+        payload_data: dict[str, Any],
+    ) -> None:
+        codec = JWTCodec()
+        jwt_token = codec.encode(payload_data)
+
+        client.set_cookie("localhost", "jwt", jwt_token)
+        resp: TestResponse = client.post("/verify_jwt")
+
+        assert resp.is_json
+        assert resp.json["data"]["e-mail"] == payload_data["e-mail"]
+        assert resp.json["data"]["password"] == payload_data["password"]
+        assert resp.json["data"]["firstname"] == payload_data["firstname"]
+        assert resp.json["data"]["lastname"] == payload_data["lastname"]
+        assert resp.json["data"]["gender"] == payload_data["gender"]
+        assert resp.json["data"]["birthday"] == payload_data["birthday"]
+
+    def test_post_with_absent_jwt_cookie_should_have_code_http_unauthorized(
+        self,
+        client: FlaskClient,
+    ) -> None:
+
+        resp: TestResponse = client.post("/verify_jwt")
+
+        assert resp.status_code == HTTPStatus.UNAUTHORIZED
+
+    def test_post_with_absent_jwt_cookie_should_return_failed_message_in_json(
+        self,
+        client: FlaskClient,
+    ) -> None:
+
+        resp: TestResponse = client.post("/verify_jwt")
+
+        assert resp.is_json
+        assert (
+            resp.json["message"]
+            == "The specific cookie does not exist in request header."
+        )
+
+    def test_post_with_invalid_jwt_cookie_should_have_code_http_unauthorized(
+        self,
+        client: FlaskClient,
+    ) -> None:
+
+        client.set_cookie("localhost", "jwt", "aaa.bbb.ccc")
+        resp: TestResponse = client.post("/verify_jwt")
+
+        assert resp.status_code == HTTPStatus.UNAUTHORIZED
+
+    def test_post_with_invalid_jwt_cookie_should_return_failed_message_in_json(
+        self,
+        client: FlaskClient,
+    ) -> None:
+
+        client.set_cookie("localhost", "jwt", "aaa.bbb.ccc")
+        resp: TestResponse = client.post("/verify_jwt")
+
+        assert resp.is_json
+        assert (
+            resp.json["message"] == "The specific cookie in request header is invalid."
+        )
+
+
 def _get_cookies(cookie_jar: CookieJar | None) -> tuple[Cookie, ...]:
     if cookie_jar is None:
         return tuple()
