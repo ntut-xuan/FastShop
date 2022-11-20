@@ -3,7 +3,7 @@ from __future__ import annotations
 from contextlib import contextmanager
 from http import HTTPStatus
 from http.cookiejar import Cookie, CookieJar
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
@@ -249,9 +249,9 @@ class TestLoginRoute:
         assert data["gender"] == new_data["gender"]
 
 
-class TestJWTVerify:
+class TestVerifyJWT:
     @pytest.fixture
-    def payload_data(self) -> dict[str, Any]:
+    def payload(self) -> dict[str, Any]:
         return {
             "e-mail": "test@email.com",
             "password": "test",
@@ -264,41 +264,32 @@ class TestJWTVerify:
     def test_post_with_valid_jwt_cookie_should_have_code_http_ok(
         self,
         client: FlaskClient,
-        payload_data: dict[str, Any],
+        payload: dict[str, Any],
     ) -> None:
-        codec = JWTCodec()
-        jwt_token = codec.encode(payload_data)
-
+        jwt_token: str = JWTCodec().encode(payload)
         client.set_cookie("localhost", "jwt", jwt_token)
+
         resp: TestResponse = client.post("/verify_jwt")
 
         assert resp.status_code == HTTPStatus.OK
 
-    def test_post_with_valid_jwt_cookie_should_return_payload_data_in_json(
+    def test_post_with_valid_jwt_cookie_should_return_payload_in_json(
         self,
         client: FlaskClient,
-        payload_data: dict[str, Any],
+        payload: dict[str, Any],
     ) -> None:
-        codec = JWTCodec()
-        jwt_token = codec.encode(payload_data)
-
+        jwt_token: str = JWTCodec().encode(payload)
         client.set_cookie("localhost", "jwt", jwt_token)
+
         resp: TestResponse = client.post("/verify_jwt")
 
         assert resp.is_json
-        respones_payload: dict[str, Any] = cast(dict[str, Any], resp.json)
-        assert respones_payload["data"]["e-mail"] == payload_data["e-mail"]
-        assert respones_payload["data"]["password"] == payload_data["password"]
-        assert respones_payload["data"]["firstname"] == payload_data["firstname"]
-        assert respones_payload["data"]["lastname"] == payload_data["lastname"]
-        assert respones_payload["data"]["gender"] == payload_data["gender"]
-        assert respones_payload["data"]["birthday"] == payload_data["birthday"]
+        assert resp.json["data"] == payload  # type: ignore
 
     def test_post_with_absent_jwt_cookie_should_have_code_http_unauthorized(
         self,
         client: FlaskClient,
     ) -> None:
-
         resp: TestResponse = client.post("/verify_jwt")
 
         assert resp.status_code == HTTPStatus.UNAUTHORIZED
@@ -307,13 +298,11 @@ class TestJWTVerify:
         self,
         client: FlaskClient,
     ) -> None:
-
         resp: TestResponse = client.post("/verify_jwt")
 
         assert resp.is_json
-        payload_from_decoded_jwt_token: dict[str, str] = cast(dict[str, str], resp.json)
         assert (
-            payload_from_decoded_jwt_token["message"]
+            resp.json["message"]  # type: ignore
             == "The specific cookie does not exist in request header."
         )
 
@@ -321,8 +310,8 @@ class TestJWTVerify:
         self,
         client: FlaskClient,
     ) -> None:
-
         client.set_cookie("localhost", "jwt", "aaa.bbb.ccc")
+
         resp: TestResponse = client.post("/verify_jwt")
 
         assert resp.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
@@ -331,13 +320,14 @@ class TestJWTVerify:
         self,
         client: FlaskClient,
     ) -> None:
-
         client.set_cookie("localhost", "jwt", "aaa.bbb.ccc")
+
         resp: TestResponse = client.post("/verify_jwt")
 
         assert resp.is_json
         assert (
-            resp.json["message"] == "The specific cookie in request header is invalid."  # type: ignore
+            resp.json["message"]  # type: ignore
+            == "The specific cookie in request header is invalid."
         )
 
 
