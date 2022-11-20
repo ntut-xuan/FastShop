@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-import json
 from datetime import datetime, timedelta, timezone
 from http import HTTPStatus
 from typing import TYPE_CHECKING, Any, Iterable, Mapping, cast
 
-from flask import Blueprint, make_response, request, Response
+from flask import Blueprint, Response, make_response, request
 
 from auth.exception import EmailAlreadyRegisteredError, IncorrectEmailOrPasswordError
 from auth.util import (
@@ -116,7 +115,7 @@ def verify_jwt_route() -> Response:
     if "jwt" not in request.cookies:
         return _make_single_message_response(HTTPStatus.UNAUTHORIZED, ABSENT_COOKIE)
 
-    jwt_token = request.cookies["jwt"]
+    jwt_token: str = request.cookies["jwt"]
     jwt_codec = JWTCodec()
 
     if not jwt_codec.is_valid_jwt(jwt_token):
@@ -124,10 +123,8 @@ def verify_jwt_route() -> Response:
             HTTPStatus.UNPROCESSABLE_ENTITY, INVALID_COOKIE
         )
 
-    jwt_payload = jwt_codec.decode(jwt_token)
-    json_jwt_payload = json.dumps(jwt_payload)
-
-    return Response(json_jwt_payload, status=HTTPStatus.OK, mimetype="application/json")
+    jwt_payload: dict[str, Any] = jwt_codec.decode(jwt_token)
+    return make_response(jwt_payload)
 
 
 def _has_required_login_data(data: Mapping[str, Any]) -> bool:
