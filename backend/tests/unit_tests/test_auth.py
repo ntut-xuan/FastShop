@@ -3,7 +3,7 @@ from __future__ import annotations
 from contextlib import contextmanager
 from http import HTTPStatus
 from http.cookiejar import Cookie, CookieJar
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 import pytest
 
@@ -286,12 +286,13 @@ class TestJWTVerify:
         resp: TestResponse = client.post("/verify_jwt")
 
         assert resp.is_json
-        assert resp.json["data"]["e-mail"] == payload_data["e-mail"]  # type: ignore
-        assert resp.json["data"]["password"] == payload_data["password"]  # type: ignore
-        assert resp.json["data"]["firstname"] == payload_data["firstname"]  # type: ignore
-        assert resp.json["data"]["lastname"] == payload_data["lastname"]  # type: ignore
-        assert resp.json["data"]["gender"] == payload_data["gender"]  # type: ignore
-        assert resp.json["data"]["birthday"] == payload_data["birthday"]  # type: ignore
+        payload_from_decoded_jwt_token: dict[str, str] = cast(dict[str, str], resp.json)
+        assert payload_from_decoded_jwt_token["e-mail"] == payload_data["e-mail"]
+        assert payload_from_decoded_jwt_token["password"] == payload_data["password"]
+        assert payload_from_decoded_jwt_token["firstname"] == payload_data["firstname"]
+        assert payload_from_decoded_jwt_token["lastname"] == payload_data["lastname"]
+        assert payload_from_decoded_jwt_token["gender"] == payload_data["gender"]
+        assert payload_from_decoded_jwt_token["birthday"] == payload_data["birthday"]
 
     def test_post_with_absent_jwt_cookie_should_have_code_http_unauthorized(
         self,
@@ -310,8 +311,9 @@ class TestJWTVerify:
         resp: TestResponse = client.post("/verify_jwt")
 
         assert resp.is_json
+        payload_from_decoded_jwt_token: dict[str, str] = cast(dict[str, str], resp.json)
         assert (
-            resp.json["message"]  # type: ignore
+            payload_from_decoded_jwt_token["message"]
             == "The specific cookie does not exist in request header."
         )
 
