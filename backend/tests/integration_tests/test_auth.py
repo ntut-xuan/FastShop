@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 import pytest
 
-from auth.util import Gender, JWTCodec
+from auth.util import Gender, HS256JWTCodec
 from database import db
 from models import User
 from tests.util import assert_not_raise
@@ -234,7 +234,7 @@ class TestLoginRoute:
         client: FlaskClient,
         new_data: dict[str, Any],
     ) -> None:
-        codec = JWTCodec()
+        codec = HS256JWTCodec()
 
         client.post("/login", json=new_data)
 

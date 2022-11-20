@@ -66,10 +66,10 @@ class UserProfile:
     birthday: int
 
 
-class JWTCodec:
-    def __init__(self, key: str = "secret", algorithm: str = "HS256") -> None:
-        self._key: str = key
-        self._algorithm: str = algorithm
+class HS256JWTCodec:
+    def __init__(self) -> None:
+        self._key: Final[str] = "secret"
+        self._algorithm: Final[str] = "HS256"
 
     @property
     def key(self) -> str:
