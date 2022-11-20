@@ -120,7 +120,9 @@ def verify_jwt_route() -> Response:
     jwt_codec = JWTCodec()
 
     if not jwt_codec.is_valid_jwt(jwt_token):
-        return _make_single_message_response(HTTPStatus.UNAUTHORIZED, INVALID_COOKIE)
+        return _make_single_message_response(
+            HTTPStatus.UNPROCESSABLE_ENTITY, INVALID_COOKIE
+        )
 
     jwt_payload = jwt_codec.decode(jwt_token)
     json_jwt_payload = json.dumps(jwt_payload)

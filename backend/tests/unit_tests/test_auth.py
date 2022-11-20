@@ -315,7 +315,7 @@ class TestJWTVerify:
             == "The specific cookie does not exist in request header."
         )
 
-    def test_post_with_invalid_jwt_cookie_should_have_code_http_unauthorized(
+    def test_post_with_invalid_jwt_cookie_should_have_code_http_unprocessable_entity(
         self,
         client: FlaskClient,
     ) -> None:
@@ -323,7 +323,7 @@ class TestJWTVerify:
         client.set_cookie("localhost", "jwt", "aaa.bbb.ccc")
         resp: TestResponse = client.post("/verify_jwt")
 
-        assert resp.status_code == HTTPStatus.UNAUTHORIZED
+        assert resp.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
     def test_post_with_invalid_jwt_cookie_should_return_failed_message_in_json(
         self,
