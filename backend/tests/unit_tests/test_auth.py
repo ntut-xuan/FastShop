@@ -286,12 +286,12 @@ class TestJWTVerify:
         resp: TestResponse = client.post("/verify_jwt")
 
         assert resp.is_json
-        assert resp.json["data"]["e-mail"] == payload_data["e-mail"]
-        assert resp.json["data"]["password"] == payload_data["password"]
-        assert resp.json["data"]["firstname"] == payload_data["firstname"]
-        assert resp.json["data"]["lastname"] == payload_data["lastname"]
-        assert resp.json["data"]["gender"] == payload_data["gender"]
-        assert resp.json["data"]["birthday"] == payload_data["birthday"]
+        assert resp.json["data"]["e-mail"] == payload_data["e-mail"]  # type: ignore
+        assert resp.json["data"]["password"] == payload_data["password"]  # type: ignore
+        assert resp.json["data"]["firstname"] == payload_data["firstname"]  # type: ignore
+        assert resp.json["data"]["lastname"] == payload_data["lastname"]  # type: ignore
+        assert resp.json["data"]["gender"] == payload_data["gender"]  # type: ignore
+        assert resp.json["data"]["birthday"] == payload_data["birthday"]  # type: ignore
 
     def test_post_with_absent_jwt_cookie_should_have_code_http_unauthorized(
         self,
@@ -311,7 +311,7 @@ class TestJWTVerify:
 
         assert resp.is_json
         assert (
-            resp.json["message"]
+            resp.json["message"]  # type: ignore
             == "The specific cookie does not exist in request header."
         )
 
@@ -335,7 +335,7 @@ class TestJWTVerify:
 
         assert resp.is_json
         assert (
-            resp.json["message"] == "The specific cookie in request header is invalid."
+            resp.json["message"] == "The specific cookie in request header is invalid."  # type: ignore
         )
 
 
