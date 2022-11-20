@@ -303,7 +303,7 @@ class TestVerifyJWT:
         assert resp.is_json
         assert (
             resp.json["message"]  # type: ignore
-            == "The specific cookie does not exist in request header."
+            == "The specific cookie does not exist in the request header."
         )
 
     def test_post_with_invalid_jwt_cookie_should_have_code_http_unprocessable_entity(
@@ -327,7 +327,7 @@ class TestVerifyJWT:
         assert resp.is_json
         assert (
             resp.json["message"]  # type: ignore
-            == "The specific cookie in request header is invalid."
+            == "The specific cookie in the request header is invalid."
         )
 
 
