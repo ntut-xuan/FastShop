@@ -67,8 +67,8 @@ class UserProfile:
 
 
 class HS256JWTCodec:
-    def __init__(self) -> None:
-        self._key: Final[str] = "secret"
+    def __init__(self, key: str) -> None:
+        self._key: Final[str] = key
         self._algorithm: Final[str] = "HS256"
 
     @property
