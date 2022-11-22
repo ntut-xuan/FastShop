@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from http import HTTPStatus
 from typing import TYPE_CHECKING, Any, Iterable, Mapping, cast
 
-from flask import Blueprint, Response, make_response, request
+from flask import Blueprint, Response, current_app, make_response, request
 
 from auth.exception import EmailAlreadyRegisteredError, IncorrectEmailOrPasswordError
 from auth.util import (
@@ -116,7 +116,7 @@ def verify_jwt_route() -> Response:
         return _make_single_message_response(HTTPStatus.UNAUTHORIZED, ABSENT_COOKIE)
 
     jwt_token: str = request.cookies["jwt"]
-    jwt_codec = HS256JWTCodec()
+    jwt_codec = HS256JWTCodec(current_app.config["jwt_key"])
 
     if not jwt_codec.is_valid_jwt(jwt_token):
         return _make_single_message_response(
@@ -149,7 +149,7 @@ def _set_jwt_cookie_to_response(
     response: Response,
     expiration_time_delta: timedelta = timedelta(days=1),
 ) -> None:
-    codec = HS256JWTCodec()
+    codec = HS256JWTCodec(current_app.config["jwt_key"])
     token: str = codec.encode(payload, expiration_time_delta)
     response.set_cookie(
         "jwt",

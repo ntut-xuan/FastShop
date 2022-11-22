@@ -12,6 +12,7 @@ from models import User
 from tests.util import assert_not_raise
 
 if TYPE_CHECKING:
+    from flask import Flask
     from flask.testing import FlaskClient
     from sqlalchemy.engine.row import Row
     from sqlalchemy.sql.selectable import Select
@@ -231,10 +232,11 @@ class TestLoginRoute:
 
     def test_post_with_correct_data_should_have_correct_jwt_token_attribute(
         self,
+        app: Flask,
         client: FlaskClient,
         new_data: dict[str, Any],
     ) -> None:
-        codec = HS256JWTCodec()
+        codec = HS256JWTCodec(app.config["jwt_key"])
 
         client.post("/login", json=new_data)
 
@@ -263,10 +265,11 @@ class TestVerifyJWT:
 
     def test_post_with_valid_jwt_cookie_should_have_code_http_ok(
         self,
+        app: Flask,
         client: FlaskClient,
         payload: dict[str, Any],
     ) -> None:
-        jwt_token: str = HS256JWTCodec().encode(payload)
+        jwt_token: str = HS256JWTCodec(app.config["jwt_key"]).encode(payload)
         client.set_cookie("localhost", "jwt", jwt_token)
 
         resp: TestResponse = client.post("/verify_jwt")
@@ -275,10 +278,11 @@ class TestVerifyJWT:
 
     def test_post_with_valid_jwt_cookie_should_return_payload_in_json(
         self,
+        app: Flask,
         client: FlaskClient,
         payload: dict[str, Any],
     ) -> None:
-        jwt_token: str = HS256JWTCodec().encode(payload)
+        jwt_token: str = HS256JWTCodec(app.config["jwt_key"]).encode(payload)
         client.set_cookie("localhost", "jwt", jwt_token)
 
         resp: TestResponse = client.post("/verify_jwt")
