@@ -6,12 +6,13 @@ from typing import TYPE_CHECKING, Any
 
 import pytest
 
-from auth.util import Gender, JWTCodec
+from auth.util import Gender, HS256JWTCodec
 from database import db
 from models import User
 from tests.util import assert_not_raise
 
 if TYPE_CHECKING:
+    from flask import Flask
     from flask.testing import FlaskClient
     from sqlalchemy.engine.row import Row
     from sqlalchemy.sql.selectable import Select
@@ -231,10 +232,11 @@ class TestLoginRoute:
 
     def test_post_with_correct_data_should_have_correct_jwt_token_attribute(
         self,
+        app: Flask,
         client: FlaskClient,
         new_data: dict[str, Any],
     ) -> None:
-        codec = JWTCodec()
+        codec = HS256JWTCodec(app.config["jwt_key"])
 
         client.post("/login", json=new_data)
 
