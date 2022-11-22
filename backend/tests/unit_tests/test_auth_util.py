@@ -201,7 +201,7 @@ class TestFetchUserProfile:
 
 class TestHS256JWTCodec:
     @pytest.fixture
-    def codec(self, app: Flask) -> HS256JWTCodec:
+    def codec(self) -> HS256JWTCodec:
         return HS256JWTCodec("secret")
 
     @freezegun.freeze_time("2000-01-01 00:00:00")
