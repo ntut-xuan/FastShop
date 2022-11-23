@@ -1,8 +1,37 @@
+let clickable_text = "h-full transition-all duration-200 hover:bg-gray-400 hover:text-white px-5 cursor-pointer"
+
+class AuthenticationComponent extends React.Component {
+    constructor(props){
+        super(props)
+    }
+    render(){
+        let block_style = "relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]"
+        let block_text = ""
+        let block_url = ""
+        if(this.props.login == false){
+            block_text = "登入"
+            block_url = "/login"
+        }else{
+            block_text = this.props.username
+            block_url = "#"
+        }
+        return (
+            <a href={block_url}>
+                <div className={clickable_text}>
+                    <p className={block_style}>{block_text}</p>
+                </div>
+            </a>
+        )
+    }
+}
+
 class NevigationBar extends React.Component {
     constructor(props){
         super(props);
+        this.state = {login: false, username: null}
         this.nav_extend_on = this.nav_extend_on.bind(this);
         this.nav_extend_off = this.nav_extend_off.bind(this);
+        this.check_jwt_verify = this.check_jwt_verify.bind(this)
     }
     nav_extend_on(){
         document.getElementById("nav_extend_main").classList.remove("h-0")
@@ -12,8 +41,20 @@ class NevigationBar extends React.Component {
         document.getElementById("nav_extend_main").classList.remove("h-80")
         document.getElementById("nav_extend_main").classList.add("h-0")
     }
+    check_jwt_verify(){
+        $.ajax({
+            url: "/verify_jwt",
+            type: "POST",
+            success: function(data, status, xhr){
+                this.setState({login: true, username: data["data"]["firstname"] + " " + data["data"]["lastname"]})
+            }.bind(this)
+        })
+    }
+    componentDidMount(){
+        this.check_jwt_verify()
+    }
     render(){
-        let clickable_text = "h-full transition-all duration-200 hover:bg-gray-400 hover:text-white px-5 cursor-pointer"
+        let {username, login} = this.state
         return [
             <div className="w-full fixed top-0 left-0 z-20 bg-white">
                 <div className="w-[90%] mx-auto h-20 flex flex-row relative left-0 top-0">
@@ -36,11 +77,7 @@ class NevigationBar extends React.Component {
                         <div className={clickable_text}>
                             <p className="relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">搜尋</p>
                         </div>
-                        <a href="/login">
-                            <div className={clickable_text}>
-                                <p className="relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">登入</p>
-                            </div>
-                        </a>
+                        <AuthenticationComponent username={username} login={login} />
                         <div className={clickable_text}>
                             <p className="relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">購物車</p>
                         </div>

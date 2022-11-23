@@ -6,17 +6,62 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var NevigationBar = function (_React$Component) {
-    _inherits(NevigationBar, _React$Component);
+var clickable_text = "h-full transition-all duration-200 hover:bg-gray-400 hover:text-white px-5 cursor-pointer";
+
+var AuthenticationComponent = function (_React$Component) {
+    _inherits(AuthenticationComponent, _React$Component);
+
+    function AuthenticationComponent(props) {
+        _classCallCheck(this, AuthenticationComponent);
+
+        return _possibleConstructorReturn(this, (AuthenticationComponent.__proto__ || Object.getPrototypeOf(AuthenticationComponent)).call(this, props));
+    }
+
+    _createClass(AuthenticationComponent, [{
+        key: "render",
+        value: function render() {
+            var block_style = "relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]";
+            var block_text = "";
+            var block_url = "";
+            if (this.props.login == false) {
+                block_text = "登入";
+                block_url = "/login";
+            } else {
+                block_text = this.props.username;
+                block_url = "#";
+            }
+            return React.createElement(
+                "a",
+                { href: block_url },
+                React.createElement(
+                    "div",
+                    { className: clickable_text },
+                    React.createElement(
+                        "p",
+                        { className: block_style },
+                        block_text
+                    )
+                )
+            );
+        }
+    }]);
+
+    return AuthenticationComponent;
+}(React.Component);
+
+var NevigationBar = function (_React$Component2) {
+    _inherits(NevigationBar, _React$Component2);
 
     function NevigationBar(props) {
         _classCallCheck(this, NevigationBar);
 
-        var _this = _possibleConstructorReturn(this, (NevigationBar.__proto__ || Object.getPrototypeOf(NevigationBar)).call(this, props));
+        var _this2 = _possibleConstructorReturn(this, (NevigationBar.__proto__ || Object.getPrototypeOf(NevigationBar)).call(this, props));
 
-        _this.nav_extend_on = _this.nav_extend_on.bind(_this);
-        _this.nav_extend_off = _this.nav_extend_off.bind(_this);
-        return _this;
+        _this2.state = { login: false, username: null };
+        _this2.nav_extend_on = _this2.nav_extend_on.bind(_this2);
+        _this2.nav_extend_off = _this2.nav_extend_off.bind(_this2);
+        _this2.check_jwt_verify = _this2.check_jwt_verify.bind(_this2);
+        return _this2;
     }
 
     _createClass(NevigationBar, [{
@@ -32,9 +77,28 @@ var NevigationBar = function (_React$Component) {
             document.getElementById("nav_extend_main").classList.add("h-0");
         }
     }, {
+        key: "check_jwt_verify",
+        value: function check_jwt_verify() {
+            $.ajax({
+                url: "/verify_jwt",
+                type: "POST",
+                success: function (data, status, xhr) {
+                    this.setState({ login: true, username: data["data"]["firstname"] + " " + data["data"]["lastname"] });
+                }.bind(this)
+            });
+        }
+    }, {
+        key: "componentDidMount",
+        value: function componentDidMount() {
+            this.check_jwt_verify();
+        }
+    }, {
         key: "render",
         value: function render() {
-            var clickable_text = "h-full transition-all duration-200 hover:bg-gray-400 hover:text-white px-5 cursor-pointer";
+            var _state = this.state,
+                username = _state.username,
+                login = _state.login;
+
             return [React.createElement(
                 "div",
                 { className: "w-full fixed top-0 left-0 z-20 bg-white" },
@@ -94,19 +158,7 @@ var NevigationBar = function (_React$Component) {
                                 "\u641C\u5C0B"
                             )
                         ),
-                        React.createElement(
-                            "a",
-                            { href: "/login" },
-                            React.createElement(
-                                "div",
-                                { className: clickable_text },
-                                React.createElement(
-                                    "p",
-                                    { className: "relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]" },
-                                    "\u767B\u5165"
-                                )
-                            )
-                        ),
+                        React.createElement(AuthenticationComponent, { username: username, login: login }),
                         React.createElement(
                             "div",
                             { className: clickable_text },
