@@ -1,9 +1,9 @@
 from tests.unit_tests.test_auth import TestLoginRoute, TestRegisterRoute
 
 
-class TestLoginRoute(TestLoginRoute):
+class TestLoginRouteWithMariaDB(TestLoginRoute):
     pass
 
 
-class TestRegisterRoute(TestRegisterRoute):
+class TestRegisterRouteWithMariaDB(TestRegisterRoute):
     pass
