@@ -51,9 +51,11 @@ class LoginPlatform extends React.Component{
                     <div id="forgot_password" className="">
                         <p className="text-sm underline underline-offset-2 cursor-pointer"> 忘記密碼？ </p>
                     </div>
-                    <div id="button_group" className="pt-10">
+                    <div id="button_group" className="pt-10 w-full">
                         <button className="bg-black text-white w-full p-2 my-2"> 登入 </button>
-                        <button className="bg-amber-600 text-white w-full p-2 my-2"> 使用 Google 進行登入 </button>
+                        <a href="#">
+                            <p className="bg-amber-600 text-white w-full p-2 my-2 text-center"> 使用 Google 進行登入 </p>
+                        </a>
                     </div>
                     <div id="footer_text" className="text-center pt-10">
                         <p className="my-2"><a href="/register" className="text-sm underline underline-offset-2 my-2 cursor-pointer"> 還沒有帳號嗎？註冊帳號 </a></p>

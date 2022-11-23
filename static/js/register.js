@@ -198,9 +198,13 @@ var RegisterPlatform = function (_React$Component) {
                             " \u8A3B\u518A "
                         ),
                         React.createElement(
-                            "button",
-                            { className: "bg-blue-600 text-white w-full p-2 my-2" },
-                            " \u4F7F\u7528 Google \u9032\u884C\u8A3B\u518A "
+                            "a",
+                            { href: "#" },
+                            React.createElement(
+                                "p",
+                                { className: "bg-blue-600 text-white w-full p-2 my-2 text-center" },
+                                " \u4F7F\u7528 Google \u9032\u884C\u8A3B\u518A "
+                            )
                         )
                     ),
                     React.createElement(

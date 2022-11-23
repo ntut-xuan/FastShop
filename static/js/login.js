@@ -97,16 +97,20 @@ var LoginPlatform = function (_React$Component) {
                     ),
                     React.createElement(
                         "div",
-                        { id: "button_group", className: "pt-10" },
+                        { id: "button_group", className: "pt-10 w-full" },
                         React.createElement(
                             "button",
                             { className: "bg-black text-white w-full p-2 my-2" },
                             " \u767B\u5165 "
                         ),
                         React.createElement(
-                            "button",
-                            { className: "bg-amber-600 text-white w-full p-2 my-2" },
-                            " \u4F7F\u7528 Google \u9032\u884C\u767B\u5165 "
+                            "a",
+                            { href: "#" },
+                            React.createElement(
+                                "p",
+                                { className: "bg-amber-600 text-white w-full p-2 my-2 text-center" },
+                                " \u4F7F\u7528 Google \u9032\u884C\u767B\u5165 "
+                            )
                         )
                     ),
                     React.createElement(

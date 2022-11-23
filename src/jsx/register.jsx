@@ -104,7 +104,9 @@ class RegisterPlatform extends React.Component{
                     </div>
                     <div id="button_group" className="">
                         <button className="bg-black text-white w-full p-2 my-2"> 註冊 </button>
-                        <button className="bg-blue-600 text-white w-full p-2 my-2"> 使用 Google 進行註冊 </button>
+                        <a href="#">
+                            <p className="bg-blue-600 text-white w-full p-2 my-2 text-center"> 使用 Google 進行註冊 </p>
+                        </a>
                     </div>
                     <div id="footer_text" className="text-center pt-10">
                         <p className="my-2"><a href="/login" className="text-sm underline underline-offset-2 cursor-pointer"> 已經有帳號了？登入帳號 </a></p>
