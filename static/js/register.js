@@ -105,7 +105,7 @@ var RegisterPlatform = function (_React$Component) {
                 changeYear: true,
                 changeMonth: true,
                 minDate: null,
-                maxDate: Date.now()
+                maxDate: 0
             });
         }
     }, {

@@ -68,7 +68,7 @@ class RegisterPlatform extends React.Component{
             changeYear: true,
             changeMonth: true,
             minDate: null,
-            maxDate: Date.now(),
+            maxDate: 0,
         })
     }
     render(){
