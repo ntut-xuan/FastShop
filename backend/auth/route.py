@@ -4,12 +4,12 @@ from datetime import datetime, timedelta, timezone
 from http import HTTPStatus
 from typing import TYPE_CHECKING, Any, Iterable, Mapping, cast
 
-from flask import Blueprint, make_response, request
+from flask import Blueprint, Response, current_app, make_response, request
 
 from auth.exception import EmailAlreadyRegisteredError, IncorrectEmailOrPasswordError
 from auth.util import (
     BIRTHDAY_FORMAT,
-    JWTCodec,
+    HS256JWTCodec,
     UserProfile,
     fetch_user_profile,
     is_valid_birthday,
@@ -18,8 +18,10 @@ from auth.util import (
     register,
 )
 from response_message import (
+    ABSENT_COOKIE,
     DUPLICATE_ACCOUNT,
     INCORRECT_EMAIL_OR_PASSWORD,
+    INVALID_COOKIE,
     INVALID_DATA,
     WRONG_DATA_FORMAT,
 )
@@ -108,6 +110,23 @@ def register_route() -> Response | str:
     return fetch_page("register")
 
 
+@auth_bp.route("/verify_jwt", methods=["POST"])
+def verify_jwt_route() -> Response:
+    if "jwt" not in request.cookies:
+        return _make_single_message_response(HTTPStatus.UNAUTHORIZED, ABSENT_COOKIE)
+
+    jwt_token: str = request.cookies["jwt"]
+    jwt_codec = HS256JWTCodec(current_app.config["jwt_key"])
+
+    if not jwt_codec.is_valid_jwt(jwt_token):
+        return _make_single_message_response(
+            HTTPStatus.UNPROCESSABLE_ENTITY, INVALID_COOKIE
+        )
+
+    jwt_payload: dict[str, Any] = jwt_codec.decode(jwt_token)
+    return make_response(jwt_payload)
+
+
 def _has_required_login_data(data: Mapping[str, Any]) -> bool:
     return "e-mail" in data and "password" in data
 
@@ -130,7 +149,7 @@ def _set_jwt_cookie_to_response(
     response: Response,
     expiration_time_delta: timedelta = timedelta(days=1),
 ) -> None:
-    codec = JWTCodec()
+    codec = HS256JWTCodec(current_app.config["jwt_key"])
     token: str = codec.encode(payload, expiration_time_delta)
     response.set_cookie(
         "jwt",
