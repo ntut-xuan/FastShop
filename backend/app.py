@@ -1,4 +1,5 @@
 from pathlib import Path
+from secrets import token_hex
 from typing import Any, Mapping
 
 from flask import Flask
@@ -17,6 +18,8 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
         app.config.from_pyfile("config.py")
     else:
         app.config.from_mapping(test_config)
+    # a random key for jwt encoding
+    app.config["jwt_key"] = token_hex()
 
     db.init_app(app)
     app.cli.add_command(create_db_command)

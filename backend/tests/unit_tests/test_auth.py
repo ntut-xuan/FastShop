@@ -1,17 +1,18 @@
 from __future__ import annotations
 
-from contextlib import contextmanager
 from http import HTTPStatus
 from http.cookiejar import Cookie, CookieJar
 from typing import TYPE_CHECKING, Any
 
 import pytest
 
-from auth.util import Gender, JWTCodec
+from auth.util import Gender, HS256JWTCodec
 from database import db
 from models import User
+from tests.util import assert_not_raise
 
 if TYPE_CHECKING:
+    from flask import Flask
     from flask.testing import FlaskClient
     from sqlalchemy.engine.row import Row
     from sqlalchemy.sql.selectable import Select
@@ -226,15 +227,16 @@ class TestLoginRoute:
         client.post("/login", json=new_data)
 
         cookies: tuple[Cookie, ...] = _get_cookies(client.cookie_jar)
-        with _assert_not_raise(ValueError):
+        with assert_not_raise(ValueError):
             (jwt_cookie,) = tuple(filter(lambda x: x.name == "jwt", cookies))
 
     def test_post_with_correct_data_should_have_correct_jwt_token_attribute(
         self,
+        app: Flask,
         client: FlaskClient,
         new_data: dict[str, Any],
     ) -> None:
-        codec = JWTCodec()
+        codec = HS256JWTCodec(app.config["jwt_key"])
 
         client.post("/login", json=new_data)
 
@@ -249,15 +251,91 @@ class TestLoginRoute:
         assert data["gender"] == new_data["gender"]
 
 
+class TestVerifyJWT:
+    @pytest.fixture
+    def payload(self) -> dict[str, Any]:
+        return {
+            "e-mail": "test@email.com",
+            "password": "test",
+            "firstname": "Han-Xuan",
+            "lastname": "Huang",
+            "gender": 0,
+            "birthday": "2002-06-25",
+        }
+
+    def test_post_with_valid_jwt_cookie_should_have_code_http_ok(
+        self,
+        app: Flask,
+        client: FlaskClient,
+        payload: dict[str, Any],
+    ) -> None:
+        jwt_token: str = HS256JWTCodec(app.config["jwt_key"]).encode(payload)
+        client.set_cookie("localhost", "jwt", jwt_token)
+
+        resp: TestResponse = client.post("/verify_jwt")
+
+        assert resp.status_code == HTTPStatus.OK
+
+    def test_post_with_valid_jwt_cookie_should_return_payload_in_json(
+        self,
+        app: Flask,
+        client: FlaskClient,
+        payload: dict[str, Any],
+    ) -> None:
+        jwt_token: str = HS256JWTCodec(app.config["jwt_key"]).encode(payload)
+        client.set_cookie("localhost", "jwt", jwt_token)
+
+        resp: TestResponse = client.post("/verify_jwt")
+
+        assert resp.is_json
+        assert resp.json["data"] == payload  # type: ignore
+
+    def test_post_with_absent_jwt_cookie_should_have_code_http_unauthorized(
+        self,
+        client: FlaskClient,
+    ) -> None:
+        resp: TestResponse = client.post("/verify_jwt")
+
+        assert resp.status_code == HTTPStatus.UNAUTHORIZED
+
+    def test_post_with_absent_jwt_cookie_should_return_failed_message_in_json(
+        self,
+        client: FlaskClient,
+    ) -> None:
+        resp: TestResponse = client.post("/verify_jwt")
+
+        assert resp.is_json
+        assert (
+            resp.json["message"]  # type: ignore
+            == "The specific cookie does not exist in the request header."
+        )
+
+    def test_post_with_invalid_jwt_cookie_should_have_code_http_unprocessable_entity(
+        self,
+        client: FlaskClient,
+    ) -> None:
+        client.set_cookie("localhost", "jwt", "aaa.bbb.ccc")
+
+        resp: TestResponse = client.post("/verify_jwt")
+
+        assert resp.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+
+    def test_post_with_invalid_jwt_cookie_should_return_failed_message_in_json(
+        self,
+        client: FlaskClient,
+    ) -> None:
+        client.set_cookie("localhost", "jwt", "aaa.bbb.ccc")
+
+        resp: TestResponse = client.post("/verify_jwt")
+
+        assert resp.is_json
+        assert (
+            resp.json["message"]  # type: ignore
+            == "The specific cookie in the request header is invalid."
+        )
+
+
 def _get_cookies(cookie_jar: CookieJar | None) -> tuple[Cookie, ...]:
     if cookie_jar is None:
         return tuple()
     return tuple(cookie for cookie in cookie_jar)
-
-
-@contextmanager
-def _assert_not_raise(exception):
-    try:
-        yield
-    except exception:
-        pytest.fail(f"DID RAISE {exception}")

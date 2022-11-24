@@ -14,7 +14,7 @@ from auth.exception import (
 )
 from auth.util import (
     Gender,
-    JWTCodec,
+    HS256JWTCodec,
     UserProfile,
     fetch_user_profile,
     is_correct_password,
@@ -199,13 +199,13 @@ class TestFetchUserProfile:
                 fetch_user_profile(unregister_email)
 
 
-class TestJWTCodec:
+class TestHS256JWTCodec:
     @pytest.fixture
-    def codec(self) -> JWTCodec:
-        return JWTCodec(key="secret", algorithm="HS256")
+    def codec(self) -> HS256JWTCodec:
+        return HS256JWTCodec("secret")
 
     @freezegun.freeze_time("2000-01-01 00:00:00")
-    def test_encode(self, codec: JWTCodec) -> None:
+    def test_encode(self, codec: HS256JWTCodec) -> None:
         data: dict[str, str] = {"some": "payload"}
 
         token: str = codec.encode(data, timedelta(days=1))
@@ -213,7 +213,7 @@ class TestJWTCodec:
         expected: str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InNvbWUiOiJwYXlsb2FkIn0sImlhdCI6OTQ2Njg0ODAwLCJleHAiOjk0Njc3MTIwMH0.FU7fNuSrA-EuVtpE2duW-VD9hJX1B1QfPuQ2_kJ95Lw"
         assert token == expected
 
-    def test_decode(self, codec: JWTCodec) -> None:
+    def test_decode(self, codec: HS256JWTCodec) -> None:
         token: str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzb21lIjoicGF5bG9hZCJ9.4twFt5NiznN84AWoo1d7KO1T_yoc0Z6XOpOVswacPZg"
 
         data: dict = codec.decode(token)
@@ -224,25 +224,29 @@ class TestJWTCodec:
     class TestIsValidJWT:
         def test_on_token_with_not_enough_segment_should_return_false(
             self,
-            codec: JWTCodec,
+            codec: HS256JWTCodec,
         ) -> None:
             token: str = "should_have_three_dot_separated_segments"
 
             assert not codec.is_valid_jwt(token)
 
-        def test_on_invalid_token_should_return_false(self, codec: JWTCodec) -> None:
+        def test_on_invalid_token_should_return_false(
+            self, codec: HS256JWTCodec
+        ) -> None:
             token: str = "this.failed.validation"
 
             assert not codec.is_valid_jwt(token)
 
-        def test_on_expired_token_should_return_false(self, codec: JWTCodec) -> None:
+        def test_on_expired_token_should_return_false(
+            self, codec: HS256JWTCodec
+        ) -> None:
             time_to_the_past = timedelta(days=-87)
 
             token: str = codec.encode({"some": "payload"}, time_to_the_past)
 
             assert not codec.is_valid_jwt(token)
 
-        def test_on_vaild_token_should_return_true(self, codec: JWTCodec) -> None:
+        def test_on_vaild_token_should_return_true(self, codec: HS256JWTCodec) -> None:
             payload: dict[str, str] = {"some": "payload"}
             token: str = jwt.encode(payload, key=codec.key, algorithm=codec.algorithm)
 
