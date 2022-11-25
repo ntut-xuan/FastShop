@@ -128,6 +128,7 @@ def register(email: str, password: str, profile: UserProfile) -> None:
         birthday=profile.birthday,
     )
     db.session.execute(insert_new_user_stmt)
+    db.session.commit()
 
 
 def is_correct_password(registered_email: str, password_to_check: str) -> bool:
