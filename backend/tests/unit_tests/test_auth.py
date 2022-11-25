@@ -52,6 +52,7 @@ class TestRegisterRoute:
 
             client.post("/register", json=new_data)
 
+        with client.application.app_context():
             stmt: Select = db.select(User.firstname, User.lastname, User.gender).where(
                 User.email == "new@gmail.com"
             )
