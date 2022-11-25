@@ -84,7 +84,7 @@ class RegisterPlatform extends React.Component{
                             <input type="text" className="w-full p-3 border-2 border-gray-400 text-xs outline-none" placeholder="名稱" onChange={this.handleLastnameChange}></input>
                         </div>
                         <div className="flex flex-row gap-3">
-                            <select className="w-full p-3 border-2 border-gray-400 text-xs outline-none" defaultValue="性別" onSelect={this.handleGenderChange}>
+                            <select className="w-full p-3 border-2 border-gray-400 text-xs outline-none" defaultValue="性別" onChange={this.handleGenderChange}>
                                 <option className="w-full text-xs" disabled="disabled">性別</option>
                                 <option className="w-full text-xs" value="0">男性</option>
                                 <option className="w-full text-xs" value="1">女性</option>

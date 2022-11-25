@@ -140,7 +140,7 @@ var RegisterPlatform = function (_React$Component) {
                             { className: "flex flex-row gap-3" },
                             React.createElement(
                                 "select",
-                                { className: "w-full p-3 border-2 border-gray-400 text-xs outline-none", defaultValue: "\u6027\u5225", onSelect: this.handleGenderChange },
+                                { className: "w-full p-3 border-2 border-gray-400 text-xs outline-none", defaultValue: "\u6027\u5225", onChange: this.handleGenderChange },
                                 React.createElement(
                                     "option",
                                     { className: "w-full text-xs", disabled: "disabled" },
