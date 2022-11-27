@@ -6,6 +6,35 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+function verify_data(firstname, lastname, gender, birthday, email, password) {
+    var column_set = [firstname, lastname, gender, birthday, email, password];
+    var flag = false;
+    for (var i = 0; i < 6; i++) {
+        if (column_set[i].toString().length == 0) {
+            flag = true;
+        }
+    }
+    if (column_set[2] == -1) {
+        flag = true;
+    }
+    return flag;
+}
+
+function get_empty_column_message(firstname, lastname, gender, birthday, email, password) {
+    var column_set = [firstname, lastname, gender, birthday, email, password];
+    var column_name = ["姓氏", "名稱", "性別", "生日", "信箱", "密碼"];
+    var empty_column = [];
+    for (var i = 0; i < 6; i++) {
+        if (column_set[i].toString().length == 0) {
+            empty_column.push(column_name[i]);
+        }
+    }
+    if (column_set[2] == -1) {
+        empty_column.push(column_name[2]);
+    }
+    return empty_column.join("、") + "未填寫";
+}
+
 var RegisterPlatform = function (_React$Component) {
     _inherits(RegisterPlatform, _React$Component);
 
@@ -52,6 +81,9 @@ var RegisterPlatform = function (_React$Component) {
     }, {
         key: "handleSubmit",
         value: function handleSubmit(event) {
+
+            event.preventDefault();
+
             var _state = this.state,
                 firstname = _state.firstname,
                 lastname = _state.lastname,
@@ -59,6 +91,12 @@ var RegisterPlatform = function (_React$Component) {
                 birthday = _state.birthday,
                 email = _state.email,
                 password = _state.password;
+
+
+            if (verify_data(firstname, lastname, gender, birthday, email, password)) {
+                error_swal_with_confirm_button("註冊失敗", get_empty_column_message(firstname, lastname, gender, birthday, email, password));
+                return;
+            }
 
             var payload = JSON.stringify({
                 "e-mail": email,
@@ -69,7 +107,7 @@ var RegisterPlatform = function (_React$Component) {
                 "birthday": birthday
             });
             console.log(payload);
-            event.preventDefault();
+
             $.ajax({
                 url: "/register",
                 type: "POST",

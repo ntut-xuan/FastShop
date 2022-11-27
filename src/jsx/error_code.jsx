@@ -16,3 +16,12 @@ function error_swal(title, text){
         showConfirmButton: false
     })
 }
+
+function error_swal_with_confirm_button(title, text){
+    Swal.fire({
+        icon: "error",
+        title: title,
+        text: text,
+        showConfirmButton: true
+    })
+}

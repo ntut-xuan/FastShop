@@ -1,3 +1,31 @@
+function verify_data(firstname, lastname, gender, birthday, email, password){
+    let column_set = [firstname, lastname, gender, birthday, email, password]
+    let flag = false;
+    for(let i = 0; i < 6; i++){
+        if(column_set[i].toString().length == 0){
+            flag = true;
+        }
+    }
+    if(column_set[2] == -1){
+        flag = true;
+    }
+    return flag;
+}
+
+function get_empty_column_message(firstname, lastname, gender, birthday, email, password){
+    let column_set = [firstname, lastname, gender, birthday, email, password]
+    let column_name = ["姓氏", "名稱", "性別", "生日", "信箱", "密碼"]
+    let empty_column = []
+    for(let i = 0; i < 6; i++){
+        if(column_set[i].toString().length == 0){
+            empty_column.push(column_name[i])
+        }
+    }
+    if(column_set[2] == -1){
+        empty_column.push(column_name[2])
+    }
+    return empty_column.join("、") + "未填寫"
+}
 
 class RegisterPlatform extends React.Component{
     constructor(props){
@@ -26,7 +54,16 @@ class RegisterPlatform extends React.Component{
         this.setState({password: event.target.value})
     }
     handleSubmit(event){
+
+        event.preventDefault();
+
         let {firstname, lastname, gender, birthday, email, password} = this.state
+
+        if(verify_data(firstname, lastname, gender, birthday, email, password)){
+            error_swal_with_confirm_button("註冊失敗", get_empty_column_message(firstname, lastname, gender, birthday, email, password));
+            return;
+        }
+
         let payload = JSON.stringify({
             "e-mail": email,
             "password": password,
@@ -36,7 +73,7 @@ class RegisterPlatform extends React.Component{
             "birthday": birthday
         })
         console.log(payload)
-        event.preventDefault();
+
         $.ajax({
             url: "/register",
             type: "POST",

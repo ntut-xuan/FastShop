@@ -1,3 +1,25 @@
+function verify_data(email, password){
+    let column_set = [email, password]
+    let flag = false;
+    for(let i = 0; i < 2; i++){
+        if(column_set[i].toString().length == 0){
+            flag = true;
+        }
+    }
+    return flag;
+}
+
+function get_empty_column_message(email, password){
+    let column_set = [email, password]
+    let column_name = ["信箱", "密碼"]
+    let empty_column = []
+    for(let i = 0; i < 2; i++){
+        if(column_set[i].toString().length == 0){
+            empty_column.push(column_name[i])
+        }
+    }
+    return empty_column.join("、") + "未填寫"
+}
 
 class LoginPlatform extends React.Component{
     constructor(props){
@@ -16,6 +38,10 @@ class LoginPlatform extends React.Component{
     handleSubmit(event){
         let {email, password} = this.state
         event.preventDefault();
+        if(verify_data(email, password)){
+            error_swal_with_confirm_button("登入失敗", get_empty_column_message(email, password));
+            return;
+        }
         $.ajax({
             url: "/login",
             type: "POST",

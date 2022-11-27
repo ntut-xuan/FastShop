@@ -6,6 +6,29 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+function verify_data(email, password) {
+    var column_set = [email, password];
+    var flag = false;
+    for (var i = 0; i < 2; i++) {
+        if (column_set[i].toString().length == 0) {
+            flag = true;
+        }
+    }
+    return flag;
+}
+
+function get_empty_column_message(email, password) {
+    var column_set = [email, password];
+    var column_name = ["信箱", "密碼"];
+    var empty_column = [];
+    for (var i = 0; i < 2; i++) {
+        if (column_set[i].toString().length == 0) {
+            empty_column.push(column_name[i]);
+        }
+    }
+    return empty_column.join("、") + "未填寫";
+}
+
 var LoginPlatform = function (_React$Component) {
     _inherits(LoginPlatform, _React$Component);
 
@@ -39,6 +62,10 @@ var LoginPlatform = function (_React$Component) {
                 password = _state.password;
 
             event.preventDefault();
+            if (verify_data(email, password)) {
+                error_swal_with_confirm_button("登入失敗", get_empty_column_message(email, password));
+                return;
+            }
             $.ajax({
                 url: "/login",
                 type: "POST",
