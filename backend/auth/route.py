@@ -130,7 +130,7 @@ def verify_jwt_route() -> Response:
 @auth_bp.route("/logout", methods=["POST"])
 def logout_route() -> Response:
     response: Response = _make_single_message_response(HTTPStatus.OK)
-    _delete_jwt_cookie_from_response(response)
+    response.delete_cookie("jwt")
     return response
 
 
@@ -163,9 +163,3 @@ def _set_jwt_cookie_to_response(
         value=token,
         expires=datetime.now(tz=timezone.utc) + expiration_time_delta,
     )
-
-
-def _delete_jwt_cookie_from_response(
-    response: Response,
-):
-    response.delete_cookie("jwt")
