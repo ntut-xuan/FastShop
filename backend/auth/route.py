@@ -127,6 +127,13 @@ def verify_jwt_route() -> Response:
     return make_response(jwt_payload)
 
 
+@auth_bp.route("/logout", methods=["POST"])
+def logout_route() -> Response:
+    response: Response = _make_single_message_response(HTTPStatus.OK)
+    _delete_jwt_cookie_from_response(response)
+    return response
+
+
 def _has_required_login_data(data: Mapping[str, Any]) -> bool:
     return "e-mail" in data and "password" in data
 
@@ -156,3 +163,9 @@ def _set_jwt_cookie_to_response(
         value=token,
         expires=datetime.now(tz=timezone.utc) + expiration_time_delta,
     )
+
+
+def _delete_jwt_cookie_from_response(
+    response: Response,
+):
+    response.delete_cookie("jwt")
