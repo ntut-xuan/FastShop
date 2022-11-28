@@ -356,7 +356,7 @@ class TestLogout:
         client.post("/logout")
 
         cookies: tuple[Cookie, ...] = _get_cookies(client.cookie_jar)
-        assert len(cookies) == 0
+        assert not cookies
 
     def test_if_jwt_absent_should_return_ok(
         self,
