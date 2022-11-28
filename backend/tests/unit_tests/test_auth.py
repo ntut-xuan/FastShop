@@ -354,8 +354,8 @@ class TestLogout:
         client.set_cookie("localhost", "jwt", "aaa.bbb.ccc")
 
         client.post("/logout")
-        cookies: tuple[Cookie, ...] = _get_cookies(client.cookie_jar)
 
+        cookies: tuple[Cookie, ...] = _get_cookies(client.cookie_jar)
         assert len(cookies) == 0
 
     def test_if_jwt_absent_should_return_ok(
