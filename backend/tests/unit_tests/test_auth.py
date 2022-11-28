@@ -337,7 +337,7 @@ class TestVerifyJWT:
 
 
 class TestLogout:
-    def test_if_jwt_exist_logout_should_return_ok(
+    def test_if_jwt_exist_should_return_ok(
         self,
         client: FlaskClient,
     ) -> None:
@@ -347,7 +347,7 @@ class TestLogout:
 
         assert resp.status_code == HTTPStatus.OK
 
-    def test_if_jwt_exist_logout_should_let_jwt_token_absent(
+    def test_if_jwt_exist_should_let_jwt_token_absent(
         self,
         client: FlaskClient,
     ) -> None:
@@ -358,7 +358,7 @@ class TestLogout:
 
         assert len(cookies) == 0
 
-    def test_if_jwt_absent_logout_should_return_ok(
+    def test_if_jwt_absent_should_return_ok(
         self,
         client: FlaskClient,
     ) -> None:
