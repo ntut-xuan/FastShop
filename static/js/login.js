@@ -6,24 +6,98 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+function verify_data(email, password) {
+    var column_set = [email, password];
+    var flag = false;
+    for (var i = 0; i < 2; i++) {
+        if (column_set[i].toString().length == 0) {
+            flag = true;
+        }
+    }
+    return flag;
+}
+
+function get_empty_column_message(email, password) {
+    var column_set = [email, password];
+    var column_name = ["信箱", "密碼"];
+    var empty_column = [];
+    for (var i = 0; i < 2; i++) {
+        if (column_set[i].toString().length == 0) {
+            empty_column.push(column_name[i]);
+        }
+    }
+    return empty_column.join("、") + "未填寫";
+}
+
 var LoginPlatform = function (_React$Component) {
     _inherits(LoginPlatform, _React$Component);
 
-    function LoginPlatform() {
+    function LoginPlatform(props) {
         _classCallCheck(this, LoginPlatform);
 
-        return _possibleConstructorReturn(this, (LoginPlatform.__proto__ || Object.getPrototypeOf(LoginPlatform)).apply(this, arguments));
+        var _this = _possibleConstructorReturn(this, (LoginPlatform.__proto__ || Object.getPrototypeOf(LoginPlatform)).call(this, props));
+
+        _this.state = { email: "", password: "" };
+        _this.handleAccountChange = _this.handleAccountChange.bind(_this);
+        _this.handlePasswordChange = _this.handlePasswordChange.bind(_this);
+        _this.handleSubmit = _this.handleSubmit.bind(_this);
+        return _this;
     }
 
     _createClass(LoginPlatform, [{
+        key: "handleAccountChange",
+        value: function handleAccountChange(event) {
+            this.setState({ email: event.target.value });
+        }
+    }, {
+        key: "handlePasswordChange",
+        value: function handlePasswordChange(event) {
+            this.setState({ password: event.target.value });
+        }
+    }, {
+        key: "handleSubmit",
+        value: function handleSubmit(event) {
+            var _state = this.state,
+                email = _state.email,
+                password = _state.password;
+
+            event.preventDefault();
+            if (verify_data(email, password)) {
+                error_swal_with_confirm_button("登入失敗", get_empty_column_message(email, password));
+                return;
+            }
+            $.ajax({
+                url: "/login",
+                type: "POST",
+                data: JSON.stringify({ "e-mail": email, "password": password }),
+                dataType: "json",
+                contentType: "application/json",
+                success: function success(data, status, xhr) {
+                    success_swal("登入成功").then(function () {
+                        window.location.href = "/";
+                    });
+                },
+                error: function error(xhr, status, _error) {
+                    console.log(_error);
+                    if (_error == "FORBIDDEN") {
+                        error_swal("登入失敗", "帳號或密碼錯誤");
+                    } else if (_error === "UNPROCESSABLE ENTITY") {
+                        error_swal("登入失敗", "信箱格式錯誤");
+                    } else {
+                        error_swal("登入失敗", "登入 Payload 格式錯誤，請聯繫管理員");
+                    }
+                }
+            });
+        }
+    }, {
         key: "render",
         value: function render() {
             return React.createElement(
                 "div",
                 { className: "bg-orange-100 w-screen h-screen" },
                 React.createElement(
-                    "div",
-                    { className: "w-[600px] max-h-[74vh] bg-white p-10 rounded-lg absolute left-[50%] top-[65%] translate-x-[-50%] translate-y-[-65%] shadow-lg overflow-y-auto" },
+                    "form",
+                    { className: "w-[600px] max-h-[74vh] bg-white p-10 rounded-lg absolute left-[50%] top-[65%] translate-x-[-50%] translate-y-[-65%] shadow-lg overflow-y-auto", onSubmit: this.handleSubmit },
                     React.createElement(
                         "div",
                         { id: "title", className: "pb-10" },
@@ -36,8 +110,8 @@ var LoginPlatform = function (_React$Component) {
                     React.createElement(
                         "div",
                         { id: "input_group", className: "" },
-                        React.createElement("input", { type: "text", className: "w-full p-3 border-2 border-gray-400 text-xs mb-4 outline-none", placeholder: "\u96FB\u5B50\u90F5\u4EF6\u5730\u5740" }),
-                        React.createElement("input", { type: "password", className: "w-full p-3 border-2 border-gray-400 text-xs mb-4 outline-none", placeholder: "\u5BC6\u78BC" })
+                        React.createElement("input", { type: "text", className: "w-full p-3 border-2 border-gray-400 text-xs mb-4 outline-none", placeholder: "\u96FB\u5B50\u90F5\u4EF6\u5730\u5740", onChange: this.handleAccountChange }),
+                        React.createElement("input", { type: "password", className: "w-full p-3 border-2 border-gray-400 text-xs mb-4 outline-none", placeholder: "\u5BC6\u78BC", onChange: this.handlePasswordChange })
                     ),
                     React.createElement(
                         "div",
@@ -50,16 +124,20 @@ var LoginPlatform = function (_React$Component) {
                     ),
                     React.createElement(
                         "div",
-                        { id: "button_group", className: "pt-10" },
+                        { id: "button_group", className: "pt-10 w-full" },
                         React.createElement(
                             "button",
                             { className: "bg-black text-white w-full p-2 my-2" },
                             " \u767B\u5165 "
                         ),
                         React.createElement(
-                            "button",
-                            { className: "bg-amber-600 text-white w-full p-2 my-2" },
-                            " \u4F7F\u7528 Google \u9032\u884C\u767B\u5165 "
+                            "a",
+                            { href: "#" },
+                            React.createElement(
+                                "p",
+                                { className: "bg-amber-600 text-white w-full p-2 my-2 text-center" },
+                                " \u4F7F\u7528 Google \u9032\u884C\u767B\u5165 "
+                            )
                         )
                     ),
                     React.createElement(
