@@ -38,7 +38,7 @@ def login_route() -> Response | str:
     if request.method == "POST":
         data = request.json
 
-        if data is None or not _has_required_login_data(data):
+        if data is None or "e-mail" not in data or "password" not in data:
             return _make_single_message_response(
                 HTTPStatus.BAD_REQUEST, message=WRONG_DATA_FORMAT
             )
