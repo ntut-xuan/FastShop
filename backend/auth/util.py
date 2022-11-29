@@ -10,7 +10,6 @@ from sqlalchemy import select
 
 from auth.exception import (
     EmailAlreadyRegisteredError,
-    IncorrectEmailOrPasswordError,
     UserNotFoundError,
 )
 from database import db
@@ -40,16 +39,6 @@ def is_valid_birthday(birthday: str) -> bool:
     except ValueError:
         return False
     return True
-
-
-def login(email: str, password: str) -> None:
-    """
-    Raises:
-        IncorrectEmailOrPasswordError
-    """
-    if not is_registered(email) or not is_correct_password(email, password):
-        raise IncorrectEmailOrPasswordError
-    # TODO: modify some cookie to mark the user as logged in
 
 
 @dataclass

@@ -9,7 +9,6 @@ import pytest
 
 from auth.exception import (
     EmailAlreadyRegisteredError,
-    IncorrectEmailOrPasswordError,
     UserNotFoundError,
 )
 from auth.util import (
@@ -21,7 +20,6 @@ from auth.util import (
     is_registered,
     is_valid_birthday,
     is_valid_email,
-    login,
     register,
 )
 from database import db
@@ -138,24 +136,6 @@ class TestIsRegistered:
         with app.app_context():
 
             assert not is_registered(unregistered_email)
-
-
-class TestLogin:
-    def test_on_unregistered_email_should_raise_exception(self, app: Flask) -> None:
-        unregistered_email: str = "unregistered@email.com"
-        password: str = "test"
-        with app.app_context():
-
-            with pytest.raises(IncorrectEmailOrPasswordError):
-                login(unregistered_email, password)
-
-    def test_on_incorrect_password_should_raise_exception(self, app: Flask) -> None:
-        email: str = "test@email.com"
-        incorrect_password: str = "should_be_test"
-        with app.app_context():
-
-            with pytest.raises(IncorrectEmailOrPasswordError):
-                login(email, incorrect_password)
 
 
 class TestRegister:
