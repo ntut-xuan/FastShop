@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 class TestIsValidEmail:
     _some_invalid_emails: ClassVar[list[str]] = ["plainaddress", "#@%^%#$@#$@#.com", "@example.com", "Joe Smith <email@example.com>", "email.example.com", "email@example@example.com", ".email@example.com", "email..email@example.com", "email@example.com (Joe Smith)", "email@example", "email@-example.com", "email@111.222.333.44444", "email@example..com", "Abc..123@example.com"]  # fmt: skip
     @pytest.mark.parametrize(
-        argnames=("malform_email",),
+        argnames=("malformed_email",),
         argvalues=(
             ("noletterafterdash-@email.com",),
             ("badsymbolindomain@ema#il.com",),
@@ -46,8 +46,8 @@ class TestIsValidEmail:
             *((invalid_email,) for invalid_email in _some_invalid_emails),
         ),
     )
-    def test_on_malform_email_should_return_false(self, malform_email: str) -> None:
-        assert not is_valid_email(malform_email)
+    def test_on_malformed_email_should_return_false(self, malformed_email: str) -> None:
+        assert not is_valid_email(malformed_email)
 
     @pytest.mark.parametrize(
         argnames=("email",),
@@ -226,7 +226,7 @@ class TestHS256JWTCodec:
 
             assert not codec.is_valid_jwt(token)
 
-        def test_on_vaild_token_should_return_true(self, codec: HS256JWTCodec) -> None:
+        def test_on_valid_token_should_return_true(self, codec: HS256JWTCodec) -> None:
             payload: dict[str, str] = {"some": "payload"}
             token: str = jwt.encode(payload, key=codec.key, algorithm=codec.algorithm)
 

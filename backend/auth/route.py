@@ -71,7 +71,7 @@ def register_route() -> Response | str:
     if request.method == "POST":
         # 400 Bad Request error will automatically be raised
         # if the content-type is not "application/json", so
-        # it's safe to cast it manually for type warning supression.
+        # it's safe to cast it manually for type warning suppression.
         data = cast(dict, request.json)
 
         required_columns: list[str] = [
