@@ -336,6 +336,37 @@ class TestVerifyJWT:
         )
 
 
+class TestLogoutRoute:
+    def test_if_jwt_exist_should_return_ok(
+        self,
+        client: FlaskClient,
+    ) -> None:
+        client.set_cookie("localhost", "jwt", "aaa.bbb.ccc")
+
+        resp: TestResponse = client.post("/logout")
+
+        assert resp.status_code == HTTPStatus.OK
+
+    def test_if_jwt_exist_should_let_jwt_token_absent(
+        self,
+        client: FlaskClient,
+    ) -> None:
+        client.set_cookie("localhost", "jwt", "aaa.bbb.ccc")
+
+        client.post("/logout")
+
+        cookies: tuple[Cookie, ...] = _get_cookies(client.cookie_jar)
+        assert not cookies
+
+    def test_if_jwt_absent_should_return_ok(
+        self,
+        client: FlaskClient,
+    ) -> None:
+        resp: TestResponse = client.post("/logout")
+
+        assert resp.status_code == HTTPStatus.OK
+
+
 def _get_cookies(cookie_jar: CookieJar | None) -> tuple[Cookie, ...]:
     if cookie_jar is None:
         return tuple()

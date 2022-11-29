@@ -10,7 +10,6 @@ from sqlalchemy import select
 
 from auth.exception import (
     EmailAlreadyRegisteredError,
-    IncorrectEmailOrPasswordError,
     UserNotFoundError,
 )
 from database import db
@@ -25,12 +24,12 @@ EMAIL_REGEX: Final[str] = r"^[A-Za-z0-9_]+([.-]?[A-Za-z0-9_]+)*@[A-Za-z0-9_]+([.
 BIRTHDAY_FORMAT: Final[str] = "%Y-%m-%d"
 
 
-def is_fullmatched_with_regex(string: str, regex: str) -> bool:
+def is_full_matched_with_regex(string: str, regex: str) -> bool:
     return bool(re.fullmatch(regex, string))
 
 
 def is_valid_email(email: str) -> bool:
-    return is_fullmatched_with_regex(email, EMAIL_REGEX)
+    return is_full_matched_with_regex(email, EMAIL_REGEX)
 
 
 def is_valid_birthday(birthday: str) -> bool:
@@ -40,16 +39,6 @@ def is_valid_birthday(birthday: str) -> bool:
     except ValueError:
         return False
     return True
-
-
-def login(email: str, password: str) -> None:
-    """
-    Raises:
-        IncorrectEmailOrPasswordError
-    """
-    if not is_registered(email) or not is_correct_password(email, password):
-        raise IncorrectEmailOrPasswordError
-    # TODO: modify some cookie to mark the user as logged in
 
 
 @dataclass
@@ -142,7 +131,7 @@ def is_correct_password(registered_email: str, password_to_check: str) -> bool:
 
 
 def is_registered(email: str) -> bool:
-    """Returns whether the email is aldready used."""
+    """Returns whether the email is already used."""
     select_user_with_email_stmt: Select = db.select(User).where(User.email == email)
 
     user_count: int = len(db.session.execute(select_user_with_email_stmt).all())
