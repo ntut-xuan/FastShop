@@ -1,0 +1,37 @@
+The route to verify the jwt token.
+---
+tags:
+  - auth
+description: Verify the jwt cookie in the header, if it is absent or invalid should return an error.
+responses:
+  200:
+    description: OK
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/ResponseBody'
+        example:
+          message: "OK"
+  401:
+    description: The specific cookie does not exist in the request header.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/ResponseBody'
+        example:
+          message: "The specific cookie does not exist in the request header."
+  422:
+    description: The specific cookie in the request header is invalid.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/ResponseBody'
+        example:
+          message: "The specific cookie in the request header is invalid."
+definitions:
+  ResponseBody:
+  type: object
+  properties:
+    message:
+      type: string
+      description: The response message from server.

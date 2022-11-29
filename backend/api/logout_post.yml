@@ -1,0 +1,21 @@
+The route to logging out of the account.
+---
+tags:
+  - auth
+description: Log out of the account and delete the jwt token.
+responses:
+  200:
+    description: OK
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/ResponseBody'
+        example:
+          message: "OK"
+definitions:
+  ResponseBody:
+  type: object
+  properties:
+    message:
+      type: string
+      description: The response message from server.
