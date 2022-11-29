@@ -128,6 +128,13 @@ def verify_jwt_route() -> Response:
     return make_response(jwt_payload)
 
 
+@auth_bp.route("/logout", methods=["POST"])
+def logout_route() -> Response:
+    response: Response = _make_single_message_response(HTTPStatus.OK)
+    response.delete_cookie("jwt")
+    return response
+
+
 def _is_correct_email_and_password(email: str, password: str) -> bool:
     return is_registered(email) and is_correct_password(email, password)
 
