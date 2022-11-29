@@ -336,7 +336,7 @@ class TestVerifyJWT:
         )
 
 
-class TestLogout:
+class TestLogoutRoute:
     def test_if_jwt_exist_should_return_ok(
         self,
         client: FlaskClient,

@@ -1,7 +1,15 @@
-from tests.unit_tests.test_auth import TestLoginRoute, TestRegisterRoute
+from tests.unit_tests.test_auth import (
+    TestLoginRoute,
+    TestLogoutRoute,
+    TestRegisterRoute,
+)
 
 
 class TestLoginRouteWithMariaDB(TestLoginRoute):
+    pass
+
+
+class TestLogoutRouteWithMariaDB(TestLogoutRoute):
     pass
 
 
