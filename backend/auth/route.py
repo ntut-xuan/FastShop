@@ -48,7 +48,7 @@ def login_route() -> Response | str:
                 HTTPStatus.UNPROCESSABLE_ENTITY, message=INVALID_DATA
             )
 
-        if not _has_correct_email_and_password(data["e-mail"], data["password"]):
+        if not _is_correct_email_and_password(data["e-mail"], data["password"]):
             return _make_single_message_response(
                 HTTPStatus.FORBIDDEN, message=INCORRECT_EMAIL_OR_PASSWORD
             )
@@ -128,7 +128,7 @@ def verify_jwt_route() -> Response:
     return make_response(jwt_payload)
 
 
-def _has_correct_email_and_password(email: str, password: str) -> bool:
+def _is_correct_email_and_password(email: str, password: str) -> bool:
     return is_registered(email) and is_correct_password(email, password)
 
 
