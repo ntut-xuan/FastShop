@@ -7,3 +7,10 @@ SQLALCHEMY_DATABASE_URI: str = (
         password=quote("@fsa2022")
     )
 )
+SWAGGER = {
+    "title": "FastShop API",
+    "uiversion": "3",
+    "openapi": "3.0.3",
+    "termsOfService": "",
+    "description": "This is a FastShop API based on the OpenAPI 3.0 specification.",
+}
