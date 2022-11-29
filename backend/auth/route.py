@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 from http import HTTPStatus
 from typing import TYPE_CHECKING, Any, Iterable, Mapping, cast
 
+from flasgger import swag_from
 from flask import Blueprint, Response, current_app, make_response, request
 
 from auth.exception import EmailAlreadyRegisteredError
@@ -35,6 +36,8 @@ auth_bp = Blueprint("auth", __name__)
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
+@swag_from("../api/login_get.yml", methods=["GET"])
+@swag_from("../api/login_post.yml", methods=["POST"])
 def login_route() -> Response | str:
     if request.method == "POST":
         data = request.json
@@ -67,6 +70,8 @@ def login_route() -> Response | str:
 
 
 @auth_bp.route("/register", methods=["GET", "POST"])
+@swag_from("../api/register_get.yml", methods=["GET"])
+@swag_from("../api/register_post.yml", methods=["POST"])
 def register_route() -> Response | str:
     if request.method == "POST":
         # 400 Bad Request error will automatically be raised
