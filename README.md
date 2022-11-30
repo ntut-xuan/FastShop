@@ -22,11 +22,11 @@ FastShop，一款以 React.js + Python 為開發工具的輕量購物網站，�
 | -- docker-compose.yml The Docker compose file to setup multiple container.
 ```
 
-## Installization
+## Installation
 
 The repository use docker to setup environment.
 
-Please use the following command to build the enviromnent.
+Please use the following command to build the environment.
 
 ```bash
 docker compose up
@@ -36,7 +36,7 @@ You can use the following command to force-rebuild the environment if any change
 
 But it will setup more slowly.
 
-```basg
+```bash
 docker compose up --build --force-recreate --no-deps
 ```
 
