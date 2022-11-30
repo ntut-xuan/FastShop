@@ -11,15 +11,15 @@ FastShop，一款以 React.js + Python 為開發工具的輕量購物網站，�
 ```
 *
 |
-| -- /src/              The directory storage JSX File.
-| -- /static/           The directory storage static file like JS File, Image, css. (frontend)
-| -- /backend/          The directory storage backend file.
-| -- /html/             The directory storage HTML file.
-| -- database.sql       The SQL file to setup SQL Database.
-| -- babel.sh           The shell to execute babel command to compile JSX File.
-| -- tailwindcss.sh     The shell to execute tailwindcss command, generate CSS File to static folder.
-| -- Dockerfile         The Dockerfile to setup environment.
-| -- docker-compose.yml The Docker compose file to setup multiple container.
+| -- /src/              JSX files.
+| -- /static/           Static files like JS files, images, and CSS. (frontend)
+| -- /backend/          Backend files.
+| -- /html/             HTML files.
+| -- database.sql       SQL files to set up the database.
+| -- babel.sh           The babel commands for compiling JSX files.
+| -- tailwindcss.sh     The tailwindcss commands for generating CSS files to the static folder.
+| -- Dockerfile         The environment setups in docker.
+| -- docker-compose.yml The environment setups of multiple containers.
 ```
 
 ## Installation
