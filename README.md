@@ -24,7 +24,7 @@ FastShop，一款以 React.js + Python 為開發工具的輕量購物網站，�
 
 ## Installation
 
-The repository use docker to setup environment.
+The repository use docker to set up the environment.
 
 Please use the following command to build the environment.
 
@@ -34,13 +34,13 @@ docker compose up
 
 You can use the following command to force-rebuild the environment if any changes on Dockerfile are made.
 
-But it will setup more slowly.
+But it will be set up more slowly.
 
 ```bash
 docker compose up --build --force-recreate --no-deps
 ```
 
-You can use VSCode-remote-plugin to connect docker-container to develope project.
+You can use VSCode-remote-plugin to connect the docker-container to the develop project.
 
 ## Contribution
 
