@@ -14,4 +14,4 @@ http://localhost:8080/apidocs
 
 The YAML file should follow OpenAPI 3.0 specification.
 
-Furthermore, in this project, we ask the API should follow [REST](https://zh.wikipedia.org/zh-tw/%E8%A1%A8%E7%8E%B0%E5%B1%82%E7%8A%B6%E6%80%81%E8%BD%AC%E6%8D%A2) also.
+Furthermore, in this project, the API should follow [REST](https://zh.wikipedia.org/zh-tw/%E8%A1%A8%E7%8E%B0%E5%B1%82%E7%8A%B6%E6%80%81%E8%BD%AC%E6%8D%A2) also.
