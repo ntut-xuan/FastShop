@@ -1,0 +1,77 @@
+The register route.
+---
+tags:
+  - auth
+description: Post the register payload to the backend server.
+requestBody:
+  content:
+    application/json:
+      schema:
+          $ref: '#/definitions/RequestBody'
+  required: true
+responses:
+  200:
+    description: OK
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/ResponseBody'
+        example:
+          message: "OK"
+  400:
+    description: The data has the wrong format and the server can't understand it.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/ResponseBody'
+        example:
+          message: "The data has the wrong format and the server can't understand it."
+  403:
+    description: The email or password that the user posted does not match any account.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/ResponseBody'
+        example:
+          message: "The email or password that the user posted does not match any account."
+  422:
+    description: The posted data has the correct format, but the data is invalid.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/ResponseBody'
+        example:
+          message: "The posted data has the correct format, but the data is invalid."
+definitions:
+  RequestBody:
+    type: object
+    required:
+      - e-mail
+      - password
+    properties:
+      e-mail:
+        type: string
+        example: xuan@fsa.net
+      password:
+        type: string
+        example: password
+      firstname:
+        type: string
+        example: Han-Xuan
+      lastname:
+        type: string
+        example: Huang
+      gender:
+        type: int
+        enum: [0, 1]
+        example: 0
+      birthday:
+        type: string
+        format: date
+        example: "2002-06-25"
+  ResponseBody:
+    type: object
+    properties:
+      message:
+        type: string
+        description: The response message from the server.
