@@ -1,6 +1,6 @@
 from pathlib import Path
 from secrets import token_hex
-from typing import Any, Mapping, Final
+from typing import Any, Final, Mapping
 
 from flasgger import Swagger
 from flask import Flask
