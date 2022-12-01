@@ -2,8 +2,8 @@ from pathlib import Path
 from secrets import token_hex
 from typing import Any, Mapping
 
-from flask import Flask
 from flasgger import Swagger
+from flask import Flask
 
 from auth.route import auth_bp
 from database import create_db_command, db
