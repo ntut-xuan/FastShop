@@ -2,7 +2,7 @@ The login route.
 ---
 tags:
   - auth
-description: Post the login payload to backend server.
+description: Post the login payload to the backend server.
 requestBody:
   content:
     application/json:
@@ -60,4 +60,4 @@ definitions:
     properties:
       message:
         type: string
-        description: The response message from server.
+        description: The response message from the server.

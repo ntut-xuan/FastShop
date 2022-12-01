@@ -2,7 +2,7 @@ The login route.
 ---
 tags:
   - auth
-description: Get the login page from backend server.
+description: Get the login page from the backend server.
 responses:
   200:
     description: OK

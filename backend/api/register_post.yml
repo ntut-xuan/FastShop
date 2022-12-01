@@ -2,7 +2,7 @@ The register route.
 ---
 tags:
   - auth
-description: Post the register payload to backend server.
+description: Post the register payload to the backend server.
 requestBody:
   content:
     application/json:
@@ -57,10 +57,10 @@ definitions:
         example: password
       firstname:
         type: string
-        example: Huang
+        example: Han-Xuan
       lastname:
         type: string
-        example: Han-Xuan
+        example: Huang
       gender:
         type: int
         enum: [0, 1]
@@ -68,10 +68,10 @@ definitions:
       birthday:
         type: string
         format: date
-        exmaple: "2002-06-25"
+        example: "2002-06-25"
   ResponseBody:
     type: object
     properties:
       message:
         type: string
-        description: The response message from server.
+        description: The response message from the server.

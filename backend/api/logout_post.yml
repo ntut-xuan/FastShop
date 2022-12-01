@@ -18,4 +18,4 @@ definitions:
   properties:
     message:
       type: string
-      description: The response message from server.
+      description: The response message from the server.
