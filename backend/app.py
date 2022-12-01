@@ -10,19 +10,7 @@ from database import create_db_command, db
 from util import fetch_page
 
 
-def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
-    app = Flask(
-        __name__,
-        static_folder=(Path(__file__).parents[1] / "static"),
-    )
-    if test_config is None:
-        app.config.from_pyfile("config.py")
-    else:
-        app.config.from_mapping(test_config)
-    # a random key for jwt encoding
-    app.config["jwt_key"] = token_hex()
-
-    # For newest swagger UI
+def init_swagger(app: Flask) -> None:
     swagger_config = Swagger.DEFAULT_CONFIG
     swagger_config[
         "swagger_ui_bundle_js"
@@ -36,6 +24,21 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     ] = "//unpkg.com/swagger-ui-dist@4.15.5/swagger-ui.css"
 
     Swagger(app)
+
+
+def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
+    app = Flask(
+        __name__,
+        static_folder=(Path(__file__).parents[1] / "static"),
+    )
+    if test_config is None:
+        app.config.from_pyfile("config.py")
+    else:
+        app.config.from_mapping(test_config)
+    # a random key for jwt encoding
+    app.config["jwt_key"] = token_hex()
+
+    init_swagger(app)
     db.init_app(app)
     app.cli.add_command(create_db_command)
     app.register_blueprint(auth_bp)
