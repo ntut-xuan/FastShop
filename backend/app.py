@@ -1,6 +1,6 @@
 from pathlib import Path
 from secrets import token_hex
-from typing import Any, Mapping
+from typing import Any, Mapping, Final
 
 from flasgger import Swagger
 from flask import Flask
@@ -35,16 +35,23 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
 
 
 def _init_swagger(app: Flask) -> None:
+    SWAGGER_UI_VERSION: Final[str] = "4.15.5"
+    JQUERY_VERSION: Final[str] = "3.6.1"
+
+    SWAGGER_UI_DIST_URL: Final[
+        str
+    ] = f"//unpkg.com/swagger-ui-dist@{SWAGGER_UI_VERSION}"
+
     swagger_config = Swagger.DEFAULT_CONFIG
     swagger_config[
         "swagger_ui_bundle_js"
-    ] = "//unpkg.com/swagger-ui-dist@4.15.5/swagger-ui-bundle.js"
+    ] = f"{SWAGGER_UI_DIST_URL}/swagger-ui-bundle.js"
     swagger_config[
         "swagger_ui_standalone_preset_js"
-    ] = "//unpkg.com/swagger-ui-dist@4.15.5/swagger-ui-standalone-preset.js"
-    swagger_config["jquery_js"] = "//unpkg.com/jquery@2.2.4/dist/jquery.min.js"
+    ] = f"{SWAGGER_UI_DIST_URL}/swagger-ui-standalone-preset.js"
+    swagger_config["swagger_ui_css"] = f"{SWAGGER_UI_DIST_URL}/swagger-ui.css"
     swagger_config[
-        "swagger_ui_css"
-    ] = "//unpkg.com/swagger-ui-dist@4.15.5/swagger-ui.css"
+        "jquery_js"
+    ] = f"//unpkg.com/jquery@{JQUERY_VERSION}/dist/jquery.min.js"
 
     Swagger(app)
