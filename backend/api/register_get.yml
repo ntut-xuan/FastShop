@@ -1,0 +1,8 @@
+The register route.
+---
+tags:
+  - auth
+description: Get the register page from the backend server.
+responses:
+  200:
+    description: OK
