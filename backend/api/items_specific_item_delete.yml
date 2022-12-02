@@ -22,3 +22,19 @@ responses:
           $ref: '#/definitions/message'
         example:
           message: "OK"
+  402:
+    description: Unauthorized.
+    content:
+      application/json:
+        schema:
+          $ref: "#/definitions/message"
+        example:
+          message: Unauthorized.
+  403:
+    description: The item query by the ID is absent.
+    content:
+      application/json:
+        schema:
+          $ref: "#/definitions/message"
+        example:
+          message: The specific item is absent.
