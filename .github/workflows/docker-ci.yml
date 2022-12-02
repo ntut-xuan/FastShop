@@ -12,9 +12,8 @@ jobs:
       run: docker compose up --build -d
       
     - name: Wait compose start completely
-      uses: jakejarvis/wait-action@master
-      with:
-        time: '10s'
+      run: sleep 10s
+      shell: bash
 
     - name: Exec test
       run: docker exec fastshop python3 -m pytest ./backend/tests
