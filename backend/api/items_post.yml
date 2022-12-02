@@ -1,0 +1,95 @@
+Add an item.
+---
+tags:
+  - item
+description: Add an item.
+
+requestBody:
+  content:
+    application/json:
+      schema:
+          $ref: '#/definitions/RequestBody'
+  required: true
+
+responses:
+  200:
+    description: "OK"
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/ResponseBody'
+        example:
+          message: "OK"
+  400:
+    description: The data has the wrong format and the server can't understand it.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/ResponseBody'
+        example:
+          message: "The data has the wrong format and the server can't understand it."
+  403:
+    description: The item already exists in the database.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/ResponseBody'
+        example:
+          message: The item already exists in the database.
+  422:
+    description: The posted data has the correct format, but the data is invalid.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/ResponseBody'
+        example:
+          message: "The posted data has the correct format, but the data is invalid."
+
+definitions:
+  RequestBody:
+    type: object
+    properties:
+      id:
+        type: string
+        description: The ID of the item.
+        example: 41092554
+      count:
+        type: integer
+        description: The count of the item.
+        example: 33
+      name:
+        type: string
+        description: The name of the item.
+        example: "Entropy"
+      price:
+        type: object
+        description: The price of the item.
+        properties:
+          discount:
+            type: integer
+            example: 43210
+          original:
+            type: integer
+            example: 48763
+      avatars:
+        type: array
+        items:
+          type: string
+        description: The avaters of the item, should return a list contains URL.
+        example:
+          - "http://localhost/500x500/item_41092554_1.png"
+          - "http://localhost/500x500/item_41092554_2.png"
+      tags:
+          type: array
+          items:
+            type: string
+          description: The tags of the item, should return a list contains string.
+          example:
+          - id: 33
+            name: dian
+  ResponseBody:
+    type: object
+    properties:
+      message:
+        type: string
+        description: The response message from the server.
