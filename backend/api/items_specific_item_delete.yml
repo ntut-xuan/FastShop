@@ -1,0 +1,24 @@
+Delete the specific item by ID.
+---
+tags:
+  - item
+
+description: Delete the specific item by ID. Return 4XX if item absent.
+
+parameters:
+  - in: path
+    name: ID
+    description: The ID of item which you want to query.
+    schema:
+      type: string
+    required: true
+
+responses:
+  200:
+    description: OK
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: "OK"

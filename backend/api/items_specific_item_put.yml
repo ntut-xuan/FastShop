@@ -1,0 +1,31 @@
+Update specific field of the item with specific ID.
+---
+tags:
+  - item
+
+description: Update the specific field of the item. The field specified in the payload will change to the value given by the body.
+
+parameters:
+  - in: path
+    name: ID
+    description: The ID of item which you want to query.
+    schema:
+      type: string
+    required: true
+
+requestBody:
+  content:
+    application/json:
+      schema:
+          $ref: '#/definitions/item'
+  required: true
+
+responses:
+  200:
+    description: OK
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: "OK"

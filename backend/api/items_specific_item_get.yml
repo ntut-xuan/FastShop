@@ -1,0 +1,22 @@
+Fetch an item by its ID.
+---
+tags:
+  - item
+
+description: Fetch an item by its ID.
+
+parameters:
+  - in: path
+    name: ID
+    description: The ID of item which you want to query.
+    schema:
+      type: string
+    required: true
+
+responses:
+  200:
+    description: OK
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/item'
