@@ -1,0 +1,24 @@
+name: Docker Compose Actions Workflow
+on: push
+jobs:
+  docker:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Start containers
+      run: docker compose up --build -d
+      
+    - name: Wait compose start completely
+      uses: jakejarvis/wait-action@master
+      with:
+        time: '10s'
+
+    - name: Exec test
+      run: docker exec fastshop python3 -m pytest ./backend/tests
+
+    - name: Stop containers
+      if: always()
+      run: docker compose down
