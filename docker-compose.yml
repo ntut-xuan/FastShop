@@ -3,6 +3,7 @@ version: "3.8"
 services:
   mariadb:
     image: mariadb:latest
+    container_name: mariadb
     restart: always
     environment:
       MYSQL_USER: fsa
@@ -14,6 +15,7 @@ services:
       - "3306:3306"
   mariadb-test:
     image: mariadb:latest
+    container_name: mariadb-test
     restart: always
     environment:
       MYSQL_USER: fsta  # t refers to test
@@ -25,6 +27,7 @@ services:
       - "3307:3306"
   fastshop:
     build: .
+    container_name: fastshop
     tty: true
     depends_on:
       - "mariadb"
