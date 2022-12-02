@@ -1,8 +1,8 @@
-Fetch all items.
+Fetch all the items.
 ---
 tags:
   - item
-description: Fetch all items.
+description: Fetch all the items.
 responses:
   200:
     description: OK
@@ -29,11 +29,11 @@ definitions:
     type: object
     properties:
       total: 
-        description: The total of items.
+        description: The total of the items.
         type: integer
       items:
         type: array
-        description: The array contains all item. 
+        description: The array contains all the item. 
         items:
           $ref: '#/definitions/item'
   item:
@@ -41,16 +41,16 @@ definitions:
     properties:
       id:
         type: string
-        description: The ID of item.
+        description: The ID of the item.
       count:
         type: integer
-        description: The count of item.
+        description: The count of the item.
       name:
         type: string
-        description: The name of item.
+        description: The name of the item.
       price:
         type: object
-        description: The price of item.
+        description: The price of the item.
         properties:
           discount: 
             type: integer
@@ -60,9 +60,9 @@ definitions:
         type: array
         items: 
           type: string
-        description: The avaters of item, should return a list contains URL.
+        description: The avaters of the item, should return a list contains URL.
       tags:
           type: array 
           items:
             type: string
-          description: The tags of item, should return a list contains string.
+          description: The tags of the item, should return a list contains string.
