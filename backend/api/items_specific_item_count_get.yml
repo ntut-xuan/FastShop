@@ -1,0 +1,27 @@
+Get the count of item with specific ID.
+---
+tags:
+  - item
+
+description: Get the count of item with specific ID.
+
+parameters:
+  - in: path
+    name: ID
+    description: The ID of item which you want to query.
+    schema:
+      type: string
+    required: true
+
+responses:
+  200:
+    description: OK
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            count:
+              description: The count of item.
+              type: integer
+              example: 55
