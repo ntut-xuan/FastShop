@@ -16,7 +16,7 @@ responses:
           - id: 41092554
             name: "Entropy"
             count: 44
-            price: 
+            price:
               discount: 43210
               original: 48763
             avaters:
@@ -28,12 +28,12 @@ definitions:
   items:
     type: object
     properties:
-      total: 
+      total:
         description: The total of the items.
         type: integer
       items:
         type: array
-        description: The array contains all the item. 
+        description: The array contains all the item.
         items:
           $ref: '#/definitions/item'
   item:
@@ -42,27 +42,37 @@ definitions:
       id:
         type: string
         description: The ID of the item.
+        example: 41092554
       count:
         type: integer
         description: The count of the item.
+        example: 44
       name:
         type: string
         description: The name of the item.
+        example: Entropy
       price:
         type: object
         description: The price of the item.
         properties:
-          discount: 
+          discount:
             type: integer
-          original: 
+            example: 43210
+          original:
             type: integer
+            example: 48763
       avatars:
         type: array
-        items: 
+        items:
           type: string
         description: The avaters of the item, should return a list contains URL.
+        example:
+          - "http://localhost/500x500/item_41092554.png"
       tags:
-          type: array 
-          items:
-            type: string
-          description: The tags of the item, should return a list contains string.
+        type: array
+        items:
+          type: string
+        description: The tags of the item, should return a list contains string.
+        example:
+        - id: 33
+          name: dian
