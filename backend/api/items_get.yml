@@ -1,0 +1,68 @@
+Fetch all items.
+---
+tags:
+  - item
+description: Fetch all items.
+responses:
+  200:
+    description: OK
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/items'
+        example:
+          total: 35
+          items:
+          - id: 41092554
+            name: "Entropy"
+            count: 44
+            price: 
+              discount: 43210
+              original: 48763
+            avaters:
+              - "http://localhost/500x500/item_41092554.png"
+            tags:
+              - id: 33
+                name: dian
+definitions:
+  items:
+    type: object
+    properties:
+      total: 
+        description: The total of items.
+        type: integer
+      items:
+        type: array
+        description: The array contains all item. 
+        items:
+          $ref: '#/definitions/item'
+  item:
+    type: object
+    properties:
+      id:
+        type: string
+        description: The ID of item.
+      count:
+        type: integer
+        description: The count of item.
+      name:
+        type: string
+        description: The name of item.
+      price:
+        type: object
+        description: The price of item.
+        properties:
+          discount: 
+            type: integer
+          original: 
+            type: integer
+      avatars:
+        type: array
+        items: 
+          type: string
+        description: The avaters of item, should return a list contains URL.
+      tags:
+          type: array 
+          items:
+            type: string
+          description: The tags of item, should return a list contains string.
