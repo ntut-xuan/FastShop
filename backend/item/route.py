@@ -34,3 +34,9 @@ def update_specific_item(ID):
 @swag_from("../api/items_specific_item_delete.yml")
 def delete_specific_item(ID):
     pass
+
+
+@item_bp.route("/items/<string:ID>/count", methods=["GET"])
+@swag_from("../api/items_specific_item_count_get.yml")
+def fetch_count_of_specific_item(ID):
+    pass
