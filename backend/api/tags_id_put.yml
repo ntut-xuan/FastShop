@@ -1,0 +1,61 @@
+The route to update specific ID of tag.
+---
+tags:
+  - tags
+
+description: "The route to update specific ID of tag. \n\n Return `4XX` if the operation fail. (See Responses section below)"
+
+parameters:
+  - in: path
+    name: id
+    type: integer
+    example: 3325
+
+requestBody:
+  content:
+    application/json:
+      schema:
+          $ref: '#/definitions/tag_payload'
+  required: true
+
+responses:
+  200:
+    description: OK
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: "OK"
+  400:
+    description: The data has the wrong format and the server can't understand it.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: "The data has the wrong format and the server can't understand it."
+  402:
+    description: Unauthorized.
+    content:
+      application/json:
+        schema:
+          $ref: "#/definitions/message"
+        example:
+          message: Unauthorized.
+  403:
+    description: The specific ID of tag is absent.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: The specific ID of tag is absent.
+  422:
+    description: The posted data has the correct format, but the data is invalid.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: "The posted data has the correct format, but the data is invalid."

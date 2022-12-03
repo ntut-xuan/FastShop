@@ -1,0 +1,38 @@
+The route to delete specific ID of tag.
+---
+tags:
+  - tags
+
+description: "The route to delete specific ID of tag. \n\n Return `4XX` if the operation fail. (See Responses section below)"
+
+parameters:
+  - in: path
+    name: id
+    type: integer
+    example: 3325
+
+responses:
+  200:
+    description: OK
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: "OK"
+  402:
+    description: Unauthorized.
+    content:
+      application/json:
+        schema:
+          $ref: "#/definitions/message"
+        example:
+          message: Unauthorized.
+  403:
+    description: The specific ID of tag is absent.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: The specific ID of tag is absent.
