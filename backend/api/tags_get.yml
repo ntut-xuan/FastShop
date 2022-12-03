@@ -2,7 +2,7 @@ The route to get all the tags.
 ---
 tags:
   - tags
-description: "The route to get all the tags."
+description: The route to get all the tags.
 responses:
   200:
     description: OK
