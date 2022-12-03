@@ -19,7 +19,7 @@ responses:
             price:
               discount: 43210
               original: 48763
-            avaters:
+            avatars:
               - "http://localhost/500x500/item_41092554.png"
             tags:
               - id: 33
@@ -33,7 +33,7 @@ definitions:
         type: integer
       items:
         type: array
-        description: The array contains all the item.
+        description: The array contains all the items.
         items:
           $ref: '#/definitions/item'
   item:
@@ -65,14 +65,14 @@ definitions:
         type: array
         items:
           type: string
-        description: The avaters of the item, should return a list contains URL.
+        description: The avatars of the item. Is a list contains URL.
         example:
           - "http://localhost/500x500/item_41092554.png"
       tags:
         type: array
         items:
           type: string
-        description: The tags of the item, should return a list contains string.
+        description: The tags of the item, Is a list contains string.
         example:
         - id: 33
           name: dian
