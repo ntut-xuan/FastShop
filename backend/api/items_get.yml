@@ -20,7 +20,7 @@ responses:
               discount: 43210
               original: 48763
             avatars:
-              - "http://localhost/500x500/item_41092554.png"
+              - http://localhost/500x500/item_41092554.png
             tags:
               - id: 33
                 name: dian
@@ -63,7 +63,7 @@ definitions:
           type: string
         description: The avatars of the item. It's a list of URLs.
         example:
-          - "http://localhost/500x500/item_41092554.png"
+          - http://localhost/500x500/item_41092554.png
       tags: # TODO: It can be ref if tags definitions exist. (#90)
         type: array
         items:

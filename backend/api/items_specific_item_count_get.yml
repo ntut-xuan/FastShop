@@ -8,7 +8,7 @@ description: "Get the count of the item with the specific ID. \n\n `4XX` if the 
 parameters:
   - in: path
     name: id
-    description: "The ID of the item which you want to query."
+    description: The ID of the item which you want to query.
     schema:
       type: string
     required: true

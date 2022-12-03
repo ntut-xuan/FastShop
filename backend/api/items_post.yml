@@ -27,7 +27,7 @@ responses:
         schema:
           $ref: '#/definitions/message'
         example:
-          message: "The data has the wrong format and the server can't understand it."
+          message: The data has the wrong format and the server can't understand it.
   402:
     description: Unauthorized.
     content:
@@ -84,7 +84,7 @@ definitions:
           type: string
         description: The avatars of the item. It's a list of URLs.
         example:
-          - "http://localhost/500x500/item_41092554.png"
+          - http://localhost/500x500/item_41092554.png
       tags: # TODO: It can be ref if tags definitions exist. (#90)
         type: array
         items:
