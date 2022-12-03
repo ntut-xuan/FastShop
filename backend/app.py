@@ -6,8 +6,8 @@ from flasgger import Swagger
 from flask import Flask
 
 from auth.route import auth_bp
-from tag.route import tag_bp
 from database import create_db_command, db
+from tag.route import tag_bp
 from util import fetch_page
 
 
