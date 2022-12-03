@@ -3,7 +3,7 @@ Update specific field of the item with specific ID.
 tags:
   - item
 
-description: "Update the specific field of the item. \n\n The field specified in the payload will change to the value given by the body. \n\n `4XX` if operation is fail. (See Response section below)"
+description: "Update the specific field of the item. \n\n The field specified in the payload will change to the value given by the body. \n\n `4XX` if the operation fails. (See Response section below)"
 
 parameters:
   - in: path

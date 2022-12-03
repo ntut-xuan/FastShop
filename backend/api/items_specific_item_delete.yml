@@ -3,7 +3,7 @@ Delete the specific item by ID.
 tags:
   - item
 
-description: "Delete the specific item by ID. \n\n `4XX` if operation is fail. (See Response section below)"
+description: "Delete the specific item by ID. \n\n `4XX` if the operation fails. (See Response section below)"
 
 parameters:
   - in: path
