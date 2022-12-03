@@ -3,7 +3,7 @@ Fetch an item by its ID.
 tags:
   - item
 
-description: Fetch an item by its ID.
+description: Fetch an item by its ID. `403` if the item query by the ID is absent.
 
 parameters:
   - in: path

@@ -2,7 +2,7 @@ Add an item.
 ---
 tags:
   - item
-description: Add an item.
+description: "Add an item. \n\n `4XX` if operation is fail. (See Response section below)"
 
 requestBody:
   content:
