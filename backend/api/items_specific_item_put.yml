@@ -7,7 +7,7 @@ description: "Update the specific field of the item. \n\n The field specified in
 
 parameters:
   - in: path
-    name: ID
+    name: id
     description: The ID of item which you want to query.
     schema:
       type: string

@@ -7,7 +7,7 @@ description: Fetch an item by its ID. `403` if the item query by the ID is absen
 
 parameters:
   - in: path
-    name: ID
+    name: id
     description: The ID of item which you want to query.
     schema:
       type: string
