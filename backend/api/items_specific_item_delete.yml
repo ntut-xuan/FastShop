@@ -8,7 +8,7 @@ description: Delete the specific item by ID. Return 4XX if item absent.
 parameters:
   - in: path
     name: ID
-    description: The ID of item which you want to query.
+    description: The ID of the item which you want to query.
     schema:
       type: string
     required: true
