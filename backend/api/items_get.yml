@@ -64,11 +64,11 @@ definitions:
         description: The avatars of the item. Is a list contains URL.
         example:
           - "http://localhost/500x500/item_41092554.png"
-      tags:
+      tags: # It can be ref if tags definitions exist. (#90)
         type: array
         items:
           type: string
-        description: The tags of the item, Is a list contains string.
+        description: The tags of the item, Is a list contains tag object.
         example:
         - id: 33
           name: dian
