@@ -22,6 +22,5 @@ responses:
           type: object
           properties:
             count:
-              description: The count of the item.
               type: integer
               example: 55
