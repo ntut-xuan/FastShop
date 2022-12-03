@@ -20,3 +20,11 @@ responses:
       application/json:
         schema:
           $ref: '#/definitions/item'
+  403:
+    description: The item query by the ID is absent.
+    content:
+      application/json:
+        schema:
+          $ref: "#/definitions/message"
+        example:
+          message: The specific item is absent.
