@@ -24,3 +24,11 @@ responses:
             count:
               type: integer
               example: 55
+  403:
+    description: The item query by the ID is absent.
+    content:
+      application/json:
+        schema:
+          $ref: "#/definitions/message"
+        example:
+          message: The specific item is absent.
