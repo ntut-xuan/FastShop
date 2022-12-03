@@ -1,7 +1,7 @@
 The route to get specific ID of tag.
 ---
 tags:
-  - tags
+  - tag
 
 description: "The route to get specific ID of tag. \n\n Return `403` if the specific ID of tag is absent."
 

@@ -1,7 +1,7 @@
 The route to add a tag.
 ---
 tags:
-  - tags
+  - tag
 description: "The route to add a tag. \n\n Return `4XX` if data invalid, tag exist or unauthorized."
 
 requestBody:

@@ -1,7 +1,7 @@
 The route to get all the tags.
 ---
 tags:
-  - tags
+  - tag
 description: The route to get all the tags.
 responses:
   200:
