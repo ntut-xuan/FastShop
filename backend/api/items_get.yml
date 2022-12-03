@@ -35,8 +35,8 @@ definitions:
         type: array
         description: The array contains all the items.
         items:
-          $ref: '#/definitions/item'
-  item:
+          $ref: '#/definitions/item_response'
+  item_response:
     type: object
     properties:
       id:

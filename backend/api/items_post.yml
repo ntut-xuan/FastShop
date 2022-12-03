@@ -8,7 +8,7 @@ requestBody:
   content:
     application/json:
       schema:
-          $ref: '#/definitions/item'
+          $ref: '#/definitions/item_payload'
   required: true
 
 responses:
@@ -60,3 +60,36 @@ definitions:
       message:
         type: string
         description: The response message from the server.
+  item_payload:
+    type: object
+    properties:
+      count:
+        type: integer
+        example: 44
+      name:
+        type: string
+        example: Entropy
+      price:
+        type: object
+        properties:
+          discount:
+            type: integer
+            example: 43210
+          original:
+            type: integer
+            example: 48763
+      avatars:
+        type: array
+        items:
+          type: string
+        description: The avatars of the item. Is a list contains URL.
+        example:
+          - "http://localhost/500x500/item_41092554.png"
+      tags:
+        type: array
+        items:
+          type: string
+        description: The tags of the item, Is a list contains string.
+        example:
+        - id: 33
+          name: dian
