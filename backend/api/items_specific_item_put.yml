@@ -1,0 +1,63 @@
+Update specific field of the item with specific ID.
+---
+tags:
+  - item
+
+description: "Update the specific field of the item. \n\n The field specified in the payload will change to the value given by the body. \n\n `4XX` if the operation fails. (See Response section below)"
+
+parameters:
+  - in: path
+    name: id
+    description: The ID of item which you want to query.
+    schema:
+      type: string
+    required: true
+
+requestBody:
+  content:
+    application/json:
+      schema:
+          $ref: '#/definitions/item_payload'
+  required: true
+
+responses:
+  200:
+    description: OK
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: "OK"
+  400:
+    description: The data has the wrong format and the server can't understand it.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: The data has the wrong format and the server can't understand it.
+  402:
+    description: Unauthorized.
+    content:
+      application/json:
+        schema:
+          $ref: "#/definitions/message"
+        example:
+          message: Unauthorized.
+  403:
+    description: The item query by the ID is absent.
+    content:
+      application/json:
+        schema:
+          $ref: "#/definitions/message"
+        example:
+          message: The specific item is absent.
+  422:
+    description: The posted data has the correct format, but the data is invalid.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: The posted data has the correct format, but the data is invalid.
