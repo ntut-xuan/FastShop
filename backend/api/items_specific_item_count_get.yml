@@ -3,12 +3,12 @@ Get the count of the item with the specific ID.
 tags:
   - item
 
-description: Get the count of the item with the specific ID.
+description: "Get the count of the item with the specific ID. \n\n `4XX` if the operation fails. (See Response section below)"
 
 parameters:
   - in: path
     name: id
-    description: "The ID of the item which you want to query. \n\n `4XX` if the operation fails. (See Response section below)"
+    description: "The ID of the item which you want to query."
     schema:
       type: string
     required: true
