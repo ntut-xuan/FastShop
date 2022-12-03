@@ -82,14 +82,14 @@ definitions:
         type: array
         items:
           type: string
-        description: The avatars of the item. Is a list contains URL.
+        description: The avatars of the item. It's a list of URLs.
         example:
           - "http://localhost/500x500/item_41092554.png"
       tags:
         type: array
         items:
           type: string
-        description: The tags of the item, Is a list contains string.
+        description: The tags of the item. It's a list of strings.
         example:
         - id: 33
           name: dian
