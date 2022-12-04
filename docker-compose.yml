@@ -1,8 +1,9 @@
-version: '0.0.1'
+version: "3.8"
 
 services:
   mariadb:
     image: mariadb:latest
+    container_name: mariadb
     restart: always
     environment:
       MYSQL_USER: fsa
@@ -12,10 +13,23 @@ services:
       MYSQL_ROOT_PASSWORD: "#fsr2022"
     ports:
       - "3306:3306"
+  mariadb-test:
+    image: mariadb:latest
+    container_name: mariadb-test
+    restart: always
+    environment:
+      MYSQL_USER: fsta  # t refers to test
+      MYSQL_PASSWORD: "@fsta2022"
+      MYSQL_DATABASE: fastshop-test
+      MYSQL_ROOT_USER: root
+      MYSQL_ROOT_PASSWORD: "#fstr2022"
+    ports:
+      - "3307:3306"
   fastshop:
     build: .
+    container_name: fastshop
     tty: true
     depends_on:
       - "mariadb"
-    ports: 
+    ports:
       - "8080:8080"
