@@ -18,7 +18,7 @@ definitions:
       count:
         type: integer
         example: 4
-      items:
+      tags:
         type: array
         description: The array contains all the tags.
         items:
