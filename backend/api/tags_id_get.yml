@@ -1,9 +1,9 @@
-The route to get specific ID of tag.
+The route to get the tag of a specific ID.
 ---
 tags:
   - tag
 
-description: "The route to get specific ID of tag. \n\n Return `403` if the specific ID of tag is absent."
+description: "The route to get the tag of a specific ID. \n\n Return `403` if the specific ID of the tag is absent."
 
 parameters:
   - in: path

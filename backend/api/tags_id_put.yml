@@ -1,9 +1,9 @@
-The route to update specific ID of tag.
+The route to update the tag of a specific ID.
 ---
 tags:
   - tag
 
-description: "The route to update specific ID of tag. \n\n Return `4XX` if the operation fail. (See Responses section below)"
+description: "The route to update the tag of a specific ID. \n\n Return `4XX` if the operation fails. (See Responses section below)"
 
 parameters:
   - in: path
@@ -44,13 +44,13 @@ responses:
         example:
           message: Unauthorized.
   403:
-    description: The specific ID of tag is absent.
+    description: The specific ID of the tag is absent.
     content:
       application/json:
         schema:
           $ref: '#/definitions/message'
         example:
-          message: The specific ID of tag is absent.
+          message: The specific ID of the tag is absent.
   422:
     description: The posted data has the correct format, but the data is invalid.
     content:

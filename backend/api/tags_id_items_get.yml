@@ -1,9 +1,9 @@
-The route to get all the items which have specific tag.
+The route to get all the items which have a specific tag.
 ---
 tags:
   - tag
 
-description: "The route to get all the items which have specific tag. \n\n Return `403` if the specific ID of tag is absent."
+description: "The route to get all the items which have a specific tag. \n\n Return `403` if the specific ID of the tag is absent."
 
 parameters:
   - in: path
@@ -19,10 +19,10 @@ responses:
         schema:
           $ref: '#/definitions/tag_response'
   403:
-    description: The specific ID of tag is absent.
+    description: The specific ID of the tag is absent.
     content:
       application/json:
         schema:
           $ref: '#/definitions/message'
         example:
-          message: The specific ID of tag is absent.
+          message: The specific ID of the tag is absent.
