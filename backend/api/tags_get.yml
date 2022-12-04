@@ -15,10 +15,9 @@ definitions:
   tags:
     type: object
     properties:
-      total:
-        description: The total of the tags.
+      count:
         type: integer
-        example: 1
+        example: 4
       items:
         type: array
         description: The array contains all the tags.
