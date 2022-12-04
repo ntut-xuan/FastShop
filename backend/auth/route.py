@@ -4,17 +4,19 @@ from datetime import datetime, timedelta, timezone
 from http import HTTPStatus
 from typing import TYPE_CHECKING, Any, Iterable, Mapping, cast
 
+from flasgger import swag_from
 from flask import Blueprint, Response, current_app, make_response, request
 
-from auth.exception import EmailAlreadyRegisteredError, IncorrectEmailOrPasswordError
+from auth.exception import EmailAlreadyRegisteredError
 from auth.util import (
     BIRTHDAY_FORMAT,
     HS256JWTCodec,
     UserProfile,
     fetch_user_profile,
+    is_correct_password,
+    is_registered,
     is_valid_birthday,
     is_valid_email,
-    login,
     register,
 )
 from response_message import (
@@ -34,11 +36,13 @@ auth_bp = Blueprint("auth", __name__)
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
+@swag_from("../api/login_get.yml", methods=["GET"])
+@swag_from("../api/login_post.yml", methods=["POST"])
 def login_route() -> Response | str:
     if request.method == "POST":
         data = request.json
 
-        if data is None or not _has_required_login_data(data):
+        if data is None or "e-mail" not in data or "password" not in data:
             return _make_single_message_response(
                 HTTPStatus.BAD_REQUEST, message=WRONG_DATA_FORMAT
             )
@@ -47,18 +51,18 @@ def login_route() -> Response | str:
                 HTTPStatus.UNPROCESSABLE_ENTITY, message=INVALID_DATA
             )
 
-        try:
-            login(data["e-mail"], data["password"])
-        except IncorrectEmailOrPasswordError:
+        if not _is_correct_email_and_password(data["e-mail"], data["password"]):
             return _make_single_message_response(
                 HTTPStatus.FORBIDDEN, message=INCORRECT_EMAIL_OR_PASSWORD
             )
         else:
             response: Response = _make_single_message_response(HTTPStatus.OK)
 
-            del data["password"]
-            data |= fetch_user_profile(data["e-mail"])
-            _set_jwt_cookie_to_response(data, response)
+            # Not using `del data["password"] because there might be something
+            # other then e-mail and password in the posted data`.
+            payload: dict[str, Any] = {"e-mail": data["e-mail"]}
+            payload |= fetch_user_profile(data["e-mail"])
+            _set_jwt_cookie_to_response(payload, response)
 
             return response
 
@@ -66,11 +70,13 @@ def login_route() -> Response | str:
 
 
 @auth_bp.route("/register", methods=["GET", "POST"])
+@swag_from("../api/register_get.yml", methods=["GET"])
+@swag_from("../api/register_post.yml", methods=["POST"])
 def register_route() -> Response | str:
     if request.method == "POST":
         # 400 Bad Request error will automatically be raised
         # if the content-type is not "application/json", so
-        # it's safe to cast it manually for type warning supression.
+        # it's safe to cast it manually for type warning suppression.
         data = cast(dict, request.json)
 
         required_columns: list[str] = [
@@ -111,6 +117,7 @@ def register_route() -> Response | str:
 
 
 @auth_bp.route("/verify_jwt", methods=["POST"])
+@swag_from("../api/verify_jwt_post.yml", methods=["POST"])
 def verify_jwt_route() -> Response:
     if "jwt" not in request.cookies:
         return _make_single_message_response(HTTPStatus.UNAUTHORIZED, ABSENT_COOKIE)
@@ -127,8 +134,16 @@ def verify_jwt_route() -> Response:
     return make_response(jwt_payload)
 
 
-def _has_required_login_data(data: Mapping[str, Any]) -> bool:
-    return "e-mail" in data and "password" in data
+@auth_bp.route("/logout", methods=["POST"])
+@swag_from("../api/logout_post.yml", methods=["POST"])
+def logout_route() -> Response:
+    response: Response = _make_single_message_response(HTTPStatus.OK)
+    response.delete_cookie("jwt")
+    return response
+
+
+def _is_correct_email_and_password(email: str, password: str) -> bool:
+    return is_registered(email) and is_correct_password(email, password)
 
 
 def _has_required_columns(data: Mapping, required_columns: Iterable) -> bool:
