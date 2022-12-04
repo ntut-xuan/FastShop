@@ -1,0 +1,34 @@
+Get the count of the item with the specific ID.
+---
+tags:
+  - item
+
+description: "Get the count of the item with the specific ID. \n\n `4XX` if the operation fails. (See Response section below)"
+
+parameters:
+  - in: path
+    name: id
+    description: The ID of the item which you want to query.
+    schema:
+      type: string
+    required: true
+
+responses:
+  200:
+    description: OK
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            count:
+              type: integer
+              example: 55
+  403:
+    description: The item query by the ID is absent.
+    content:
+      application/json:
+        schema:
+          $ref: "#/definitions/message"
+        example:
+          message: The specific item is absent.
