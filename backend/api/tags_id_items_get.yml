@@ -1,0 +1,78 @@
+The route to get all the items which have a specific tag.
+---
+tags:
+  - tag
+
+description: "The route to get all the items which have a specific tag. \n\n Return `403` if the specific ID of the tag is absent."
+
+parameters:
+  - in: path
+    name: id
+    type: integer
+    example: 3325
+
+responses:
+  200:
+    description: OK
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/items'
+  403:
+    description: The specific ID of the tag is absent.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: The specific ID of the tag is absent.
+
+definitions:
+  items:
+    type: object
+    properties:
+      count:
+        description: The count of the items.
+        type: integer
+        example: 1
+      items:
+        type: array
+        description: The array contains all the items.
+        items:
+          $ref: '#/definitions/item_response'
+  item_response:
+    type: object
+    properties:
+      id:
+        type: string
+        example: 41092554
+      count:
+        type: integer
+        example: 44
+      name:
+        type: string
+        example: Entropy
+      price:
+        type: object
+        properties:
+          discount:
+            type: integer
+            example: 43210
+          original:
+            type: integer
+            example: 48763
+      avatars:
+        type: array
+        items:
+          type: string
+        description: The avatars of the item. It's a list of URLs.
+        example:
+          - http://localhost/500x500/item_41092554.png
+      tags: # TODO: It can be ref if tags definitions exist. (#90)
+        type: array
+        items:
+          type: string
+        description: The tags of the item. It's a list of tag objects.
+        example:
+        - id: 33
+          name: dian
