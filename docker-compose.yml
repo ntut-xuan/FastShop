@@ -25,6 +25,13 @@ services:
       MYSQL_ROOT_PASSWORD: "#fstr2022"
     ports:
       - "3307:3306"
+  thumbor:
+    build: ./thumbor/
+    container_name: thumbor
+    restart: always
+    tty: true
+    ports:
+      - "8081:8888"
   fastshop:
     build: .
     container_name: fastshop
