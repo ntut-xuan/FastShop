@@ -24,7 +24,7 @@ responses:
           id:
             type: string
         example:
-          id: 22045569
+          id: 59cb70a7-51e0-4e33-b942-e6ea1bba20fa
   400:
     description: The data has the wrong format and the server can't understand it.
     content:
