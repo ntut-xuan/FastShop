@@ -1,0 +1,95 @@
+Add an item.
+---
+tags:
+  - item
+description: "Add an item. \n\n `4XX` if the operation fails. (See Response section below)"
+
+requestBody:
+  content:
+    application/json:
+      schema:
+          $ref: '#/definitions/item_payload'
+  required: true
+
+responses:
+  200:
+    description: "OK"
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: OK
+  400:
+    description: The data has the wrong format and the server can't understand it.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: The data has the wrong format and the server can't understand it.
+  402:
+    description: Unauthorized.
+    content:
+      application/json:
+        schema:
+          $ref: "#/definitions/message"
+        example:
+          message: Unauthorized.
+  403:
+    description: The item already exists in the database.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: The item already exists in the database.
+  422:
+    description: The posted data has the correct format, but the data is invalid.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: The posted data has the correct format, but the data is invalid.
+
+definitions:
+  message:
+    type: object
+    properties:
+      message:
+        type: string
+        description: The response message from the server.
+  item_payload:
+    type: object
+    properties:
+      count:
+        type: integer
+        example: 44
+      name:
+        type: string
+        example: Entropy
+      price:
+        type: object
+        properties:
+          discount:
+            type: integer
+            example: 43210
+          original:
+            type: integer
+            example: 48763
+      avatars:
+        type: array
+        items:
+          type: string
+        description: The avatars of the item. It's a list of URLs.
+        example:
+          - http://localhost/500x500/item_41092554.png
+      tags: # TODO: It can be ref if tags definitions exist. (#90)
+        type: array
+        items:
+          type: string
+        description: The tags of the item. It's a list of strings.
+        example:
+        - id: 33
+          name: dian
