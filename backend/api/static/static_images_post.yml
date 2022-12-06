@@ -19,9 +19,12 @@ responses:
     content:
       application/json:
         schema:
-          $ref: '#/definitions/message'
+          message:
+            type: string
+          id:
+            type: string
         example:
-          message: "OK"
+          id: 22045569
   400:
     description: The data has the wrong format and the server can't understand it.
     content:
