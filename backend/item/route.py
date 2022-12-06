@@ -19,24 +19,24 @@ def add_item():
 
 
 @item_bp.route("/items/<string:id>", methods=["GET"])
-@swag_from("../api/item/items_specific_item_get.yml")
+@swag_from("../api/item/items_id_get.yml")
 def fetch_specific_item(id):
     pass  # pragma: no cover
 
 
 @item_bp.route("/items/<string:id>", methods=["PUT"])
-@swag_from("../api/item/items_specific_item_put.yml")
+@swag_from("../api/item/items_id_put.yml")
 def update_specific_item(id):
     pass  # pragma: no cover
 
 
 @item_bp.route("/items/<string:id>", methods=["DELETE"])
-@swag_from("../api/item/items_specific_item_delete.yml")
+@swag_from("../api/item/items_id_delete.yml")
 def delete_specific_item(id):
     pass  # pragma: no cover
 
 
 @item_bp.route("/items/<string:id>/count", methods=["GET"])
-@swag_from("../api/item/items_specific_item_count_get.yml")
+@swag_from("../api/item/items_id_count_get.yml")
 def fetch_count_of_specific_item(id):
     pass  # pragma: no cover
