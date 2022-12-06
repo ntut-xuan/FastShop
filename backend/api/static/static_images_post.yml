@@ -1,0 +1,40 @@
+Update image with specific ID.
+---
+tags:
+  - static
+
+description: "Update base64 of image with specific ID. \n\n `4XX` if the operation fails. (See Response section below)"
+
+requestBody:
+  content:
+    text/plain:
+      schema:
+          type: string
+          example: data:image/png;base64,...
+  required: true
+
+responses:
+  200:
+    description: OK
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: "OK"
+  400:
+    description: The data has the wrong format and the server can't understand it.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: The data has the wrong format and the server can't understand it.
+  402:
+    description: Unauthorized.
+    content:
+      application/json:
+        schema:
+          $ref: "#/definitions/message"
+        example:
+          message: Unauthorized.

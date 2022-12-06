@@ -1,0 +1,29 @@
+Fetch image with specific ID.
+---
+tags:
+  - static
+description: Fetch image with specific ID.
+
+parameters:
+  - in: path
+    name: id
+    description: The ID of image which you want to query.
+    schema:
+      type: string
+    required: true
+
+responses:
+  200:
+    description: OK
+    content:
+      image/png:
+        schema: 
+          type: string
+          format: binary
+  403:
+    description: The image with specific ID is absent.
+    content:
+      plain/text:
+        schema:
+          type: string
+          example: The image with specific ID is absent.

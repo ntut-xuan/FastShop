@@ -1,0 +1,56 @@
+Update image with specific ID.
+---
+tags:
+  - static
+
+description: "Update image with specific ID. \n\n `4XX` if the operation fails. (See Response section below)"
+
+parameters:
+  - in: path
+    name: id
+    description: The ID of item which you want to query.
+    schema:
+      type: string
+    required: true
+
+requestBody:
+  content:
+    text/plain:
+      schema:
+          type: string
+          format: binary
+  required: true
+
+responses:
+  200:
+    description: OK
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: "OK"
+  400:
+    description: The data has the wrong format and the server can't understand it.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: The data has the wrong format and the server can't understand it.
+  402:
+    description: Unauthorized.
+    content:
+      application/json:
+        schema:
+          $ref: "#/definitions/message"
+        example:
+          message: Unauthorized.
+  403:
+    description: The image query by the ID is absent.
+    content:
+      application/json:
+        schema:
+          $ref: "#/definitions/message"
+        example:
+          message: The specific image is absent.
