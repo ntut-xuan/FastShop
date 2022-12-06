@@ -21,7 +21,7 @@ responses:
         schema:
           $ref: '#/definitions/message'
         example:
-          message: "OK"
+          message: OK
   402:
     description: Unauthorized.
     content:

@@ -29,7 +29,7 @@ responses:
         schema:
           $ref: '#/definitions/message'
         example:
-          message: "OK"
+          message: OK
   400:
     description: The data has the wrong format and the server can't understand it.
     content:
