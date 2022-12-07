@@ -13,6 +13,9 @@ RUN npm -v
 # setup repository file to /etc/fastshop
 RUN mkdir /etc/fastshop
 COPY . /etc/fastshop
+# make var-path directory to store static file.
+RUN mkdir /var/fastshop
+RUN mkdir /var/fastshop/image
 # install tailwindcss and react.js from npm
 WORKDIR /etc/fastshop
 RUN npm install -D tailwindcss
