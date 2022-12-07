@@ -13,13 +13,14 @@ def fetch_page(page_name: str) -> str:
 def register_swagger_file(type: str, filename: str, methods: list[str] = None):
     """The decorator to warp `swag_from` function from flasgger.
 
-    It can format the filepath by type and filename to the URI format below:
+    It can format the file path by type and filename to the URI format below:
 
     `../api/{type}/{filename}.yml`
 
-    When the file placed consentingly, it can help you to format the URI, without input URI by yourself to cause redundancy.
+    So as long as the location and name of the files follow the convention,
+    it can help you format the URI without passing it by yourself and causing redundancy.
 
-    Attributes:
+    Arguments:
         type: The API type.
         filename: The filename of API documentation.
     """
