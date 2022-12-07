@@ -5,7 +5,6 @@ from functools import wraps
 from http import HTTPStatus
 from typing import TYPE_CHECKING, Any, Iterable, Mapping, cast
 
-from flasgger import swag_from
 from flask import Blueprint, Response, current_app, make_response, request
 
 from auth.exception import EmailAlreadyRegisteredError
@@ -28,7 +27,7 @@ from response_message import (
     INVALID_DATA,
     WRONG_DATA_FORMAT,
 )
-from util import SingleMessageStatus, fetch_page
+from util import SingleMessageStatus, fetch_page, register_swagger_file
 
 if TYPE_CHECKING:
     from flask.wrappers import Response
@@ -37,8 +36,8 @@ auth_bp = Blueprint("auth", __name__)
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
-@swag_from("../api/auth/login_get.yml", methods=["GET"])
-@swag_from("../api/auth/login_post.yml", methods=["POST"])
+@register_swagger_file("auth", "login_get", methods=["GET"])
+@register_swagger_file("auth", "login_post", methods=["POST"])
 def login_route() -> Response | str:
     if request.method == "POST":
         data = request.json
@@ -71,8 +70,8 @@ def login_route() -> Response | str:
 
 
 @auth_bp.route("/register", methods=["GET", "POST"])
-@swag_from("../api/auth/register_get.yml", methods=["GET"])
-@swag_from("../api/auth/register_post.yml", methods=["POST"])
+@register_swagger_file("auth", "register_get", methods=["GET"])
+@register_swagger_file("auth", "register_post", methods=["POST"])
 def register_route() -> Response | str:
     if request.method == "POST":
         # 400 Bad Request error will automatically be raised
@@ -118,7 +117,7 @@ def register_route() -> Response | str:
 
 
 @auth_bp.route("/verify_jwt", methods=["POST"])
-@swag_from("../api/auth/verify_jwt_post.yml", methods=["POST"])
+@register_swagger_file("auth", "verify_jwt_post", methods=["POST"])
 def verify_jwt_route() -> Response:
     if "jwt" not in request.cookies:
         return _make_single_message_response(HTTPStatus.UNAUTHORIZED, ABSENT_COOKIE)
@@ -136,7 +135,7 @@ def verify_jwt_route() -> Response:
 
 
 @auth_bp.route("/logout", methods=["POST"])
-@swag_from("../api/auth/logout_post.yml", methods=["POST"])
+@register_swagger_file("auth", "logout_post", methods=["POST"])
 def logout_route() -> Response:
     response: Response = _make_single_message_response(HTTPStatus.OK)
     response.delete_cookie("jwt")
