@@ -8,7 +8,7 @@ description: "Delete the image with a specific ID. \n\n `4XX` if the operation f
 parameters:
   - in: path
     name: id
-    description: The ID of the item which you want to delete.
+    description: The ID of the image which you want to delete.
     schema:
       type: string
     required: true
