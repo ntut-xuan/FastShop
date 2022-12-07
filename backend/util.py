@@ -2,11 +2,35 @@ from dataclasses import dataclass
 from http import HTTPStatus
 
 from flask import current_app
+from flasgger import swag_from
 
 
 def fetch_page(page_name: str) -> str:
     with current_app.open_resource(f"../html/{page_name}.html", mode="r") as page:
         return page.read()
+
+
+def register_swagger_file(type: str, filename: str, methods: list[str] = None):
+    """The decorator to warp `swag_from` function from flasgger.
+
+    It can format the filepath by type and filename to the URI format below:
+
+    `../api/{type}/{filename}.yml`
+
+    When the file placed consentingly, it can help you to format the URI, without input URI by yourself to cause redundancy.
+
+    Attributes:
+        type: The API type.
+        filename: The filename of API documentation.
+    """
+
+    def warpper(func):
+        swag_from_function = swag_from(
+            f"../api/{type}/{filename}.yml", methods=methods
+        )(func)
+        return swag_from_function
+
+    return warpper
 
 
 @dataclass
