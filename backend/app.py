@@ -8,6 +8,7 @@ from flask import Flask
 from auth.route import auth_bp
 from database import create_db_command, db
 from item.route import item_bp
+from static.route import static_bp
 from tag.route import tag_bp
 from util import fetch_page
 
@@ -29,6 +30,7 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     app.cli.add_command(create_db_command)
     app.register_blueprint(auth_bp)
     app.register_blueprint(item_bp)
+    app.register_blueprint(static_bp)
     app.register_blueprint(tag_bp)
 
     @app.route("/", methods=["GET"])
