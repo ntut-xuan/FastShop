@@ -1,0 +1,2 @@
+class FileNotExistError(RuntimeError):
+    pass
