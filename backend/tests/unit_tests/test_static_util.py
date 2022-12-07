@@ -3,9 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
-from app import create_app
 
-from tests.unit_tests.conftest import app
 from static.exception import FileNotExistError
 from static.util import (
     is_image_with_specific_id_exist,
