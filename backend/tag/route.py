@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from flasgger import swag_from
 from flask import Blueprint
 
 from util import register_swagger_file

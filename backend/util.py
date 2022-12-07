@@ -1,8 +1,7 @@
 from dataclasses import dataclass
-from http import HTTPStatus
 
-from flask import current_app
 from flasgger import swag_from
+from flask import current_app
 
 
 def fetch_page(page_name: str) -> str:
@@ -25,13 +24,13 @@ def register_swagger_file(type: str, filename: str, methods: list[str] = None):
         filename: The filename of API documentation.
     """
 
-    def warpper(func):
+    def wrapper(func):
         swag_from_function = swag_from(
             f"../api/{type}/{filename}.yml", methods=methods
         )(func)
         return swag_from_function
 
-    return warpper
+    return wrapper
 
 
 @dataclass

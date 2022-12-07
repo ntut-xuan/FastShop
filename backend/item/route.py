@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from flasgger import swag_from
 from flask import Blueprint
 
 from util import register_swagger_file
@@ -22,7 +21,6 @@ def add_item():
 
 @item_bp.route("/items/<string:id>", methods=["GET"])
 @register_swagger_file("item", "id_get", methods=["GET"])
-@swag_from("../api/item/id_get.yml")
 def fetch_specific_item(id):
     pass  # pragma: no cover
 
