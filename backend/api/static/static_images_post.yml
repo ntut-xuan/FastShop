@@ -1,9 +1,9 @@
-Update image with specific ID.
+Update the image with a specific ID.
 ---
 tags:
   - static
 
-description: "Update base64 of image with specific ID. \n\n `4XX` if the operation fails. (See Response section below)"
+description: "Update base64 of the image with a specific ID. \n\n `4XX` if the operation fails. (See Response section below)"
 
 requestBody:
   content:

@@ -1,14 +1,14 @@
-Delete image with specific ID.
+Delete the image with a specific ID.
 ---
 tags:
   - static
 
-description: "Delete image with specific ID. \n\n `4XX` if the operation fails. (See Response section below)"
+description: "Delete the image with a specific ID. \n\n `4XX` if the operation fails. (See Response section below)"
 
 parameters:
   - in: path
     name: id
-    description: The ID of item which you want to query.
+    description: The ID of the item which you want to delete.
     schema:
       type: string
     required: true
@@ -31,10 +31,10 @@ responses:
         example:
           message: Unauthorized.
   403:
-    description: The image query by the ID is absent.
+    description: The image with a specific ID is absent.
     content:
       application/json:
         schema:
           $ref: "#/definitions/message"
         example:
-          message: The specific image is absent.
+          message: The image with a specific ID is absent.
