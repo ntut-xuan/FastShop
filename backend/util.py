@@ -33,6 +33,15 @@ def register_swagger_file(type: str, filename: str, methods: list[str] = None):
     return wrapper
 
 
+def register_swagger(specs, methods):
+    # TODO: have this decorator map the route to the directory structure
+    def wrapper(func):
+        print(func.__dict__)
+        return swag_from(specs, methods=methods)(func)
+
+    return wrapper
+
+
 @dataclass
 class SingleMessageStatus:
     """A convenient response status dataclass.

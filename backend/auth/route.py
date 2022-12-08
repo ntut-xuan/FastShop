@@ -26,7 +26,7 @@ from response_message import (
     INVALID_DATA,
     WRONG_DATA_FORMAT,
 )
-from util import SingleMessageStatus, fetch_page, register_swagger_file
+from util import SingleMessageStatus, fetch_page, register_swagger
 
 if TYPE_CHECKING:
     from flask.wrappers import Response
@@ -35,8 +35,8 @@ auth_bp = Blueprint("auth", __name__)
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
-@register_swagger_file("auth", "login_get", methods=["GET"])
-@register_swagger_file("auth", "login_post", methods=["POST"])
+@register_swagger("../api/auth/login/get.yml", methods=["GET"])
+@register_swagger("../api/auth/login/post.yml", methods=["POST"])
 def login_route() -> Response | str:
     if request.method == "POST":
         data = request.json
@@ -69,8 +69,8 @@ def login_route() -> Response | str:
 
 
 @auth_bp.route("/register", methods=["GET", "POST"])
-@register_swagger_file("auth", "register_get", methods=["GET"])
-@register_swagger_file("auth", "register_post", methods=["POST"])
+@register_swagger("../api/auth/register/get.yml", methods=["GET"])
+@register_swagger("../api/auth/register/post.yml", methods=["POST"])
 def register_route() -> Response | str:
     if request.method == "POST":
         # 400 Bad Request error will automatically be raised
@@ -116,7 +116,7 @@ def register_route() -> Response | str:
 
 
 @auth_bp.route("/verify_jwt", methods=["POST"])
-@register_swagger_file("auth", "verify_jwt_post", methods=["POST"])
+@register_swagger("../api/auth/verify_jwt/post.yml", methods=["POST"])
 def verify_jwt_route() -> Response:
     if "jwt" not in request.cookies:
         return _make_single_message_response(HTTPStatus.UNAUTHORIZED, ABSENT_COOKIE)
@@ -134,7 +134,7 @@ def verify_jwt_route() -> Response:
 
 
 @auth_bp.route("/logout", methods=["POST"])
-@register_swagger_file("auth", "logout_post", methods=["POST"])
+@register_swagger("../api/auth/logout/post.yml", methods=["POST"])
 def logout_route() -> Response:
     response: Response = _make_single_message_response(HTTPStatus.OK)
     response.delete_cookie("jwt")
