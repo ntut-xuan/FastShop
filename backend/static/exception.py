@@ -1,2 +1,2 @@
-class FileNotExistError(RuntimeError):
+class ImageNotExistError(FileNotFoundError):
     pass

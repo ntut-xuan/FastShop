@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Generator
 
 import pytest
 
-from static.exception import FileNotExistError
+from static.exception import ImageNotExistError
 from static.util import (
     delete_image,
     has_image_with_specific_id,
@@ -62,7 +62,7 @@ class TestImageManipulation:
     def test_delete_image_by_absent_uuid_should_throw_exception(
         self, app: Flask
     ) -> None:
-        with app.app_context(), pytest.raises(FileNotExistError):
+        with app.app_context(), pytest.raises(ImageNotExistError):
             delete_image("an-absent-uuid")
 
     def test_delete_image_by_exist_uuid_should_delete_image(

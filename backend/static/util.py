@@ -2,7 +2,7 @@ import os
 
 from flask import current_app
 
-from static.exception import FileNotExistError
+from static.exception import ImageNotExistError
 
 
 def has_image_with_specific_id(image_id: str) -> bool:
@@ -12,10 +12,10 @@ def has_image_with_specific_id(image_id: str) -> bool:
 
 def delete_image(image_id: str) -> None:
     image_path: str = _get_file_path_by_image_id(image_id)
-    if not has_image_with_specific_id(image_id):
-        raise FileNotExistError(image_path)
-    else:
+    try:
         os.remove(image_path)
+    except FileNotFoundError:
+        raise ImageNotExistError(image_path)
 
 
 def write_static_image(image_data: str, image_id: str) -> None:
