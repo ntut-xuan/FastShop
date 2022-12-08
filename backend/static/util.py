@@ -19,8 +19,10 @@ def delete_image(image_id: str) -> None:
         remove(image_path)
 
 
-def put_image(image_data: str, image_id: str):
-    _write_file(image_data, image_id)
+def write_static_image(image_data: str, image_id: str) -> None:
+    image_path: str = _get_file_path_by_image_id(image_id)
+    with open(image_path, "w") as f:
+        f.write(image_data)
 
 
 def _get_file_path_by_image_id(image_id: str) -> str:
@@ -31,9 +33,3 @@ def _get_file_path_by_image_id(image_id: str) -> str:
 def _get_image_storage_path() -> str:
     testing: str = current_app.config.get("TESTING")  # type: ignore
     return "/tmp" if testing else "/var/fastshop/image"
-
-
-def _write_file(image_data: str, image_id: str) -> None:
-    image_path: str = _get_file_path_by_image_id(image_id)
-    with open(image_path, "w") as f:
-        f.write(image_data)

@@ -6,9 +6,9 @@ import pytest
 
 from static.exception import FileNotExistError
 from static.util import (
-    has_image_with_specific_id ,
     delete_image,
-    put_image,
+    has_image_with_specific_id ,
+    write_static_image,
 )
 
 if TYPE_CHECKING:
@@ -34,7 +34,7 @@ class TestStorageImage:
         uuid = image_object_fixture[1]
 
         with app.app_context():
-            put_image(content, uuid)  # Create image
+            write_static_image(content, uuid)  # Create image
 
             assert has_image_with_specific_id (uuid)
 
@@ -52,7 +52,7 @@ class TestStorageImage:
         uuid = image_object_fixture[1]
 
         with app.app_context():
-            put_image(content, uuid)  # Create image
+            write_static_image(content, uuid)  # Create image
             delete_image(uuid)  # Delete image
 
             assert not has_image_with_specific_id (uuid)
