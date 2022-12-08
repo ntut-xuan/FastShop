@@ -6,7 +6,7 @@ import pytest
 
 from static.exception import FileNotExistError
 from static.util import (
-    is_image_with_specific_id_exist,
+    has_image_with_specific_id ,
     delete_image,
     put_image,
 )
@@ -23,7 +23,7 @@ def image_object_fixture(app: Flask) -> tuple:
     yield (some_image_base64_content, some_image_uuid)
 
     with app.app_context():
-        if is_image_with_specific_id_exist(some_image_uuid):
+        if has_image_with_specific_id (some_image_uuid):
             delete_image(some_image_uuid)
 
 class TestStorageImage:
@@ -36,7 +36,7 @@ class TestStorageImage:
         with app.app_context():
             put_image(content, uuid)  # Create image
 
-            assert is_image_with_specific_id_exist(uuid)
+            assert has_image_with_specific_id (uuid)
 
     def test_delete_image_by_absent_uuid_should_throw_exceptions(
         self, app: Flask
@@ -55,4 +55,4 @@ class TestStorageImage:
             put_image(content, uuid)  # Create image
             delete_image(uuid)  # Delete image
 
-            assert not is_image_with_specific_id_exist(uuid)
+            assert not has_image_with_specific_id (uuid)

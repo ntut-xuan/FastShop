@@ -6,14 +6,14 @@ from flask import current_app
 from static.exception import FileNotExistError
 
 
-def is_image_with_specific_id_exist(image_id: str) -> bool:
+def has_image_with_specific_id (image_id: str) -> bool:
     image_path: str = _get_file_path_by_image_id(image_id)
     return exists(image_path)
 
 
 def delete_image(image_id: str) -> None:
     image_path: str = _get_file_path_by_image_id(image_id)
-    if not is_image_with_specific_id_exist(image_id):
+    if not has_image_with_specific_id (image_id):
         raise FileNotExistError(image_path)
     else:
         remove(image_path)
