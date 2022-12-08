@@ -3,6 +3,7 @@ from __future__ import annotations
 import shutil
 import tempfile
 from dataclasses import dataclass
+from pathlib import Path
 from typing import TYPE_CHECKING, Generator
 
 import pytest
@@ -10,6 +11,7 @@ import pytest
 from static.exception import ImageNotExistError
 from static.util import (
     delete_image,
+    get_file_path_by_image_id,
     has_image_with_specific_id,
     write_image,
 )
@@ -52,13 +54,27 @@ class TestImageManipulation:
 
             assert has_image_with_specific_id(new_image.uuid)
 
-    def test_delete_image_by_absent_uuid_should_throw_exception(
+    def test_write_static_image_with_existing_uuid_should_update_image(
+        self, app: Flask, some_image: SomeImage
+    ) -> None:
+        with app.app_context():
+            write_image(some_image.base64_content, some_image.uuid)
+            new_content: str = "data:image/png;base64,newcontent"
+
+            write_image(new_content, some_image.uuid)
+
+            assert (
+                Path(get_file_path_by_image_id(some_image.uuid)).read_text()
+                == new_content
+            )
+
+    def test_delete_image_with_absent_uuid_should_throw_exception(
         self, app: Flask
     ) -> None:
         with app.app_context(), pytest.raises(ImageNotExistError):
             delete_image("an-absent-uuid")
 
-    def test_delete_image_by_exist_uuid_should_delete_image(
+    def test_delete_image_with_existing_uuid_should_delete_image(
         self, app: Flask, some_image: SomeImage
     ) -> None:
         with app.app_context():
