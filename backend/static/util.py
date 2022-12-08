@@ -18,7 +18,7 @@ def delete_image(image_id: str) -> None:
         raise ImageNotExistError(image_path)
 
 
-def write_static_image(image_data: str, image_id: str) -> None:
+def write_image(image_data: str, image_id: str) -> None:
     image_path: str = _get_file_path_by_image_id(image_id)
     with open(image_path, "w") as f:
         f.write(image_data)
