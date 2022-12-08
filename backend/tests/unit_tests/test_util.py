@@ -71,3 +71,33 @@ class TestRouteWithDocDecorator:
         route_with_doc(Blueprint("test", __name__), "/some/rule", methods=["GET"])(
             self.dummy_func
         )
+
+    def test_should_map_rule_with_params_to_doc_path(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        expect_path = self.ExpectedDocPathFunctor(
+            "../api/test/some/param1/rule/param2/get.yml"
+        )
+
+        monkeypatch.setattr("util.swag_from", expect_path)
+
+        route_with_doc(
+            Blueprint("test", __name__), "/some/<param1>/rule/<param2>", methods=["GET"]
+        )(self.dummy_func)
+
+    def test_should_map_rule_with_typed_params_to_doc_path(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        expect_path = self.ExpectedDocPathFunctor(
+            "../api/test/some/param1/rule/param2/get.yml"
+        )
+
+        monkeypatch.setattr("util.swag_from", expect_path)
+
+        route_with_doc(
+            Blueprint("test", __name__),
+            "/some/<int:param1>/rule/<string:param2>",
+            methods=["GET"],
+        )(self.dummy_func)
