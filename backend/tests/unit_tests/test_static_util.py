@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import shutil
+import tempfile
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Generator
 
@@ -23,6 +25,16 @@ class SomeImage:
 
 
 class TestImageManipulation:
+    @pytest.fixture
+    def app(self, app: Flask) -> Generator[Flask, None, None]:
+        """Shadows the one in conftest.py."""
+        static_path: str = tempfile.mkdtemp()
+        app.config["STATIC_RESOURCE_PATH"] = static_path
+
+        yield app
+
+        shutil.rmtree(static_path)
+
     @pytest.fixture
     def some_image(self, app: Flask) -> Generator[SomeImage, None, None]:
         image = SomeImage(
