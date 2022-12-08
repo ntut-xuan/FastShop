@@ -49,14 +49,15 @@ class TestImageManipulation:
             if has_image_with_specific_id(image.uuid):
                 delete_image(image.uuid)
 
-    def test_put_image_by_absent_uuid_should_create_image(
+    def test_write_static_image_with_absent_uuid_should_create_image(
         self, app: Flask, some_image: SomeImage
     ) -> None:
         with app.app_context():
+            new_image: SomeImage = some_image
 
-            write_static_image(some_image.base64_content, some_image.uuid)
+            write_static_image(new_image.base64_content, new_image.uuid)
 
-            assert has_image_with_specific_id(some_image.uuid)
+            assert has_image_with_specific_id(new_image.uuid)
 
     def test_delete_image_by_absent_uuid_should_throw_exception(
         self, app: Flask
@@ -68,8 +69,8 @@ class TestImageManipulation:
         self, app: Flask, some_image: SomeImage
     ) -> None:
         with app.app_context():
-
             write_static_image(some_image.base64_content, some_image.uuid)
+
             delete_image(some_image.uuid)
 
             assert not has_image_with_specific_id(some_image.uuid)
