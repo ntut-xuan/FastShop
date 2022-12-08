@@ -31,5 +31,5 @@ def _get_file_path_by_image_id(image_id: str) -> str:
 
 
 def _get_image_storage_path() -> str:
-    path: str = current_app.config.get("STATIC_RESOURCE_PATH")
+    path: str = current_app.config.get("STATIC_RESOURCE_PATH") # type: ignore
     return path
