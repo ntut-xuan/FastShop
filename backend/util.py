@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from flasgger import swag_from
-from flask import current_app
+from flask import Blueprint, current_app
 
 
 def fetch_page(page_name: str) -> str:
@@ -33,11 +33,13 @@ def register_swagger_file(type: str, filename: str, methods: list[str] = None):
     return wrapper
 
 
-def register_swagger(specs, methods):
-    # TODO: have this decorator map the route to the directory structure
+def route_with_doc(bp: Blueprint, rule: str, methods: list[str]):
     def wrapper(func):
-        print(func.__dict__)
-        return swag_from(specs, methods=methods)(func)
+        for method in methods:
+            swag_from(f"../api/{bp.name}{rule}/{method.lower()}.yml", methods=[method])(
+                func
+            )
+        return bp.route(rule, methods=methods)(func)
 
     return wrapper
 
