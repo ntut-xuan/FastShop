@@ -1,10 +1,12 @@
 from __future__ import annotations
 
-import pytest
 from http import HTTPStatus
 from typing import TYPE_CHECKING
 
-from util import SingleMessageStatus, fetch_page
+import pytest
+from flask import Blueprint
+
+from util import SingleMessageStatus, fetch_page, route_with_doc
 
 if TYPE_CHECKING:
     from flask.testing import FlaskClient
@@ -40,3 +42,32 @@ class TestSingleMessageStatus:
         status = SingleMessageStatus(status_code)
 
         assert status.message["message"] == "OK"
+
+
+class TestRouteWithDocDecorator:
+    def dummy_func(self, *args, **kwargs) -> None:
+        """Dummy function as a wrappee. Left empty"""
+
+    class ExpectedDocPathFunctor:
+        def __init__(self, expected_path: str) -> None:
+            self._expected_path = expected_path
+
+        def __call__(self, doc_path: str, *args, **kwargs):
+            assert doc_path == self._expected_path
+
+            def wrapper(func):
+                return func
+
+            return wrapper
+
+    def test_should_map_rule_to_doc_path(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        expect_path = self.ExpectedDocPathFunctor("../api/test/some/rule/get.yml")
+
+        monkeypatch.setattr("util.swag_from", expect_path)
+
+        route_with_doc(Blueprint("test", __name__), "/some/rule", methods=["GET"])(
+            self.dummy_func
+        )
