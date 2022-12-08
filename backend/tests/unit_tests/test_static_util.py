@@ -16,11 +16,15 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture
-def image_object_fixture() -> tuple:
+def image_object_fixture(app: Flask) -> tuple:
     some_image_base64_content = "data:image/png;base64,somecontent"
     some_image_uuid = "c11d5bcf-f529-4318-904d-4bc8b8d7f68a"
+    
     yield (some_image_base64_content, some_image_uuid)
 
+    with app.app_context():
+        if is_image_with_specific_id_exist(some_image_uuid):
+            delete_image(some_image_uuid)
 
 class TestStorageImage:
     def test_put_image_by_absent_uuid_should_create_image(
@@ -33,8 +37,6 @@ class TestStorageImage:
             put_image(content, uuid)  # Create image
 
             assert is_image_with_specific_id_exist(uuid)
-
-            delete_image(uuid)  # Teardown
 
     def test_delete_image_by_absent_uuid_should_throw_exceptions(
         self, app: Flask
