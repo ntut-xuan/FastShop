@@ -31,5 +31,5 @@ def _get_file_path_by_image_id(image_id: str) -> str:
 
 
 def _get_image_storage_path() -> str:
-    testing: str = current_app.config.get("TESTING")  # type: ignore
-    return "/tmp" if testing else "/var/fastshop/image"
+    path: str = current_app.config.get("STATIC_RESOURCE_PATH")
+    return path
