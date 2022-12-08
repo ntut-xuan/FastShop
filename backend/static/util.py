@@ -25,10 +25,9 @@ def write_static_image(image_data: str, image_id: str) -> None:
 
 
 def _get_file_path_by_image_id(image_id: str) -> str:
-    path: str = _get_image_storage_path()
-    return path + f"/{image_id}.png"
-
-
-def _get_image_storage_path() -> str:
-    path: str = current_app.config.get("STATIC_RESOURCE_PATH")  # type: ignore
-    return path
+    """
+    Image with its id as `image_id` has path `STATIC_RESOURCE_PATH`/`image_id`.png,
+    where `STATIC_RESOURCE_PATH` is configured in config.py.
+    """
+    static_resource_path: str = current_app.config.get("STATIC_RESOURCE_PATH")  # type: ignore
+    return f"{static_resource_path}/{image_id}.png"
