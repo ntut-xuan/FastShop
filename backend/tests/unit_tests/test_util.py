@@ -118,3 +118,29 @@ class TestRouteWithDocDecorator:
             "/some/<int:has_type>/rule/<no_type>/and/<string:has_type>/more/<no_type>",
             methods=["GET"],
         )(self.dummy_func)
+
+    class RulePassedToRouteShouldNotChangeFunctor:
+        def __init__(self, expected_rule: str) -> None:
+            self._expected_rule: str = expected_rule
+
+        def __call__(self, actual_rule: str, *args, **kwargs):
+            assert actual_rule == self._expected_rule
+
+            def wrapper(func):
+                return func
+
+            return wrapper
+
+    def test_rule_passed_to_bp_route_should_not_change(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        test_bp = Blueprint("test", __name__)
+        rule = (
+            "/some/<int:has_type>/rule/<no_type>/and/<string:has_type>/more/<no_type>"
+        )
+        # disable swag_from since its irrelevant in this test
+        monkeypatch.setattr("util.swag_from", lambda *x, **y: self.dummy_func)
+        # monkeypatch route for assertion
+        test_bp.route = self.RulePassedToRouteShouldNotChangeFunctor(rule)  # type: ignore
+
+        route_with_doc(test_bp, rule, methods=["GET"])(self.dummy_func)

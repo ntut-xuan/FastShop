@@ -44,11 +44,11 @@ def route_with_doc(bp: Blueprint, rule: str, methods: list[str]):
             return match[0]
         return ""
 
-    rule = re.sub(r"<([^<>]+)>", remove_angle_bracket_and_type, rule)
+    path: str = re.sub(r"<([^<>]+)>", remove_angle_bracket_and_type, rule)
 
     def wrapper(func):
         for method in methods:
-            swag_from(f"../api/{bp.name}{rule}/{method.lower()}.yml", methods=[method])(
+            swag_from(f"../api/{bp.name}{path}/{method.lower()}.yml", methods=[method])(
                 func
             )
         return bp.route(rule, methods=methods)(func)
