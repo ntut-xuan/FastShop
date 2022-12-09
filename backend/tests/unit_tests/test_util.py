@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from http import HTTPStatus
-import re
 from typing import TYPE_CHECKING
 
 import pytest
@@ -61,12 +60,10 @@ class TestRouteWithDocDecorator:
 
             return wrapper
 
-    def test_should_map_rule_to_doc_path(
-        self,
-        monkeypatch: pytest.MonkeyPatch,
+    def test_should_map_no_param_rule_to_doc_path(
+        self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         expect_path = self.ExpectedDocPathFunctor("../api/test/some/rule/get.yml")
-
         monkeypatch.setattr("util.swag_from", expect_path)
 
         route_with_doc(Blueprint("test", __name__), "/some/rule", methods=["GET"])(
@@ -74,13 +71,11 @@ class TestRouteWithDocDecorator:
         )
 
     def test_should_map_rule_with_params_to_doc_path(
-        self,
-        monkeypatch: pytest.MonkeyPatch,
+        self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         expect_path = self.ExpectedDocPathFunctor(
             "../api/test/some/param1/rule/param2/get.yml"
         )
-
         monkeypatch.setattr("util.swag_from", expect_path)
 
         route_with_doc(
@@ -88,13 +83,11 @@ class TestRouteWithDocDecorator:
         )(self.dummy_func)
 
     def test_should_map_rule_with_typed_params_to_doc_path(
-        self,
-        monkeypatch: pytest.MonkeyPatch,
+        self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         expect_path = self.ExpectedDocPathFunctor(
             "../api/test/some/param1/rule/param2/get.yml"
         )
-
         monkeypatch.setattr("util.swag_from", expect_path)
 
         route_with_doc(
@@ -104,13 +97,11 @@ class TestRouteWithDocDecorator:
         )(self.dummy_func)
 
     def test_should_map_rule_with_optionally_typed_params_to_doc_path(
-        self,
-        monkeypatch: pytest.MonkeyPatch,
+        self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         expect_path = self.ExpectedDocPathFunctor(
             "../api/test/some/has_type/rule/no_type/and/has_type/more/no_type/get.yml"
         )
-
         monkeypatch.setattr("util.swag_from", expect_path)
 
         route_with_doc(
@@ -138,9 +129,9 @@ class TestRouteWithDocDecorator:
         rule = (
             "/some/<int:has_type>/rule/<no_type>/and/<string:has_type>/more/<no_type>"
         )
-        # disable swag_from since its irrelevant in this test
+        # disable swag_from since it's irrelevant in this test
         monkeypatch.setattr("util.swag_from", lambda *x, **y: self.dummy_func)
-        # monkeypatch route for assertion
+        # monkeypatch route for the assertion
         test_bp.route = self.RulePassedToRouteShouldNotChangeFunctor(rule)  # type: ignore
 
         route_with_doc(test_bp, rule, methods=["GET"])(self.dummy_func)
