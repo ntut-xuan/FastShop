@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from http import HTTPStatus
+import re
 from typing import TYPE_CHECKING
 
 import pytest
@@ -72,6 +73,7 @@ class TestRouteWithDocDecorator:
             self.dummy_func
         )
 
+    @pytest.mark.skip
     def test_should_map_rule_with_params_to_doc_path(
         self,
         monkeypatch: pytest.MonkeyPatch,
@@ -101,3 +103,38 @@ class TestRouteWithDocDecorator:
             "/some/<int:param1>/rule/<string:param2>",
             methods=["GET"],
         )(self.dummy_func)
+
+
+def test_regex_sub_should_remove_angle_bracket() -> None:
+    pattern: re.Pattern = re.compile(r"<(.*?)>")
+    string: str = "/some/<param1>/rule/<param2>"
+
+    def remove_angle_bracket(m: re.Match) -> str:
+        return m[0][1:-1]
+
+    path = pattern.sub(remove_angle_bracket, string)
+    assert path == "/some/param1/rule/param2"
+
+
+def test_regex_sub_should_remove_angle_bracket_and_type() -> None:
+    pattern: re.Pattern = re.compile(r"<(.*?)>")
+    string: str = "/some/<int:param1>/rule/<string:param2>"
+
+    def remove_angle_bracket_and_type(m: re.Match) -> str:
+        match = re.findall(r"<.*:(.*?)>", m[0])
+        return match[0]
+
+    path = pattern.sub(remove_angle_bracket_and_type, string)
+    assert path == "/some/param1/rule/param2"
+
+
+def test_regex_sub_should_remove_angle_bracket_and_optional_type() -> None:
+    pattern: re.Pattern = re.compile(r"<(.*?)>")
+    string: str = "/some/<int:param1>/rule/<param2>"
+
+    def remove_angle_bracket_and_type(m: re.Match) -> str:
+        match = re.findall(r"<.*:(.*?)>", m[0])
+        return match[0]
+
+    path = pattern.sub(remove_angle_bracket_and_type, string)
+    assert path == "/some/param1/rule/param2"
