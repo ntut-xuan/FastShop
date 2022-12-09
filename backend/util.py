@@ -33,24 +33,32 @@ def register_swagger_file(type: str, filename: str, methods: list[str] = None):
 
 
 def route_with_doc(bp: Blueprint, rule: str, methods: list[str]):
-    def remove_angle_bracket_and_type(m: re.Match) -> str:
-        # find typed params
-        match: list[str] = re.findall(r"<[^<>]+:([^<>]+)>", m[0])
-        if match:
-            return match[0]
-        # find untyped params
-        match = re.findall(r"<([^<>]+)>", m[0])
-        if match:
-            return match[0]
-        return ""
+    """Decorates a view function to register it with the given URL rule and methods,
+    and loads the swagger specs mapped by the URL rule.
 
-    path: str = re.sub(r"<([^<>]+)>", remove_angle_bracket_and_type, rule)
+    The swagger yml file of specs should be placed in `../api/` and have the same folder
+    structure as the rule.
+    """
+
+    def remove_angle_bracket_and_param_type(m: re.Match) -> str:
+        # one may use findall with patterns concatenated with '|',
+        # but the return type will be complex as list[tuple[str, ...]]
+        typed_params = r"<[^<>]+:([^<>]+)>"
+        untyped_params = r"<([^<>]+)>"
+        for pattern in (typed_params, untyped_params):
+            match: list[str] = re.findall(pattern, m[0])
+            if match:
+                return match[0]
+        raise RuntimeError("the pattern used with re.sub might be ill-formed")
+
+    doc_path: str = re.sub(r"<([^<>]+)>", remove_angle_bracket_and_param_type, rule)
 
     def wrapper(func):
         for method in methods:
-            swag_from(f"../api/{bp.name}{path}/{method.lower()}.yml", methods=[method])(
-                func
-            )
+            swag_from(
+                f"../api/{bp.name}{doc_path}/{method.lower()}.yml",
+                methods=[method],
+            )(func)
         return bp.route(rule, methods=methods)(func)
 
     return wrapper
