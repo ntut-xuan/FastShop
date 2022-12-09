@@ -73,7 +73,6 @@ class TestRouteWithDocDecorator:
             self.dummy_func
         )
 
-    @pytest.mark.skip
     def test_should_map_rule_with_params_to_doc_path(
         self,
         monkeypatch: pytest.MonkeyPatch,
@@ -106,7 +105,7 @@ class TestRouteWithDocDecorator:
 
 
 def test_regex_sub_should_remove_angle_bracket() -> None:
-    pattern: re.Pattern = re.compile(r"<(.*?)>")
+    pattern: re.Pattern = re.compile(r"<([^<>]+)>")
     string: str = "/some/<param1>/rule/<param2>"
 
     def remove_angle_bracket(m: re.Match) -> str:
@@ -117,24 +116,30 @@ def test_regex_sub_should_remove_angle_bracket() -> None:
 
 
 def test_regex_sub_should_remove_angle_bracket_and_type() -> None:
-    pattern: re.Pattern = re.compile(r"<(.*?)>")
+    pattern: re.Pattern = re.compile(r"<([^<>]+)>")
     string: str = "/some/<int:param1>/rule/<string:param2>"
 
     def remove_angle_bracket_and_type(m: re.Match) -> str:
-        match = re.findall(r"<.*:(.*?)>", m[0])
-        return match[0]
+        match: list[str] = re.findall(r"<[^<>]+:([^<>]+)>", m[0])
+        return match[0] if match else ""
 
-    path = pattern.sub(remove_angle_bracket_and_type, string)
+    path: str = pattern.sub(remove_angle_bracket_and_type, string)
     assert path == "/some/param1/rule/param2"
 
 
 def test_regex_sub_should_remove_angle_bracket_and_optional_type() -> None:
-    pattern: re.Pattern = re.compile(r"<(.*?)>")
-    string: str = "/some/<int:param1>/rule/<param2>"
+    pattern: re.Pattern = re.compile(r"<([^<>]+)>")
+    string: str = (
+        "/some/<int:has_type>/rule/<no_type>/and/<string:has_type>/more/<no_type>"
+    )
 
     def remove_angle_bracket_and_type(m: re.Match) -> str:
-        match = re.findall(r"<.*:(.*?)>", m[0])
-        return match[0]
+        match = re.findall(r"<[^<>]+:([^<>]+)>", m[0])
+        if match:
+            return match[0]
+        match = re.findall(r"<([^<>]+)>", m[0])
+        if match:
+            return match[0]
 
-    path = pattern.sub(remove_angle_bracket_and_type, string)
-    assert path == "/some/param1/rule/param2"
+    path: str = pattern.sub(remove_angle_bracket_and_type, string)
+    assert path == "/some/has_type/rule/no_type/and/has_type/more/no_type"

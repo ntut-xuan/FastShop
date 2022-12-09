@@ -1,3 +1,4 @@
+import re
 from dataclasses import dataclass
 
 from flasgger import swag_from
@@ -32,6 +33,18 @@ def register_swagger_file(type: str, filename: str, methods: list[str] = None):
 
 
 def route_with_doc(bp: Blueprint, rule: str, methods: list[str]):
+    def remove_angle_bracket_and_type(m: re.Match) -> str:
+        # find typed params
+        match = re.findall(r"<[^<>]+:([^<>]+)>", m[0])
+        if match:
+            return match[0]
+        # find untyped params
+        match = re.findall(r"<([^<>]+)>", m[0])
+        if match:
+            return match[0]
+
+    rule = re.sub(r"<([^<>]+)>", remove_angle_bracket_and_type, rule)
+
     def wrapper(func):
         for method in methods:
             swag_from(f"../api/{bp.name}{rule}/{method.lower()}.yml", methods=[method])(
