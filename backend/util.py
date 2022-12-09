@@ -17,12 +17,10 @@ def route_with_doc(bp: Blueprint, rule: str, methods: list[str]):
     The swagger yml file of specs should be placed in `../api/` and have the same folder
     structure as the rule.
     """
-    
+
     params = r"<(?:\w+:)*(\w+)>"
 
     def remove_angle_bracket_and_param_type(m: re.Match) -> str:
-        # one may use findall with patterns concatenated with '|',
-        # but the return type will be complex as list[tuple[str, ...]]
         match: list[str] = re.findall(params, m[0])
         if match:
             return match[0]

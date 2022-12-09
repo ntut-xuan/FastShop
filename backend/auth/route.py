@@ -35,8 +35,6 @@ auth_bp = Blueprint("auth", __name__)
 
 
 @route_with_doc(auth_bp, "/login", methods=["GET", "POST"])
-# @register_swagger("../api/auth/login/get.yml", methods=["GET"])
-# @register_swagger("../api/auth/login/post.yml", methods=["POST"])
 def login_route() -> Response | str:
     if request.method == "POST":
         data = request.json
