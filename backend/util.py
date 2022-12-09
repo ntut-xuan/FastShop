@@ -10,28 +10,6 @@ def fetch_page(page_name: str) -> str:
         return page.read()
 
 
-def register_swagger_file(type: str, filename: str, methods: list[str] = None):
-    """Formats the file path by type and filename to the URI format `../api/{type}/{filename}.yml`.
-
-    The decorator to warp `swag_from` function from [flasgger](https://github.com/flasgger/flasgger).
-
-    As long as the location and name of the files follow the convention,
-    it can help you format the URI without passing it by yourself and causing redundancy.
-
-    Arguments:
-        type: The API type.
-        filename: The filename of API documentation.
-    """
-
-    def wrapper(func):
-        swag_from_function = swag_from(
-            f"../api/{type}/{filename}.yml", methods=methods
-        )(func)
-        return swag_from_function
-
-    return wrapper
-
-
 def route_with_doc(bp: Blueprint, rule: str, methods: list[str]):
     """Decorates a view function to register it with the given URL rule and methods,
     and loads the swagger specs mapped by the URL rule.
