@@ -27,7 +27,9 @@ def route_with_doc(bp: Blueprint, rule: str, methods: list[str]):
             match: list[str] = re.findall(pattern, m[0])
             if match:
                 return match[0]
-        raise RuntimeError("the pattern used with re.sub might be ill-formed")
+        assert (
+            False
+        ), "the pattern used with re.sub or re.findall might be ill-formed"  # pragma: no cover
 
     doc_path: str = re.sub(r"<([^<>]+)>", remove_angle_bracket_and_param_type, rule)
 
