@@ -17,21 +17,20 @@ def route_with_doc(bp: Blueprint, rule: str, methods: list[str]):
     The swagger yml file of specs should be placed in `../api/` and have the same folder
     structure as the rule.
     """
+    
+    params = r"<(?:\w+:)*(\w+)>"
 
     def remove_angle_bracket_and_param_type(m: re.Match) -> str:
         # one may use findall with patterns concatenated with '|',
         # but the return type will be complex as list[tuple[str, ...]]
-        typed_params = r"<[^<>]+:([^<>]+)>"
-        untyped_params = r"<([^<>]+)>"
-        for pattern in (typed_params, untyped_params):
-            match: list[str] = re.findall(pattern, m[0])
-            if match:
-                return match[0]
+        match: list[str] = re.findall(params, m[0])
+        if match:
+            return match[0]
         assert (
             False
         ), "the pattern used with re.sub or re.findall might be ill-formed"  # pragma: no cover
 
-    doc_path: str = re.sub(r"<([^<>]+)>", remove_angle_bracket_and_param_type, rule)
+    doc_path: str = re.sub(params, remove_angle_bracket_and_param_type, rule)
 
     def wrapper(func):
         for method in methods:
