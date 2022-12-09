@@ -23,6 +23,7 @@ def app() -> Generator[Flask, None, None]:
             "SQLALCHEMY_DATABASE_URI": "mysql+pymysql://fsta:{password}@mariadb-test:3306/fastshop-test".format(
                 password=quote("@fsta2022")
             ),
+            "STATIC_RESOURCE_PATH": "/var/fastshop/image",
         }
     )
 
