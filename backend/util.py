@@ -1,12 +1,44 @@
+import re
 from dataclasses import dataclass
-from http import HTTPStatus
 
-from flask import current_app
+from flasgger import swag_from
+from flask import Blueprint, current_app
 
 
 def fetch_page(page_name: str) -> str:
     with current_app.open_resource(f"../html/{page_name}.html", mode="r") as page:
         return page.read()
+
+
+def route_with_doc(bp: Blueprint, rule: str, methods: list[str]):
+    """Decorates a view function to register it with the given URL rule and methods,
+    and loads the swagger specs mapped by the URL rule.
+
+    The swagger yml file of specs should be placed in `../api/` and have the same folder
+    structure as the rule.
+    """
+
+    params = r"<(?:\w+:)*(\w+)>"
+
+    def remove_angle_bracket_and_param_type(m: re.Match) -> str:
+        match: list[str] = re.findall(params, m[0])
+        if match:
+            return match[0]
+        assert (
+            False
+        ), "the pattern used with re.sub or re.findall might be ill-formed"  # pragma: no cover
+
+    doc_path: str = re.sub(params, remove_angle_bracket_and_param_type, rule)
+
+    def wrapper(func):
+        for method in methods:
+            swag_from(
+                f"../api/{bp.name}{doc_path}/{method.lower()}.yml",
+                methods=[method],
+            )(func)
+        return bp.route(rule, methods=methods)(func)
+
+    return wrapper
 
 
 @dataclass

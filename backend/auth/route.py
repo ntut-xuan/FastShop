@@ -4,7 +4,6 @@ from datetime import datetime, timedelta, timezone
 from http import HTTPStatus
 from typing import TYPE_CHECKING, Any, Iterable, Mapping, cast
 
-from flasgger import swag_from
 from flask import Blueprint, Response, current_app, make_response, request
 
 from auth.exception import EmailAlreadyRegisteredError
@@ -27,7 +26,7 @@ from response_message import (
     INVALID_DATA,
     WRONG_DATA_FORMAT,
 )
-from util import SingleMessageStatus, fetch_page
+from util import SingleMessageStatus, fetch_page, route_with_doc
 
 if TYPE_CHECKING:
     from flask.wrappers import Response
@@ -35,9 +34,7 @@ if TYPE_CHECKING:
 auth_bp = Blueprint("auth", __name__)
 
 
-@auth_bp.route("/login", methods=["GET", "POST"])
-@swag_from("../api/login_get.yml", methods=["GET"])
-@swag_from("../api/login_post.yml", methods=["POST"])
+@route_with_doc(auth_bp, "/login", methods=["GET", "POST"])
 def login_route() -> Response | str:
     if request.method == "POST":
         data = request.json
@@ -69,9 +66,7 @@ def login_route() -> Response | str:
     return fetch_page("login")
 
 
-@auth_bp.route("/register", methods=["GET", "POST"])
-@swag_from("../api/register_get.yml", methods=["GET"])
-@swag_from("../api/register_post.yml", methods=["POST"])
+@route_with_doc(auth_bp, "/register", methods=["GET", "POST"])
 def register_route() -> Response | str:
     if request.method == "POST":
         # 400 Bad Request error will automatically be raised
@@ -116,8 +111,7 @@ def register_route() -> Response | str:
     return fetch_page("register")
 
 
-@auth_bp.route("/verify_jwt", methods=["POST"])
-@swag_from("../api/verify_jwt_post.yml", methods=["POST"])
+@route_with_doc(auth_bp, "/verify_jwt", methods=["POST"])
 def verify_jwt_route() -> Response:
     if "jwt" not in request.cookies:
         return _make_single_message_response(HTTPStatus.UNAUTHORIZED, ABSENT_COOKIE)
@@ -134,8 +128,7 @@ def verify_jwt_route() -> Response:
     return make_response(jwt_payload)
 
 
-@auth_bp.route("/logout", methods=["POST"])
-@swag_from("../api/logout_post.yml", methods=["POST"])
+@route_with_doc(auth_bp, "/logout", methods=["POST"])
 def logout_route() -> Response:
     response: Response = _make_single_message_response(HTTPStatus.OK)
     response.delete_cookie("jwt")
