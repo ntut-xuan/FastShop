@@ -11,3 +11,8 @@ class User(db.Model):  # type: ignore
     birthday = db.Column(db.Integer, nullable=False)  # timestamp
 
     __table_args__ = (db.CheckConstraint(gender.in_({0, 1})),)
+
+
+class Tag(db.Model):  # type: ignore
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(100), nullable=False)
