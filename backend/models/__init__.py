@@ -38,3 +38,22 @@ class Item(db.Model):  # type: ignore
     avatar = db.Column(db.String(36))  # 36 character long uuid
 
     __table_args__ = (db.CheckConstraint(count > 0),)
+
+
+class TagOfItem(db.Model):  # type: ignore
+    item_id = db.Column(
+        db.ForeignKey(
+            Item.id,
+            ondelete="CASCADE",
+            onupdate="CASCADE",
+        ),
+        primary_key=True,
+    )
+    tag_id = db.Column(
+        db.ForeignKey(
+            Tag.id,
+            ondelete="CASCADE",
+            onupdate="CASCADE",
+        ),
+        primary_key=True,
+    )
