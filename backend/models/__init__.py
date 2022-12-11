@@ -1,7 +1,5 @@
 from database import db
 
-from sqlalchemy.engine.default import DefaultExecutionContext
-
 
 class User(db.Model):  # type: ignore
     uid = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -21,7 +19,10 @@ class Tag(db.Model):  # type: ignore
 
 
 def same_as(column_name: str):
-    def default_function(context: DefaultExecutionContext):
+    def default_function(context):
+        # context seems to be in type "sqlalchemy.engine.default.DefaultExecutionContext"
+        # from the doc, but mypy says no
+        # See https://docs.sqlalchemy.org/en/20/core/internals.html#sqlalchemy.engine.default.DefaultExecutionContext.current_parameters
         return context.current_parameters.get(column_name)
 
     return default_function
