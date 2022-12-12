@@ -58,7 +58,7 @@ def insert_test_data(app: Flask) -> None:
 
 
 def test_update_on_tag_should_be_cascaded_to_tag_of_item(app: Flask) -> None:
-    # delete the id of (5, "fish") to 5
+    # update the id of (2, "fish") to 5
     with app.app_context():
         id_of_fish_tag = 2
         db.session.execute(db.update(Tag).where(Tag.id == id_of_fish_tag).values(id=5))
@@ -74,6 +74,27 @@ def test_update_on_tag_should_be_cascaded_to_tag_of_item(app: Flask) -> None:
             map(attrgetter("tag_id"), db.session.execute(stmt).fetchall())
         )
         assert 5 in tag_ids_of_tilapia
+
+
+def test_update_on_item_should_be_cascaded_to_tag_of_item(app: Flask) -> None:
+    # update the id of item (1, "apple") to 3
+    with app.app_context():
+        id_of_apple_item = 1
+        db.session.execute(
+            db.update(Item).where(Item.id == id_of_apple_item).values(id=3)
+        )
+        db.session.commit()
+
+    # "fruit" should now have a item with id 3, which is "apple"
+    with app.app_context():
+        id_of_fruit = 1
+        stmt: Select = db.select(TagOfItem.item_id).where(
+            TagOfItem.tag_id == id_of_fruit
+        )
+        item_ids_of_fruit = list(
+            map(attrgetter("item_id"), db.session.execute(stmt).fetchall())
+        )
+        assert 3 in item_ids_of_fruit
 
 
 def test_delete_on_tag_should_be_cascaded_to_tag_of_item(app: Flask) -> None:
