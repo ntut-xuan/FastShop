@@ -132,3 +132,28 @@ class TestCascadeUpdateAndDeleteOnTagOfItem:
                 map(attrgetter("item_id"), db.session.execute(stmt).fetchall())
             )
             assert item_ids_of_fruit == set()
+
+
+def test_item_discount_should_be_as_same_as_original_if_not_given(app: Flask) -> None:
+    original = 30
+    with app.app_context():
+        db.session.execute(
+            db.insert(Item),
+            [
+                {
+                    "id": 1,
+                    "name": "apple",
+                    "count": 10,
+                    "original": original,
+                    # no discount,
+                    "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
+                },
+            ],
+        )
+        db.session.commit()
+
+    with app.app_context():
+        select_discount_stmt: Select = db.select(Item.discount).where(Item.id == 1)
+        discount: int = db.session.execute(select_discount_stmt).scalar_one()
+
+        assert discount == original
