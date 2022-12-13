@@ -19,8 +19,7 @@ responses:
             price:
               discount: 43210
               original: 48763
-            avatars:
-              - http://localhost/500x500/item_41092554.png
+            avatar: f692073a-7ac1-11ed-a1eb-0242ac120002
             tags:
               - id: 33
                 name: dian
@@ -57,13 +56,10 @@ definitions:
           original:
             type: integer
             example: 48763
-      avatars:
-        type: array
-        items:
-          type: string
-        description: The avatars of the item. It's a list of URLs.
-        example:
-          - http://localhost/500x500/item_41092554.png
+      avatar:
+        type: string
+        description: The UUID of the avatar.
+        example: f692073a-7ac1-11ed-a1eb-0242ac120002
       tags: # TODO: It can be ref if tags definitions exist. (#90)
         type: array
         items:
