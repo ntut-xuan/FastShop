@@ -3,9 +3,12 @@ import re
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from enum import IntEnum
+from functools import wraps
+from http import HTTPStatus
 from typing import TYPE_CHECKING, Any, Final
 
 import jwt
+from flask import current_app, make_response, request
 from sqlalchemy import select
 
 from auth.exception import (
@@ -14,6 +17,7 @@ from auth.exception import (
 )
 from database import db
 from models import User
+from util import SingleMessageStatus
 
 if TYPE_CHECKING:
     from sqlalchemy.engine.row import Row
@@ -157,3 +161,18 @@ def fetch_user_profile(email: str) -> dict[str, Any]:
         select_user_profile_with_email_stmt
     ).fetchone()
     return dict(user_profile)
+
+
+def verify_login_or_return_401(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        codec = HS256JWTCodec(current_app.config["jwt_key"])
+        cookie: str | None = request.cookies.get("jwt")
+
+        if cookie is None or not codec.is_valid_jwt(cookie):
+            status = SingleMessageStatus(HTTPStatus.UNAUTHORIZED, "Unauthorized.")
+            return make_response(status.message, status.code)
+
+        return func(*args, **kwargs)
+
+    return wrapper
