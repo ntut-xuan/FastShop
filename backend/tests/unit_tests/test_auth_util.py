@@ -240,7 +240,7 @@ class TestHS256JWTCodec:
 class TestVerifyLoginDecorator:
     def dummy_func(self, *args, **kwargs) -> None:
         """Dummy function as a wrappee. Left empty"""
-    
+
     @pytest.fixture
     def payload(self) -> dict[str, Any]:
         return {
@@ -251,36 +251,31 @@ class TestVerifyLoginDecorator:
             "gender": 0,
             "birthday": "2002-06-25",
         }
-        
+
     class MonkeyRequestWithCookie:
         def __init__(self, cookies):
             self.cookies = cookies
 
     def test_use_verify_login_decorator_with_invalid_jwt_cookie_mocking_request_should_return_401_response(
-        self,
-        app: Flask,
-        monkeypatch: pytest.MonkeyPatch
+        self, app: Flask, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         monkey_request_object = self.MonkeyRequestWithCookie("a.b.c")
-        
+
         monkeypatch.setattr("auth.util.request", monkey_request_object)
         with app.app_context():
             decorator_return_value = verify_login_or_return_401(self.dummy_func)()
-        
+
             assert type(decorator_return_value) is Response
             assert decorator_return_value.status_code == 401
 
     def test_use_verify_login_decorator_with_valid_jwt_cookie_mocking_request_should_return_function_in_parameter(
-        self,
-        app: Flask,
-        monkeypatch: pytest.MonkeyPatch,
-        payload: dict[str, Any]
+        self, app: Flask, monkeypatch: pytest.MonkeyPatch, payload: dict[str, Any]
     ) -> None:
         jwt_token: str = HS256JWTCodec(app.config["jwt_key"]).encode(payload)
         monkey_request_object = self.MonkeyRequestWithCookie(jwt_token)
-        
+
         monkeypatch.setattr("auth.util.request", monkey_request_object)
         with app.app_context():
             decorator_return_value = verify_login_or_return_401(self.dummy_func)()
-        
+
             assert decorator_return_value is None
