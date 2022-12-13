@@ -19,10 +19,12 @@ if TYPE_CHECKING:
 @pytest.fixture
 def app() -> Generator[Flask, None, None]:
     db_fp, db_path = tempfile.mkstemp()
+    static_path: str = tempfile.mkdtemp()
     app: Flask = create_app(
         {
             "TESTING": True,
             "SQLALCHEMY_DATABASE_URI": f"sqlite:///{db_path}",
+            "STATIC_RESOURCE_PATH": static_path,
         }
     )
     with app.app_context():
