@@ -6,9 +6,9 @@ from flask import Blueprint
 static_bp = Blueprint("static", __name__)
 
 
-@static_bp.route("/static/images/<string:id>", methods=["GET"])
+@static_bp.route("/static/images/<string:uuid>", methods=["GET"])
 @swag_from("../api/static/static_images_id_get.yml")
-def fetch_image_with_specific_id(id):
+def fetch_image_with_specific_id(uuid):
     pass  # pragma: no cover
 
 
@@ -18,13 +18,13 @@ def upload_image():
     pass  # pragma: no cover
 
 
-@static_bp.route("/static/images/<string:id>", methods=["PUT"])
+@static_bp.route("/static/images/<string:uuid>", methods=["PUT"])
 @swag_from("../api/static/static_images_id_put.yml")
-def modify_image_with_specific_id(id):
+def modify_image_with_specific_id(uuid):
     pass  # pragma: no cover
 
 
-@static_bp.route("/static/images/<string:id>", methods=["DELETE"])
+@static_bp.route("/static/images/<string:uuid>", methods=["DELETE"])
 @swag_from("../api/static/static_images_id_delete.yml")
-def delete_image_with_specific_id(id):
+def delete_image_with_specific_id(uuid):
     pass  # pragma: no cover
