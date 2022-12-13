@@ -21,6 +21,7 @@ responses:
         schema:
           type: string
           format: binary
+        example: The binary of the image.
   403:
     description: The image with a specific UUID is absent.
     content:
