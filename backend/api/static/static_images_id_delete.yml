@@ -1,17 +1,18 @@
-Delete the image with a specific ID.
+Delete the image with a specific UUID.
 ---
 tags:
   - static
 
-description: "Delete the image with a specific ID. \n\n `4XX` if the operation fails. (See Response section below)"
+description: "Delete the image with a specific UUID. \n\n `4XX` if the operation fails. (See Response section below)"
 
 parameters:
   - in: path
     name: id
-    description: The ID of the image which you want to delete.
+    description: The UUID of the image which you want to delete.
     schema:
       type: string
     required: true
+    example: 0ba7c0ab-408f-4cc4-be22-8dc928888dc8
 
 responses:
   200:
@@ -31,10 +32,10 @@ responses:
         example:
           message: Unauthorized.
   403:
-    description: The image with a specific ID is absent.
+    description: The image with a specific UUID is absent.
     content:
       application/json:
         schema:
           $ref: "#/definitions/message"
         example:
-          message: The image with a specific ID is absent.
+          message: The image with a specific UUID is absent.
