@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 import freezegun
 import jwt
 import pytest
+from flask import Response
 
 from auth.exception import (
     EmailAlreadyRegisteredError,
@@ -21,6 +22,7 @@ from auth.util import (
     is_valid_birthday,
     is_valid_email,
     register,
+    verify_login_or_return_401,
 )
 from database import db
 from models import User
@@ -233,3 +235,52 @@ class TestHS256JWTCodec:
             is_valid_jwt: bool = codec.is_valid_jwt(token)
 
             assert is_valid_jwt
+
+
+class TestVerifyLoginDecorator:
+    def dummy_func(self, *args, **kwargs) -> None:
+        """Dummy function as a wrappee. Left empty"""
+    
+    @pytest.fixture
+    def payload(self) -> dict[str, Any]:
+        return {
+            "e-mail": "test@email.com",
+            "password": "test",
+            "firstname": "Han-Xuan",
+            "lastname": "Huang",
+            "gender": 0,
+            "birthday": "2002-06-25",
+        }
+        
+    class MonkeyRequestWithCookie:
+        def __init__(self, cookies):
+            self.cookies = cookies
+
+    def test_use_verify_login_decorator_with_invalid_jwt_cookie_mocking_request_should_return_401_response(
+        self,
+        app: Flask,
+        monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkey_request_object = self.MonkeyRequestWithCookie("a.b.c")
+        
+        monkeypatch.setattr("auth.util.request", monkey_request_object)
+        with app.app_context():
+            decorator_return_value = verify_login_or_return_401(self.dummy_func)()
+        
+            assert type(decorator_return_value) is Response
+            assert decorator_return_value.status_code == 401
+
+    def test_use_verify_login_decorator_with_valid_jwt_cookie_mocking_request_should_return_function_in_parameter(
+        self,
+        app: Flask,
+        monkeypatch: pytest.MonkeyPatch,
+        payload: dict[str, Any]
+    ) -> None:
+        jwt_token: str = HS256JWTCodec(app.config["jwt_key"]).encode(payload)
+        monkey_request_object = self.MonkeyRequestWithCookie(jwt_token)
+        
+        monkeypatch.setattr("auth.util.request", monkey_request_object)
+        with app.app_context():
+            decorator_return_value = verify_login_or_return_401(self.dummy_func)()
+        
+            assert decorator_return_value is None
