@@ -1,4 +1,6 @@
 import os
+import re
+from base64 import b64decode
 
 from flask import current_app
 
@@ -18,10 +20,18 @@ def delete_image(image_id: str) -> None:
         raise ImageNotExistError(image_path)
 
 
-def write_image(image_data: str, image_id: str) -> None:
+def write_image_with_byte_data(image_byte_data: bytes, image_id: str) -> None:
     image_path: str = get_file_path_by_image_id(image_id)
-    with open(image_path, "w") as f:
-        f.write(image_data)
+    with open(image_path, "wb") as f:
+        f.write(image_byte_data)
+
+
+def get_image_byte_from_existing_file(image_id: str) -> bytes:
+    image_path: str = get_file_path_by_image_id(image_id)
+    image_byte_data: bytes
+    with open(image_path, "rb") as f:
+        image_byte_data = f.read()
+    return image_byte_data
 
 
 def get_file_path_by_image_id(image_id: str) -> str:
@@ -31,3 +41,14 @@ def get_file_path_by_image_id(image_id: str) -> str:
     """
     static_resource_path: str = current_app.config.get("STATIC_RESOURCE_PATH")  # type: ignore
     return f"{static_resource_path}/{image_id}.png"
+
+
+def get_image_byte_data_from_base64_content(image_base64_content: str):
+    return b64decode(image_base64_content.split(",")[1].rstrip())
+
+
+def verify_image_data(image_data: str) -> bool:
+    return (
+        re.fullmatch("^data:image\/png;base64,[A-Za-z0-9+/]+={0,2}$", image_data)
+        is not None
+    )
