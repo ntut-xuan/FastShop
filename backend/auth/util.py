@@ -167,9 +167,9 @@ def verify_login_or_return_401(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         codec = HS256JWTCodec(current_app.config["jwt_key"])
-        cookie: str = request.cookies.get("jwt")
+        cookie: str | None = request.cookies.get("jwt")
 
-        if not codec.is_valid_jwt(cookie):
+        if cookie is None or not codec.is_valid_jwt(cookie):
             status = SingleMessageStatus(HTTPStatus.UNAUTHORIZED, "Unauthorized.")
             return make_response(status.message, status.code)
 
