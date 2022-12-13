@@ -81,7 +81,7 @@ definitions:
       avatar:
         type: string
         description: The uuid of the avatar.
-        example: http://localhost/500x500/item_41092554.png
+        example: f692073a-7ac1-11ed-a1eb-0242ac120002
       tags: # TODO: It can be ref if tags definitions exist. (#90)
         type: array
         items:
