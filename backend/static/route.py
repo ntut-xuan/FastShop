@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-import json
-from base64 import b64decode
 from http import HTTPStatus
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 from flasgger import swag_from
 from flask import Blueprint, make_response, request
