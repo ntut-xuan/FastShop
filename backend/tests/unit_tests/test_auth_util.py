@@ -7,6 +7,7 @@ import freezegun
 import jwt
 import pytest
 from flask import Response
+from werkzeug.datastructures import MultiDict
 
 from auth.exception import (
     EmailAlreadyRegisteredError,
@@ -253,8 +254,8 @@ class TestVerifyLoginDecorator:
         }
 
     class MonkeyRequestWithCookie:
-        def __init__(self, cookies):
-            self.cookies = cookies
+        def __init__(self, cookie):
+            self.cookies = MultiDict([("jwt", cookie)])
 
     def test_use_verify_login_decorator_with_invalid_jwt_cookie_mocking_request_should_return_401_response(
         self, app: Flask, monkeypatch: pytest.MonkeyPatch
