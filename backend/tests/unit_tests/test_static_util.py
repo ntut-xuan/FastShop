@@ -13,7 +13,7 @@ from static.util import (
     get_image_byte_from_existing_file,
     get_image_byte_data_from_base64_content,
     has_image_with_specific_uuid,
-    verify_image_data,
+    verify_image_base64_content,
     verify_uuid,
     write_image_with_byte_data,
 )
@@ -98,7 +98,7 @@ class TestImageManipulation:
 
 
 def test_verify_image_with_invalid_data_should_return_false() -> None:
-    assert not verify_image_data(f"data:image/png;base64,_____________==")
+    assert not verify_image_base64_content(f"data:image/png;base64,_____________==")
 
 
 @pytest.mark.parametrize(
