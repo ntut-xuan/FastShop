@@ -47,8 +47,7 @@ def get_image_byte_data_from_base64_content(base64_content: str):
 
 def verify_image_data(data: str) -> bool:
     return (
-        re.fullmatch("^data:image\/png;base64,[A-Za-z0-9+/]+={0,2}$", image_data)
-        is not None
+        re.fullmatch("^data:image\/png;base64,[A-Za-z0-9+/]+={0,2}$", data) is not None
     )
 
 
