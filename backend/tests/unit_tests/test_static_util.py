@@ -15,7 +15,7 @@ from static.util import (
     get_file_path_by_image_uuid,
     get_image_byte_from_existing_file,
     get_image_byte_data_from_base64_content,
-    has_image_with_specific_id,
+    has_image_with_specific_uuid,
     verify_image_data,
     verify_uuid,
     write_image_with_byte_data,
@@ -59,7 +59,7 @@ class TestImageManipulation:
 
             write_image_with_byte_data(new_image.base64_byte_content, new_image.uuid)
 
-            assert has_image_with_specific_id(new_image.uuid)
+            assert has_image_with_specific_uuid(new_image.uuid)
 
     def test_write_static_image_with_existing_uuid_should_update_image(
         self, app: Flask, some_image: SomeImage
@@ -91,7 +91,7 @@ class TestImageManipulation:
 
             delete_image(some_image.uuid)
 
-            assert not has_image_with_specific_id(some_image.uuid)
+            assert not has_image_with_specific_uuid(some_image.uuid)
 
     def test_get_image_byte_with_base64_content_should_return_correct_byte_data(
         self,

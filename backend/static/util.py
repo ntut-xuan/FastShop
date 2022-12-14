@@ -7,8 +7,8 @@ from flask import current_app
 from static.exception import ImageNotExistError
 
 
-def has_image_with_specific_id(image_id: str) -> bool:
-    image_path: Path = get_file_path_by_image_uuid(image_id)
+def has_image_with_specific_uuid(image_uuid: str) -> bool:
+    image_path: Path = get_file_path_by_image_uuid(image_uuid)
     return image_path.exists()
 
 
