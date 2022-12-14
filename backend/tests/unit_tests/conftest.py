@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import shutil
 import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING, Generator
@@ -19,10 +20,12 @@ if TYPE_CHECKING:
 @pytest.fixture
 def app() -> Generator[Flask, None, None]:
     db_fp, db_path = tempfile.mkstemp()
+    static_path: str = tempfile.mkdtemp()
     app: Flask = create_app(
         {
             "TESTING": True,
             "SQLALCHEMY_DATABASE_URI": f"sqlite:///{db_path}",
+            "STATIC_RESOURCE_PATH": static_path,
         }
     )
     with app.app_context():
@@ -33,6 +36,7 @@ def app() -> Generator[Flask, None, None]:
 
     os.close(db_fp)
     os.unlink(db_path)
+    shutil.rmtree(static_path)
 
 
 @pytest.fixture
