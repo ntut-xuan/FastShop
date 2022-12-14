@@ -26,12 +26,9 @@ def write_image_with_byte_data(byte_data: bytes, image_uuid: str) -> None:
     Path(image_path).write_bytes(byte_data)
 
 
-def get_image_byte_from_existing_file(image_id: str) -> bytes:
-    image_path: str = get_file_path_by_image_id(image_id)
-    image_byte_data: bytes
-    with open(image_path, "rb") as f:
-        image_byte_data = f.read()
-    return image_byte_data
+def get_image_byte_from_existing_file(image_uuid: str) -> bytes:
+    image_path: str = get_file_path_by_image_id(image_uuid)
+    return Path(image_path).read_bytes()
 
 
 def get_file_path_by_image_id(image_id: str) -> str:
