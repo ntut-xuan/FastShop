@@ -40,8 +40,8 @@ def get_file_path_by_image_uuid(uuid: str) -> str:
     return f"{static_resource_path}/{uuid}.png"
 
 
-def get_image_byte_data_from_base64_content(image_base64_content: str):
-    return b64decode(image_base64_content.split(",")[1].rstrip())
+def get_image_byte_data_from_base64_content(base64_content: str):
+    return b64decode(base64_content.split(",")[1].rstrip())
 
 
 def verify_image_data(image_data: str) -> bool:
