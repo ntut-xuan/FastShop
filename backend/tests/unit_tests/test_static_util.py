@@ -10,7 +10,7 @@ from static.exception import ImageNotExistError
 from static.util import (
     delete_image,
     get_file_path_by_image_uuid,
-    get_image_byte_from_existing_file,
+    get_image_byte,
     get_image_byte_data_from_base64_content,
     has_image_with_specific_uuid,
     verify_image_base64_content,
@@ -92,7 +92,7 @@ class TestImageManipulation:
             new_image: SomeImage = some_image
             write_image_with_byte_data(new_image.byte_data, new_image.uuid)
 
-            bytes_data = get_image_byte_from_existing_file(new_image.uuid)
+            bytes_data = get_image_byte(new_image.uuid)
 
             assert bytes_data == new_image.byte_data
 
