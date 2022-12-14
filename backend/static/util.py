@@ -78,7 +78,7 @@ def verify_image_base64_content(content: str) -> bool:
         bool: The content is valid or not.
     """
     return (
-        re.fullmatch("^data:image\/png;base64,[A-Za-z0-9+/]+={0,2}$", content)
+        re.fullmatch(r"^data:image/png;base64,[A-Za-z0-9+/]+={0,2}$", content)
         is not None
     )
 
