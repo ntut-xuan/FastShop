@@ -14,7 +14,7 @@ def has_image_with_specific_uuid(image_uuid: str) -> bool:
 
 
 def delete_image(image_uuid: str) -> None:
-    """Deletes the image with specific `image_uuid`
+    """Deletes the image with specific `image_uuid`.
 
     Raises:
         ImageNotExistError: Specific `image_uuid` is not exist.
@@ -32,8 +32,12 @@ def write_image_with_byte_data(byte_data: bytes, image_uuid: str) -> None:
     image_path.write_bytes(byte_data)
 
 
-def get_image_byte_from_existing_file(image_uuid: str) -> bytes:
-    """Returns the byte data of the image with specific UUID."""
+def get_image_byte(image_uuid: str) -> bytes:
+    """Returns the byte data of the image with specific `image_uuid`.
+
+    Raises:
+        ImageNotExistError: Specific `image_uuid` is not exist.
+    """
     image_path: Path = get_file_path_by_image_uuid(image_uuid)
     return image_path.read_bytes()
 
