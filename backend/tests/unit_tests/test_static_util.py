@@ -33,16 +33,6 @@ class SomeImage:
 
 class TestImageManipulation:
     @pytest.fixture
-    def app(self, app: Flask) -> Generator[Flask, None, None]:
-        """Shadows the one in conftest.py."""
-        static_path: str = tempfile.mkdtemp()
-        app.config["STATIC_RESOURCE_PATH"] = static_path
-
-        yield app
-
-        shutil.rmtree(static_path)
-
-    @pytest.fixture
     def some_image(self) -> SomeImage:
         return SomeImage(
             uuid="c11d5bcf-f529-4318-904d-4bc8b8d7f68a",

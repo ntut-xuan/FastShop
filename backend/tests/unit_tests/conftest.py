@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import shutil
 import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING, Generator
@@ -35,6 +36,7 @@ def app() -> Generator[Flask, None, None]:
 
     os.close(db_fp)
     os.unlink(db_path)
+    shutil.rmtree(static_path)
 
 
 @pytest.fixture
