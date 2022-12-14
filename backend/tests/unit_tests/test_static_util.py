@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from base64 import b64decode
 from dataclasses import dataclass
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
@@ -34,9 +33,7 @@ class TestImageManipulation:
     def some_image(self) -> SomeImage:
         return SomeImage(
             uuid="c11d5bcf-f529-4318-904d-4bc8b8d7f68a",
-            byte_data=b64decode(
-                "ZG9lc19ub3RfbWF0dGVy"
-            ),  # The base64 encoding of does_not_matter
+            byte_data=b"does_not_matter",
         )
 
     def test_write_static_image_with_absent_uuid_should_create_image(
@@ -60,10 +57,8 @@ class TestImageManipulation:
 
             write_image_with_byte_data(new_byte_content, some_image.uuid)
 
-            assert (
-                Path(get_file_path_by_image_uuid(some_image.uuid)).read_bytes()
-                == new_byte_content
-            )
+            file_content = get_file_path_by_image_uuid(some_image.uuid).read_bytes()
+            assert file_content == new_byte_content
 
     def test_delete_image_with_absent_uuid_should_throw_exception(
         self, app: Flask
