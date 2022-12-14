@@ -1,11 +1,9 @@
 from __future__ import annotations
 
-import shutil
-import tempfile
 from base64 import b64decode
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Generator
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -28,7 +26,7 @@ if TYPE_CHECKING:
 @dataclass
 class SomeImage:
     uuid: str
-    base64_byte_content: bytes
+    base64_byte_data: bytes
 
 
 class TestImageManipulation:
@@ -36,7 +34,7 @@ class TestImageManipulation:
     def some_image(self) -> SomeImage:
         return SomeImage(
             uuid="c11d5bcf-f529-4318-904d-4bc8b8d7f68a",
-            base64_byte_content=b64decode(
+            base64_byte_data=b64decode(
                 "ZG9lc19ub3RfbWF0dGVy"
             ),  # The base64 encoding of does_not_matter
         )
@@ -47,7 +45,7 @@ class TestImageManipulation:
         with app.app_context():
             new_image: SomeImage = some_image
 
-            write_image_with_byte_data(new_image.base64_byte_content, new_image.uuid)
+            write_image_with_byte_data(new_image.base64_byte_data, new_image.uuid)
 
             assert has_image_with_specific_uuid(new_image.uuid)
 
@@ -55,7 +53,7 @@ class TestImageManipulation:
         self, app: Flask, some_image: SomeImage
     ) -> None:
         with app.app_context():
-            write_image_with_byte_data(some_image.base64_byte_content, some_image.uuid)
+            write_image_with_byte_data(some_image.base64_byte_data, some_image.uuid)
             new_byte_content: bytes = get_image_byte_data_from_base64_content(
                 "data:image/png;base64,bmV3X2NvbnRlbnQ="
             )  # The base64 encoding of new_content
@@ -77,7 +75,7 @@ class TestImageManipulation:
         self, app: Flask, some_image: SomeImage
     ) -> None:
         with app.app_context():
-            write_image_with_byte_data(some_image.base64_byte_content, some_image.uuid)
+            write_image_with_byte_data(some_image.base64_byte_data, some_image.uuid)
 
             delete_image(some_image.uuid)
 
@@ -97,11 +95,11 @@ class TestImageManipulation:
     ) -> None:
         with app.app_context():
             new_image: SomeImage = some_image
-            write_image_with_byte_data(new_image.base64_byte_content, new_image.uuid)
+            write_image_with_byte_data(new_image.base64_byte_data, new_image.uuid)
 
             bytes_data = get_image_byte_from_existing_file(new_image.uuid)
 
-            assert bytes_data == new_image.base64_byte_content
+            assert bytes_data == new_image.base64_byte_data
 
     def test_verify_image_invalid_data_should_return_false(self) -> None:
         assert not verify_image_data(f"data:image/png;base64,_____________==")
