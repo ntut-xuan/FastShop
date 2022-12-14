@@ -39,7 +39,10 @@ def get_image_byte(image_uuid: str) -> bytes:
         ImageNotExistError: Specific `image_uuid` is not exist.
     """
     image_path: Path = get_file_path_by_image_uuid(image_uuid)
-    return image_path.read_bytes()
+    try:
+        return image_path.read_bytes()
+    except FileNotFoundError:
+        raise ImageNotExistError(image_path)
 
 
 def get_file_path_by_image_uuid(uuid: str) -> Path:

@@ -96,6 +96,12 @@ class TestImageManipulation:
 
             assert bytes_data == new_image.byte_data
 
+    def test_get_image_byte_with_absent_uuid_should_throw_exception(
+        self, app: Flask
+    ) -> None:
+        with app.app_context(), pytest.raises(ImageNotExistError):
+            get_image_byte("an-absent-uuid")
+
 
 def test_verify_image_with_invalid_data_should_return_false() -> None:
     assert not verify_image_base64_content(f"data:image/png;base64,_____________==")
