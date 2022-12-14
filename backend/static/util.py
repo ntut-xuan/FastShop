@@ -76,7 +76,7 @@ def verify_image_base64_content(content: str) -> bool:
     """Verify the data of the image using Regex.
 
     Args:
-        data (str): The content formatted `data:image/png;base64,<some base64 data>`.
+        content (str): The content formatted `data:image/png;base64,<some base64 data>`.
 
     Returns:
         bool: The content is valid or not.
