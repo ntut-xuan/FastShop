@@ -1,6 +1,7 @@
 import os
 import re
 from base64 import b64decode
+from pathlib import Path
 
 from flask import current_app
 
@@ -22,8 +23,7 @@ def delete_image(image_id: str) -> None:
 
 def write_image_with_byte_data(byte_data: bytes, image_uuid: str) -> None:
     image_path: str = get_file_path_by_image_id(image_uuid)
-    with open(image_path, "wb") as f:
-        f.write(byte_data)
+    Path(image_path).write_bytes(byte_data)
 
 
 def get_image_byte_from_existing_file(image_id: str) -> bytes:
