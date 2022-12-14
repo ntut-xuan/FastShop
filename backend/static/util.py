@@ -41,10 +41,11 @@ def get_file_path_by_image_uuid(uuid: str) -> str:
 
 
 def get_image_byte_data_from_base64_content(base64_content: str):
-    return b64decode(base64_content.split(",")[1].rstrip())
+    header, base64_data = base64_content.split(",")
+    return b64decode(base64_data)
 
 
-def verify_image_data(image_data: str) -> bool:
+def verify_image_data(data: str) -> bool:
     return (
         re.fullmatch("^data:image\/png;base64,[A-Za-z0-9+/]+={0,2}$", image_data)
         is not None
