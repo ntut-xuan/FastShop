@@ -9,12 +9,12 @@ from static.exception import ImageNotExistError
 
 
 def has_image_with_specific_id(image_id: str) -> bool:
-    image_path: str = get_file_path_by_image_id(image_id)
+    image_path: str = get_file_path_by_image_uuid(image_id)
     return os.path.exists(image_path)
 
 
 def delete_image(image_id: str) -> None:
-    image_path: str = get_file_path_by_image_id(image_id)
+    image_path: str = get_file_path_by_image_uuid(image_id)
     try:
         os.remove(image_path)
     except FileNotFoundError:
@@ -22,22 +22,22 @@ def delete_image(image_id: str) -> None:
 
 
 def write_image_with_byte_data(byte_data: bytes, image_uuid: str) -> None:
-    image_path: str = get_file_path_by_image_id(image_uuid)
+    image_path: str = get_file_path_by_image_uuid(image_uuid)
     Path(image_path).write_bytes(byte_data)
 
 
 def get_image_byte_from_existing_file(image_uuid: str) -> bytes:
-    image_path: str = get_file_path_by_image_id(image_uuid)
+    image_path: str = get_file_path_by_image_uuid(image_uuid)
     return Path(image_path).read_bytes()
 
 
-def get_file_path_by_image_id(image_id: str) -> str:
+def get_file_path_by_image_uuid(uuid: str) -> str:
     """
     Image with its id as `image_id` has path `STATIC_RESOURCE_PATH`/`image_id`.png,
     where `STATIC_RESOURCE_PATH` is configured in config.py.
     """
     static_resource_path: str = current_app.config.get("STATIC_RESOURCE_PATH")  # type: ignore
-    return f"{static_resource_path}/{image_id}.png"
+    return f"{static_resource_path}/{uuid}.png"
 
 
 def get_image_byte_data_from_base64_content(image_base64_content: str):
