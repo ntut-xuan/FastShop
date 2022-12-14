@@ -12,7 +12,7 @@ import pytest
 from static.exception import ImageNotExistError
 from static.util import (
     delete_image,
-    get_file_path_by_image_id,
+    get_file_path_by_image_uuid,
     get_image_byte_from_existing_file,
     get_image_byte_data_from_base64_content,
     has_image_with_specific_id,
@@ -73,7 +73,7 @@ class TestImageManipulation:
             write_image_with_byte_data(new_byte_content, some_image.uuid)
 
             assert (
-                Path(get_file_path_by_image_id(some_image.uuid)).read_bytes()
+                Path(get_file_path_by_image_uuid(some_image.uuid)).read_bytes()
                 == new_byte_content
             )
 
