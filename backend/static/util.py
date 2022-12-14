@@ -52,3 +52,13 @@ def verify_image_data(image_data: str) -> bool:
         re.fullmatch("^data:image\/png;base64,[A-Za-z0-9+/]+={0,2}$", image_data)
         is not None
     )
+
+
+def verify_uuid(uuid: str) -> bool:
+    return (
+        re.fullmatch(
+            r"^[A-Za-z0-9]{8}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{12}$",
+            uuid,
+        )
+        is not None
+    )

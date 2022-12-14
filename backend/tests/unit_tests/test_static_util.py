@@ -17,6 +17,7 @@ from static.util import (
     get_image_byte_data_from_base64_content,
     has_image_with_specific_id,
     verify_image_data,
+    verify_uuid,
     write_image_with_byte_data,
 )
 
@@ -114,3 +115,20 @@ class TestImageManipulation:
 
     def test_verify_image_invalid_data_should_return_false(self) -> None:
         assert not verify_image_data(f"data:image/png;base64,_____________==")
+
+    @pytest.mark.parametrize(
+        argnames=("bad_uuid",),
+        argvalues=(
+            (
+                "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE-",
+            ),  # Redundant dash in back of string
+            (
+                "-AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE",
+            ),  # Redundant dash in front of string
+            ("A-B-C-D-E",),  # Not enough length of every segment
+            ("A-B-C",),  # Not enough of segment
+            ("________-____-____-____-____________",),  # Contains invalid character.
+        ),
+    )
+    def test_verify_uuid_invalid_data_should_return_false(self, bad_uuid: str) -> None:
+        assert not verify_uuid(bad_uuid)
