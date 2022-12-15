@@ -4,7 +4,6 @@ from http import HTTPStatus
 from typing import TYPE_CHECKING
 from uuid import uuid4
 
-from flasgger import swag_from
 from flask import Blueprint, make_response, request, send_file
 
 from auth.util import verify_login_or_return_401
