@@ -16,12 +16,12 @@ from static.util import (
     verify_uuid,
     write_image_with_byte_data,
 )
-from util import SingleMessageStatus
 from response_message import (
     ABSENT_IMAGE_WITH_SPECIFIC_UUID,
     INVALID_UUID,
     WRONG_DATA_FORMAT,
 )
+from util import SingleMessageStatus
 
 static_bp = Blueprint("static", __name__)
 
