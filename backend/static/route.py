@@ -51,7 +51,9 @@ def upload_image():
         status = SingleMessageStatus(HTTPStatus.BAD_REQUEST, WRONG_DATA_FORMAT)
         return make_response(status.message, status.code)
 
-    image_byte_data: str = get_image_byte_data_from_base64_content(image_base64_content)
+    image_byte_data: bytes = get_image_byte_data_from_base64_content(
+        image_base64_content
+    )
     image_uuid_string: str = str(uuid4())
     write_image_with_byte_data(image_byte_data, image_uuid_string)
 
@@ -79,7 +81,9 @@ def modify_image_with_specific_id(uuid: str):
         status = SingleMessageStatus(HTTPStatus.BAD_REQUEST, WRONG_DATA_FORMAT)
         return make_response(status.message, status.code)
 
-    image_byte_data: str = get_image_byte_data_from_base64_content(image_base64_content)
+    image_byte_data: bytes = get_image_byte_data_from_base64_content(
+        image_base64_content
+    )
     write_image_with_byte_data(image_byte_data, uuid)
 
     status = SingleMessageStatus(HTTPStatus.OK)
