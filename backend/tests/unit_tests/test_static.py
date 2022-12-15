@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from base64 import b64decode
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, cast
 from dataclasses import dataclass
-from uuid import UUID, uuid4
+from uuid import UUID
 
 import pytest
 from http import HTTPStatus
@@ -31,7 +31,7 @@ class SomeImage:
 
 
 @pytest.fixture
-def login_client(client: FlaskClient) -> FlaskClient:
+def logged_in_client(client: FlaskClient) -> FlaskClient:
     client.post(
         "/login",
         json={
@@ -43,12 +43,12 @@ def login_client(client: FlaskClient) -> FlaskClient:
 
 
 @pytest.fixture
-def add_image(login_client: FlaskClient) -> SomeImage:
+def add_image(logged_in_client: FlaskClient) -> SomeImage:
     base64_image_content: str = "data:image/png;base64,ZG9lc19ub3RfbWF0dGVy"  # The base64 encode result of "does_not_matter"
     image_byte_data: bytes = get_image_byte_data_from_base64_content(
         base64_image_content
     )
-    response: TestResponse = login_client.post(
+    response: TestResponse = logged_in_client.post(
         "/static/images", data=base64_image_content, content_type="text/plain"
     )
     # Type: ignore because response.json return Any | None, so it will return any random shit to us.
@@ -76,7 +76,7 @@ class TestImageRoute:
         assert response.status_code == 401
 
     def test_upload_image_should_store_base64_to_static_file_path(
-        self, app: Flask, login_client: FlaskClient
+        self, app: Flask, logged_in_client: FlaskClient
     ):
         base64_image_content = (
             "ZG9lc19ub3RfbWF0dGVy"  # The base64 encode result of "does_not_matter"
@@ -84,7 +84,7 @@ class TestImageRoute:
         content: str = "data:image/png;base64," + base64_image_content
         with app.app_context():
 
-            response: TestResponse = login_client.post(
+            response: TestResponse = logged_in_client.post(
                 "/static/images", data=content, content_type="text/plain"
             )
 
@@ -96,21 +96,21 @@ class TestImageRoute:
             )
 
     def test_upload_image_with_invalid_content_should_return_http_status_code_bad_request(
-        self, login_client: FlaskClient
+        self, logged_in_client: FlaskClient
     ):
         content: str = "data:image/png;base64,____________=="
 
-        response: TestResponse = login_client.post(
+        response: TestResponse = logged_in_client.post(
             "/static/images", data=content, content_type="text/plain"
         )
 
         assert response.status_code == HTTPStatus.BAD_REQUEST
 
     def test_get_image_with_invalid_uuid_should_return_http_status_code_forbidden(
-        self, login_client: FlaskClient
+        self, logged_in_client: FlaskClient
     ):
         # [Act] Try modify the image with invalid UUID by PUT method
-        response: TestResponse = login_client.get(
+        response: TestResponse = logged_in_client.get(
             "/static/images/________-____-____-____-____________"
         )
 
@@ -118,14 +118,14 @@ class TestImageRoute:
         assert response.status_code == HTTPStatus.FORBIDDEN
 
     def test_get_image_with_valid_uuid_should_return_image(
-        self, login_client: FlaskClient, add_image: SomeImage
+        self, logged_in_client: FlaskClient, add_image: SomeImage
     ):
         # [Arrange] Add the image and fetch the uuid.
         uuid = add_image.uuid
         image_byte_data = add_image.base64_byte_content
 
         # [Act] Get the image by GET method
-        response: TestResponse = login_client.get(f"/static/images/{uuid}")
+        response: TestResponse = logged_in_client.get(f"/static/images/{uuid}")
 
         # [Assert]
         # It should return the image bytes data by mimetype image/png
@@ -134,10 +134,12 @@ class TestImageRoute:
         assert image_byte_data == response_image_byte_data
 
     def test_get_image_with_absent_uuid_should_return_http_status_code_not_found(
-        self, login_client: FlaskClient, some_absent_uuid: UUID
+        self, logged_in_client: FlaskClient, some_absent_uuid: UUID
     ):
         # [Act] Get the image with absent UUID by GET method.
-        response: TestResponse = login_client.get(f"/static/images/{some_absent_uuid}")
+        response: TestResponse = logged_in_client.get(
+            f"/static/images/{some_absent_uuid}"
+        )
 
         # [Assert] It should be return HTTP status code NOT_FOUND.
         assert response.status_code == HTTPStatus.NOT_FOUND
@@ -152,10 +154,12 @@ class TestImageRoute:
         assert response.status_code == HTTPStatus.UNAUTHORIZED
 
     def test_modify_image_with_absent_uuid_should_return_http_status_code_forbidden(
-        self, login_client: FlaskClient, some_absent_uuid: UUID
+        self, logged_in_client: FlaskClient, some_absent_uuid: UUID
     ):
         # [Act] Try modify the image with absent UUID by PUT method.
-        response: TestResponse = login_client.put(f"/static/images/{some_absent_uuid}")
+        response: TestResponse = logged_in_client.put(
+            f"/static/images/{some_absent_uuid}"
+        )
         response_data = cast(dict, response.json)
 
         # [Assert] It should be return HTTP status code FORBIDDEN.
@@ -163,10 +167,10 @@ class TestImageRoute:
         assert response_data["message"] == ABSENT_IMAGE_WITH_SPECIFIC_UUID
 
     def test_modify_image_with_invalid_uuid_should_return_http_status_code_forbidden(
-        self, login_client: FlaskClient
+        self, logged_in_client: FlaskClient
     ):
         # [Act] Try modify the image with invalid UUID by PUT method
-        response: TestResponse = login_client.put(
+        response: TestResponse = logged_in_client.put(
             "/static/images/________-____-____-____-____________"
         )
         response_data = cast(dict, response.json)
@@ -176,14 +180,14 @@ class TestImageRoute:
         assert response_data["message"] == INVALID_UUID
 
     def test_modify_image_with_invalid_image_content_should_return_http_status_code_bad_request(
-        self, login_client: FlaskClient, add_image: SomeImage
+        self, logged_in_client: FlaskClient, add_image: SomeImage
     ):
         # [Arrange] Add the image and fetch the uuid. Modify the image with invalid image base64 content.
         uuid: str = add_image.uuid
         image_base64_content: str = "data:image/png;base64,____________=="
 
         # [Act] Try modify the image with invalid base64 content by PUT method
-        response: TestResponse = login_client.put(
+        response: TestResponse = logged_in_client.put(
             f"/static/images/{uuid}",
             data=image_base64_content,
             content_type="text/plain",
@@ -193,7 +197,7 @@ class TestImageRoute:
         assert response.status_code == HTTPStatus.BAD_REQUEST
 
     def test_modify_image_with_exist_uuid_should_modify_successfully(
-        self, app: Flask, login_client: FlaskClient, add_image: SomeImage
+        self, app: Flask, logged_in_client: FlaskClient, add_image: SomeImage
     ):
         # [Arrange] Add the image and fetch the uuid.
         # It will use app_context in Flask app because get_image_byte_from_existing_file.
@@ -205,7 +209,7 @@ class TestImageRoute:
         with app.app_context():
 
             # [Act] Replace the existing image to the new image
-            response: TestResponse = login_client.put(
+            response: TestResponse = logged_in_client.put(
                 f"/static/images/{uuid}",
                 data=new_image_base64_content,
                 content_type="text/plain",
@@ -225,10 +229,10 @@ class TestImageRoute:
         assert response.status_code == HTTPStatus.UNAUTHORIZED
 
     def test_delete_image_with_invalid_uuid_should_return_http_status_code_forbidden(
-        self, login_client: FlaskClient
+        self, logged_in_client: FlaskClient
     ):
         # [Act] Delete the image with invalid UUID by DELETE method.
-        response: TestResponse = login_client.delete(
+        response: TestResponse = logged_in_client.delete(
             "/static/images/________-____-____-____-____________"
         )
         response_data = cast(dict, response.json)
@@ -238,10 +242,10 @@ class TestImageRoute:
         assert response_data["message"] == INVALID_UUID
 
     def test_delete_image_with_absent_uuid_should_return_http_status_code_forbidden(
-        self, login_client: FlaskClient, some_absent_uuid: UUID
+        self, logged_in_client: FlaskClient, some_absent_uuid: UUID
     ):
-        # [Act] Delete the image with absend UUID by DELETE method.
-        response: TestResponse = login_client.delete(
+        # [Act] Delete the image with absent UUID by DELETE method.
+        response: TestResponse = logged_in_client.delete(
             f"/static/images/{some_absent_uuid}"
         )
         response_data = cast(dict, response.json)
@@ -251,7 +255,7 @@ class TestImageRoute:
         assert response_data["message"] == ABSENT_IMAGE_WITH_SPECIFIC_UUID  # type: ignore
 
     def test_delete_image_with_exist_uuid_should_delete_successfully(
-        self, app: Flask, login_client: FlaskClient, add_image: SomeImage
+        self, app: Flask, logged_in_client: FlaskClient, add_image: SomeImage
     ):
         # [Arrange] Add the image and fetch the uuid.
         # It will use app_context in Flask app because has_image_with_specific_id
@@ -259,7 +263,7 @@ class TestImageRoute:
         with app.app_context():
 
             # [Act] Delete the existing image.
-            response: TestResponse = login_client.delete(f"/static/images/{uuid}")
+            response: TestResponse = logged_in_client.delete(f"/static/images/{uuid}")
 
             # [Assert] It should delete successfully.
             assert response.status_code == HTTPStatus.OK
