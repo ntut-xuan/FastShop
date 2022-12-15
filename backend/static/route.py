@@ -4,13 +4,13 @@ from http import HTTPStatus
 from uuid import uuid4
 
 from flasgger import swag_from
-from flask import Blueprint, make_response, send_file, request
+from flask import Blueprint, make_response, request, send_file
 
 from auth.util import verify_login_or_return_401
 from static.util import (
     delete_image,
-    get_image_byte_data_from_base64_content,
     get_file_path_by_image_uuid,
+    get_image_byte_data_from_base64_content,
     has_image_with_specific_uuid,
     verify_image_base64_content,
     verify_uuid,
@@ -54,10 +54,10 @@ def upload_image():
     image_byte_data: bytes = get_image_byte_data_from_base64_content(
         image_base64_content
     )
-    image_uuid_string: str = str(uuid4())
-    write_image_with_byte_data(image_byte_data, image_uuid_string)
+    image_uuid: str = str(uuid4())
+    write_image_with_byte_data(image_byte_data, image_uuid)
 
-    response_payload = {"uuid": image_uuid_string}
+    response_payload = {"uuid": image_uuid}
     return make_response(response_payload)
 
 
