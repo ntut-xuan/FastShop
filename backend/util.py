@@ -1,8 +1,15 @@
+from __future__ import annotations
+
 import re
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from flasgger import swag_from
-from flask import Blueprint, current_app
+from flask import current_app, make_response
+
+if TYPE_CHECKING:
+    from flask import Blueprint, Response
+    from http import HTTPStatus
 
 
 def fetch_page(page_name: str) -> str:
@@ -39,6 +46,13 @@ def route_with_doc(bp: Blueprint, rule: str, methods: list[str]):
         return bp.route(rule, methods=methods)(func)
 
     return wrapper
+
+
+def make_single_message_response(
+    http_status: HTTPStatus, message: str = None
+) -> Response:
+    status = SingleMessageStatus(http_status, message)
+    return make_response(status.message, status.code)
 
 
 @dataclass

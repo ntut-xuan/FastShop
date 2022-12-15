@@ -26,7 +26,7 @@ from response_message import (
     INVALID_DATA,
     WRONG_DATA_FORMAT,
 )
-from util import SingleMessageStatus, fetch_page, route_with_doc
+from util import fetch_page, make_single_message_response, route_with_doc
 
 if TYPE_CHECKING:
     from flask.wrappers import Response
@@ -40,20 +40,20 @@ def login_route() -> Response | str:
         data = request.json
 
         if data is None or "e-mail" not in data or "password" not in data:
-            return _make_single_message_response(
+            return make_single_message_response(
                 HTTPStatus.BAD_REQUEST, message=WRONG_DATA_FORMAT
             )
         if not is_valid_email(data["e-mail"]):
-            return _make_single_message_response(
+            return make_single_message_response(
                 HTTPStatus.UNPROCESSABLE_ENTITY, message=INVALID_DATA
             )
 
         if not _is_correct_email_and_password(data["e-mail"], data["password"]):
-            return _make_single_message_response(
+            return make_single_message_response(
                 HTTPStatus.FORBIDDEN, message=INCORRECT_EMAIL_OR_PASSWORD
             )
         else:
-            response: Response = _make_single_message_response(HTTPStatus.OK)
+            response: Response = make_single_message_response(HTTPStatus.OK)
 
             # Not using `del data["password"] because there might be something
             # other then e-mail and password in the posted data`.
@@ -83,11 +83,11 @@ def register_route() -> Response | str:
             "password",
         ]
         if not _has_required_columns(data, required_columns):
-            return _make_single_message_response(
+            return make_single_message_response(
                 HTTPStatus.BAD_REQUEST, message=WRONG_DATA_FORMAT
             )
         if not _has_valid_register_data_format(data):
-            return _make_single_message_response(
+            return make_single_message_response(
                 HTTPStatus.UNPROCESSABLE_ENTITY, message=INVALID_DATA
             )
 
@@ -102,11 +102,11 @@ def register_route() -> Response | str:
         try:
             register(data["e-mail"], data["password"], profile)
         except EmailAlreadyRegisteredError:
-            return _make_single_message_response(
+            return make_single_message_response(
                 HTTPStatus.FORBIDDEN, message=DUPLICATE_ACCOUNT
             )
         else:
-            return _make_single_message_response(HTTPStatus.OK)
+            return make_single_message_response(HTTPStatus.OK)
 
     return fetch_page("register")
 
@@ -114,13 +114,13 @@ def register_route() -> Response | str:
 @route_with_doc(auth_bp, "/verify_jwt", methods=["POST"])
 def verify_jwt_route() -> Response:
     if "jwt" not in request.cookies:
-        return _make_single_message_response(HTTPStatus.UNAUTHORIZED, ABSENT_COOKIE)
+        return make_single_message_response(HTTPStatus.UNAUTHORIZED, ABSENT_COOKIE)
 
     jwt_token: str = request.cookies["jwt"]
     jwt_codec = HS256JWTCodec(current_app.config["jwt_key"])
 
     if not jwt_codec.is_valid_jwt(jwt_token):
-        return _make_single_message_response(
+        return make_single_message_response(
             HTTPStatus.UNPROCESSABLE_ENTITY, INVALID_COOKIE
         )
 
@@ -130,7 +130,7 @@ def verify_jwt_route() -> Response:
 
 @route_with_doc(auth_bp, "/logout", methods=["POST"])
 def logout_route() -> Response:
-    response: Response = _make_single_message_response(HTTPStatus.OK)
+    response: Response = make_single_message_response(HTTPStatus.OK)
     response.delete_cookie("jwt")
     return response
 
@@ -145,11 +145,6 @@ def _has_required_columns(data: Mapping, required_columns: Iterable) -> bool:
 
 def _has_valid_register_data_format(data: Mapping[str, Any]) -> bool:
     return is_valid_birthday(data["birthday"]) and is_valid_email(data["e-mail"])
-
-
-def _make_single_message_response(code: int, message: str | None = None) -> Response:
-    status = SingleMessageStatus(code, message)
-    return make_response(status.message, status.code)
 
 
 def _set_jwt_cookie_to_response(
