@@ -31,7 +31,7 @@ class SomeImage:
 
 
 @pytest.fixture
-def login_client(client: FlaskClient) -> None:
+def login_client(client: FlaskClient) -> FlaskClient:
     client.post(
         "/login",
         json={
