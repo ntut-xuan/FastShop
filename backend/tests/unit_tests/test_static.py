@@ -9,8 +9,8 @@ from http import HTTPStatus
 
 from static.util import (
     get_image_byte_data_from_base64_content,
-    get_image_byte_from_existing_file,
-    has_image_with_specific_id,
+    get_image_byte,
+    has_image_with_specific_uuid,
 )
 
 if TYPE_CHECKING:
@@ -78,10 +78,8 @@ class TestImageRoute:
 
             data_dict: dict[str, Any] = response.json  # type: ignore
             assert response.status_code == 200
-            assert has_image_with_specific_id(data_dict["uuid"])
-            assert get_image_byte_from_existing_file(data_dict["uuid"]) == b64decode(
-                base64_image_content
-            )
+            assert has_image_with_specific_uuid(data_dict["uuid"])
+            assert get_image_byte(data_dict["uuid"]) == b64decode(base64_image_content)
 
     def test_upload_image_with_invalid_content_should_return_http_status_code_bad_request(
         self, login_client: FlaskClient
@@ -175,7 +173,7 @@ class TestImageRoute:
 
             # [Assert] It should be modify successfully
             assert response.status_code == HTTPStatus.OK
-            assert get_image_byte_from_existing_file(uuid) == new_image_byte_data
+            assert get_image_byte(uuid) == new_image_byte_data
 
     def test_delete_image_should_return_http_status_code_unauthorized_if_not_login(
         self, client: FlaskClient
@@ -208,4 +206,4 @@ class TestImageRoute:
 
             # [Assert] It should delete successfully.
             assert response.status_code == HTTPStatus.OK
-            assert not has_image_with_specific_id(uuid)
+            assert not has_image_with_specific_uuid(uuid)
