@@ -108,7 +108,7 @@ class TestImageRoute:
         response_image_byte_data: bytes = response.data
         assert image_byte_data == response_image_byte_data
 
-    def test_get_image_with_absent_uuid_should_http_status_code_not_found(
+    def test_get_image_with_absent_uuid_should_return_http_status_code_not_found(
         self, login_client: FlaskClient
     ):
         # [Act] Get the image with absent UUID by GET method.
