@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from typing import Any, ClassVar, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, ClassVar
 
 import freezegun
 import jwt
@@ -9,10 +9,7 @@ import pytest
 from flask import Response
 from werkzeug.datastructures import MultiDict
 
-from auth.exception import (
-    EmailAlreadyRegisteredError,
-    UserNotFoundError,
-)
+from auth.exception import EmailAlreadyRegisteredError, UserNotFoundError
 from auth.util import (
     Gender,
     HS256JWTCodec,

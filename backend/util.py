@@ -8,8 +8,9 @@ from flasgger import swag_from
 from flask import current_app, make_response
 
 if TYPE_CHECKING:
-    from flask import Blueprint, Response
     from http import HTTPStatus
+
+    from flask import Blueprint, Response
 
 
 def fetch_page(page_name: str) -> str:
