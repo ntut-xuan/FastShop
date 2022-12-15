@@ -3,10 +3,15 @@ from __future__ import annotations
 from base64 import b64decode
 from typing import TYPE_CHECKING, Any
 from dataclasses import dataclass
+from uuid import UUID, uuid4
 
 import pytest
 from http import HTTPStatus
 
+from response_message import (
+    ABSENT_IMAGE_WITH_SPECIFIC_UUID,
+    INVALID_UUID,
+)
 from static.util import (
     get_image_byte_data_from_base64_content,
     get_image_byte,
@@ -51,6 +56,13 @@ def add_image(login_client: FlaskClient) -> SomeImage:
     return SomeImage(uuid, image_byte_data)
 
 
+@pytest.fixture
+def some_absent_uuid() -> UUID:
+    # Cuz the route with the UUID path parameter will check the UUID is valid or not, so we want to unitary the absent UUID.
+    # We assuming the UUID 15cb8517-32d6-436f-b8dc-1e1d2a9e8163.png will not exists in file.
+    return UUID("15cb8517-32d6-436f-b8dc-1e1d2a9e8163")
+
+
 class TestImageRoute:
     def test_upload_image_should_return_401_if_user_not_login(
         self, client: FlaskClient
@@ -92,6 +104,17 @@ class TestImageRoute:
 
         assert response.status_code == HTTPStatus.BAD_REQUEST
 
+    def test_get_image_with_invalid_uuid_should_return_http_status_code_forbidden(
+        self, login_client: FlaskClient
+    ):
+        # [Act] Try modify the image with invalid UUID by PUT method
+        response: TestResponse = login_client.get(
+            "/static/images/________-____-____-____-____________"
+        )
+
+        # [Assert] It should be return HTTP status code FORBIDDEN.
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
     def test_get_image_with_valid_uuid_should_return_image(
         self, login_client: FlaskClient, add_image: SomeImage
     ):
@@ -109,10 +132,10 @@ class TestImageRoute:
         assert image_byte_data == response_image_byte_data
 
     def test_get_image_with_absent_uuid_should_return_http_status_code_not_found(
-        self, login_client: FlaskClient
+        self, login_client: FlaskClient, some_absent_uuid: UUID
     ):
         # [Act] Get the image with absent UUID by GET method.
-        response: TestResponse = login_client.get("/static/images/DOES-NOT-MATTER-HERE")
+        response: TestResponse = login_client.get(f"/static/images/{some_absent_uuid}")
 
         # [Assert] It should be return HTTP status code NOT_FOUND.
         assert response.status_code == HTTPStatus.NOT_FOUND
@@ -127,13 +150,26 @@ class TestImageRoute:
         assert response.status_code == HTTPStatus.UNAUTHORIZED
 
     def test_modify_image_with_absent_uuid_should_return_http_status_code_forbidden(
-        self, login_client: FlaskClient
+        self, login_client: FlaskClient, some_absent_uuid: UUID
     ):
         # [Act] Try modify the image with absent UUID by PUT method.
-        response: TestResponse = login_client.put("/static/images/DOES-NOT-MATTER-HERE")
+        response: TestResponse = login_client.put(f"/static/images/{some_absent_uuid}")
 
         # [Assert] It should be return HTTP status code FORBIDDEN.
         assert response.status_code == HTTPStatus.FORBIDDEN
+        assert response.json["message"] == ABSENT_IMAGE_WITH_SPECIFIC_UUID
+
+    def test_modify_image_with_invalid_uuild_should_return_http_status_code_forbidden(
+        self, login_client: FlaskClient
+    ):
+        # [Act] Try modify the image with invalid UUID by PUT method
+        response: TestResponse = login_client.put(
+            "/static/images/________-____-____-____-____________"
+        )
+
+        # [Assert] It should be return HTTP status code FORBIDDEN.
+        assert response.status_code == HTTPStatus.FORBIDDEN
+        assert response.json["message"] == INVALID_UUID
 
     def test_modify_image_with_invalid_image_content_should_return_http_status_code_bad_request(
         self, login_client: FlaskClient, add_image: SomeImage
@@ -184,14 +220,29 @@ class TestImageRoute:
         # [Assert] It should return HTTP status code UNAUTHORIZED
         assert response.status_code == HTTPStatus.UNAUTHORIZED
 
-    def test_delete_image_with_absent_uuid_should_return_http_status_code_forbidden(
+    def test_delete_image_with_invalid_uuid_should_return_http_status_code_forbidden(
         self, login_client: FlaskClient
     ):
+        # [Act] Delete the image with invalid UUID by DELETE method.
+        response: TestResponse = login_client.delete(
+            "/static/images/________-____-____-____-____________"
+        )
+
+        # [Assert] It should return HTTP status code FORBIDDEN
+        assert response.status_code == HTTPStatus.FORBIDDEN
+        assert response.json["message"] == INVALID_UUID
+
+    def test_delete_image_with_absent_uuid_should_return_http_status_code_forbidden(
+        self, login_client: FlaskClient, some_absent_uuid: UUID
+    ):
         # [Act] Delete the image with absend UUID by DELETE method.
-        response: TestResponse = login_client.delete("/static/images/DOES-NOT-MATTER")
+        response: TestResponse = login_client.delete(
+            f"/static/images/{some_absent_uuid}"
+        )
 
         # [Assert] It should return HTTP status code FORBIDDEN.
         assert response.status_code == HTTPStatus.FORBIDDEN
+        assert response.json["message"] == ABSENT_IMAGE_WITH_SPECIFIC_UUID
 
     def test_delete_image_with_exist_uuid_should_delete_successfully(
         self, app: Flask, login_client: FlaskClient, add_image: SomeImage
