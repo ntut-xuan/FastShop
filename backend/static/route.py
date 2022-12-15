@@ -22,7 +22,7 @@ from response_message import (
     INVALID_UUID,
     WRONG_DATA_FORMAT,
 )
-from util import SingleMessageStatus
+from util import SingleMessageStatus, route_with_doc
 
 if TYPE_CHECKING:
     from flask.wrappers import Response
@@ -30,8 +30,7 @@ if TYPE_CHECKING:
 static_bp = Blueprint("static", __name__)
 
 
-@static_bp.route("/static/images/<string:uuid>", methods=["GET"])
-@swag_from("../api/static/static_images_id_get.yml")
+@route_with_doc(static_bp, "/static/images/<string:uuid>", methods=["GET"])
 def fetch_image_with_specific_id(uuid: str) -> Response:
     if not verify_uuid(uuid):
         return make_single_message_response(HTTPStatus.FORBIDDEN, INVALID_UUID)
@@ -44,8 +43,7 @@ def fetch_image_with_specific_id(uuid: str) -> Response:
     return send_file(get_file_path_by_image_uuid(uuid), mimetype="image/png")
 
 
-@static_bp.route("/static/images", methods=["POST"])
-@swag_from("../api/static/static_images_post.yml")
+@route_with_doc(static_bp, "/static/images", methods=["POST"])
 @verify_login_or_return_401
 def upload_image() -> Response:
     image_base64_content: str = request.data.decode("utf-8")
@@ -63,8 +61,7 @@ def upload_image() -> Response:
     return make_response(response_payload)
 
 
-@static_bp.route("/static/images/<string:uuid>", methods=["PUT"])
-@swag_from("../api/static/static_images_id_put.yml")
+@route_with_doc(static_bp, "/static/images/<string:uuid>", methods=["PUT"])
 @verify_login_or_return_401
 def modify_image_with_specific_id(uuid: str) -> Response:
     image_base64_content: str = request.data.decode("utf-8")
@@ -88,8 +85,7 @@ def modify_image_with_specific_id(uuid: str) -> Response:
     return make_single_message_response(HTTPStatus.OK)
 
 
-@static_bp.route("/static/images/<string:uuid>", methods=["DELETE"])
-@swag_from("../api/static/static_images_id_delete.yml")
+@route_with_doc(static_bp, "/static/images/<string:uuid>", methods=["DELETE"])
 @verify_login_or_return_401
 def delete_image_with_specific_id(uuid: str) -> Response:
     if not verify_uuid(uuid):
