@@ -1,4 +1,4 @@
-from tests.unit_tests.test_auth import (
+from tests.unit_tests.auth.test_auth import (
     TestLoginRoute,
     TestLogoutRoute,
     TestRegisterRoute,
