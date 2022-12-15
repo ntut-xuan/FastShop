@@ -22,8 +22,11 @@ responses:
           type: string
           format: binary
         example: The binary of the image.
-  403:
-    description: The image with a specific UUID is absent.
+  404:
+    description:
+      "The specific UUID is absent or invalid. Their corresponding message is: \n\n
+      - Absent: `The image with a specific UUID is absent.` \n\n
+      - Invalid: `The specific UUID in the path parameter is invalid.`"
     content:
       plain/text:
         schema:
