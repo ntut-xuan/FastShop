@@ -49,9 +49,9 @@ def route_with_doc(bp: Blueprint, rule: str, methods: list[str]):
 
 
 def make_single_message_response(
-    http_status: HTTPStatus, message: str = None
+    status_code: HTTPStatus, message: str = None
 ) -> Response:
-    status = SingleMessageStatus(http_status, message)
+    status = SingleMessageStatus(status_code, message)
     return make_response(status.message, status.code)
 
 
