@@ -159,7 +159,7 @@ class TestImageRoute:
         assert response.status_code == HTTPStatus.FORBIDDEN
         assert response.json["message"] == ABSENT_IMAGE_WITH_SPECIFIC_UUID
 
-    def test_modify_image_with_invalid_uuild_should_return_http_status_code_forbidden(
+    def test_modify_image_with_invalid_uuid_should_return_http_status_code_forbidden(
         self, login_client: FlaskClient
     ):
         # [Act] Try modify the image with invalid UUID by PUT method
