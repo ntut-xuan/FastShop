@@ -48,7 +48,10 @@ responses:
         example:
           message: Unauthorized.
   403:
-    description: "The UUID user query is absent or invalid. \n\n If the UUID user query is absent, respond `The image with a specific UUID is absent.` in the message field. \n\n If the UUID user query is invalid, respond `The specific UUID in the path parameter is invalid.` in the message field."
+    description:
+      "The specific UUID is absent or invalid. Their corresponding message is: \n\n
+      - Absent: `The image with a specific UUID is absent.` \n\n
+      - Invalid: `The specific UUID in the path parameter is invalid.`"
     content:
       application/json:
         schema:
