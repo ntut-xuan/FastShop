@@ -4,7 +4,7 @@ from http import HTTPStatus
 from uuid import uuid4
 
 from flasgger import swag_from
-from flask import Blueprint, make_response, send_file, abort, request
+from flask import Blueprint, make_response, send_file, request
 
 from auth.util import verify_login_or_return_401
 from static.util import (
