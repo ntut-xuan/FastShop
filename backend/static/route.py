@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from http import HTTPStatus
+from typing import TYPE_CHECKING
 from uuid import uuid4
 
 from flasgger import swag_from
@@ -23,12 +24,15 @@ from response_message import (
 )
 from util import SingleMessageStatus
 
+if TYPE_CHECKING:
+    from flask.wrappers import Response
+
 static_bp = Blueprint("static", __name__)
 
 
 @static_bp.route("/static/images/<string:uuid>", methods=["GET"])
 @swag_from("../api/static/static_images_id_get.yml")
-def fetch_image_with_specific_id(uuid: str):
+def fetch_image_with_specific_id(uuid: str) -> Response:
     if not verify_uuid(uuid):
         return make_single_message_response(HTTPStatus.FORBIDDEN, INVALID_UUID)
 
@@ -36,13 +40,14 @@ def fetch_image_with_specific_id(uuid: str):
         return make_single_message_response(
             HTTPStatus.NOT_FOUND, ABSENT_IMAGE_WITH_SPECIFIC_UUID
         )
+
     return send_file(get_file_path_by_image_uuid(uuid), mimetype="image/png")
 
 
 @static_bp.route("/static/images", methods=["POST"])
 @swag_from("../api/static/static_images_post.yml")
 @verify_login_or_return_401
-def upload_image():
+def upload_image() -> Response:
     image_base64_content: str = request.data.decode("utf-8")
 
     if not verify_image_base64_content(image_base64_content):
@@ -51,17 +56,17 @@ def upload_image():
     image_byte_data: bytes = get_image_byte_data_from_base64_content(
         image_base64_content
     )
-    image_uuid: str = str(uuid4())
+    image_uuid = str(uuid4())
     write_image_with_byte_data(image_byte_data, image_uuid)
 
-    response_payload = {"uuid": image_uuid}
+    response_payload: dict[str, str] = {"uuid": image_uuid}
     return make_response(response_payload)
 
 
 @static_bp.route("/static/images/<string:uuid>", methods=["PUT"])
 @swag_from("../api/static/static_images_id_put.yml")
 @verify_login_or_return_401
-def modify_image_with_specific_id(uuid: str):
+def modify_image_with_specific_id(uuid: str) -> Response:
     image_base64_content: str = request.data.decode("utf-8")
 
     if not verify_uuid(uuid):
@@ -86,7 +91,7 @@ def modify_image_with_specific_id(uuid: str):
 @static_bp.route("/static/images/<string:uuid>", methods=["DELETE"])
 @swag_from("../api/static/static_images_id_delete.yml")
 @verify_login_or_return_401
-def delete_image_with_specific_id(uuid: str):
+def delete_image_with_specific_id(uuid: str) -> Response:
     if not verify_uuid(uuid):
         return make_single_message_response(HTTPStatus.FORBIDDEN, INVALID_UUID)
 
@@ -100,6 +105,8 @@ def delete_image_with_specific_id(uuid: str):
     return make_single_message_response(HTTPStatus.OK)
 
 
-def make_single_message_response(http_status: HTTPStatus, message: str = None):
+def make_single_message_response(
+    http_status: HTTPStatus, message: str = None
+) -> Response:
     status = SingleMessageStatus(http_status, message)
     return make_response(status.message, status.code)
