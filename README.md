@@ -1,5 +1,7 @@
 # FastShop
 
+[![codecov](https://codecov.io/gh/ntut-xuan/FastShop/branch/main/graph/badge.svg?token=2LF2YOVAZA)](https://codecov.io/gh/ntut-xuan/FastShop)
+
 ## Introduction
 
 ![FastShop](https://user-images.githubusercontent.com/69747731/189900653-63525935-2691-487d-9709-1a030ff7c470.png)
