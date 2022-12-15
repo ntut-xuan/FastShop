@@ -13,10 +13,15 @@ from static.util import (
     get_file_path_by_image_uuid,
     has_image_with_specific_uuid,
     verify_image_base64_content,
+    verify_uuid,
     write_image_with_byte_data,
 )
 from util import SingleMessageStatus
-from response_message import WRONG_DATA_FORMAT
+from response_message import (
+    ABSENT_IMAGE_WITH_SPECIFIC_UUID,
+    INVALID_UUID,
+    WRONG_DATA_FORMAT,
+)
 
 static_bp = Blueprint("static", __name__)
 
@@ -24,9 +29,13 @@ static_bp = Blueprint("static", __name__)
 @static_bp.route("/static/images/<string:uuid>", methods=["GET"])
 @swag_from("../api/static/static_images_id_get.yml")
 def fetch_image_with_specific_id(uuid):
+    if not verify_uuid(uuid):
+        status = SingleMessageStatus(HTTPStatus.FORBIDDEN, INVALID_UUID)
+        return make_response(status.message, status.code)
+
     if not has_image_with_specific_uuid(uuid):
         status = SingleMessageStatus(
-            HTTPStatus.NOT_FOUND, "The image with a specific UUID is absent."
+            HTTPStatus.NOT_FOUND, ABSENT_IMAGE_WITH_SPECIFIC_UUID
         )
         return make_response(status.message, status.code)
     return send_file(get_file_path_by_image_uuid(uuid), mimetype="image/png")
@@ -56,9 +65,13 @@ def upload_image():
 def modify_image_with_specific_id(uuid):
     image_base64_content: str = request.data.decode("utf-8")
 
+    if not verify_uuid(uuid):
+        status = SingleMessageStatus(HTTPStatus.FORBIDDEN, INVALID_UUID)
+        return make_response(status.message, status.code)
+
     if not has_image_with_specific_uuid(uuid):
         status = SingleMessageStatus(
-            HTTPStatus.FORBIDDEN, "The image with a specific UUID is absent."
+            HTTPStatus.FORBIDDEN, ABSENT_IMAGE_WITH_SPECIFIC_UUID
         )
         return make_response(status.message, status.code)
 
@@ -77,9 +90,13 @@ def modify_image_with_specific_id(uuid):
 @swag_from("../api/static/static_images_id_delete.yml")
 @verify_login_or_return_401
 def delete_image_with_specific_id(uuid):
+    if not verify_uuid(uuid):
+        status = SingleMessageStatus(HTTPStatus.FORBIDDEN, INVALID_UUID)
+        return make_response(status.message, status.code)
+
     if not has_image_with_specific_uuid(uuid):
         status = SingleMessageStatus(
-            HTTPStatus.FORBIDDEN, "The image with a specific UUID is absent."
+            HTTPStatus.FORBIDDEN, ABSENT_IMAGE_WITH_SPECIFIC_UUID
         )
         return make_response(status.message, status.code)
 
