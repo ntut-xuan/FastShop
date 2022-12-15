@@ -1,5 +1,9 @@
 # FastShop
 
+[![codecov](https://codecov.io/gh/ntut-xuan/FastShop/branch/main/graph/badge.svg?token=2LF2YOVAZA)](https://codecov.io/gh/ntut-xuan/FastShop)
+![Unit Test](https://github.com/ntut-xuan/fastshop/actions/workflows/backend-unit-test.yml/badge.svg)
+![Docker CI](https://github.com/ntut-xuan/fastshop/actions/workflows/docker-ci.yml/badge.svg)
+
 ## Introduction
 
 ![FastShop](https://user-images.githubusercontent.com/69747731/189900653-63525935-2691-487d-9709-1a030ff7c470.png)
