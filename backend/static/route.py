@@ -28,7 +28,7 @@ static_bp = Blueprint("static", __name__)
 
 @static_bp.route("/static/images/<string:uuid>", methods=["GET"])
 @swag_from("../api/static/static_images_id_get.yml")
-def fetch_image_with_specific_id(uuid):
+def fetch_image_with_specific_id(uuid: str):
     if not verify_uuid(uuid):
         status = SingleMessageStatus(HTTPStatus.FORBIDDEN, INVALID_UUID)
         return make_response(status.message, status.code)
@@ -62,7 +62,7 @@ def upload_image():
 @static_bp.route("/static/images/<string:uuid>", methods=["PUT"])
 @swag_from("../api/static/static_images_id_put.yml")
 @verify_login_or_return_401
-def modify_image_with_specific_id(uuid):
+def modify_image_with_specific_id(uuid: str):
     image_base64_content: str = request.data.decode("utf-8")
 
     if not verify_uuid(uuid):
@@ -89,7 +89,7 @@ def modify_image_with_specific_id(uuid):
 @static_bp.route("/static/images/<string:uuid>", methods=["DELETE"])
 @swag_from("../api/static/static_images_id_delete.yml")
 @verify_login_or_return_401
-def delete_image_with_specific_id(uuid):
+def delete_image_with_specific_id(uuid: str):
     if not verify_uuid(uuid):
         status = SingleMessageStatus(HTTPStatus.FORBIDDEN, INVALID_UUID)
         return make_response(status.message, status.code)
