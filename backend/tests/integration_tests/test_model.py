@@ -1,4 +1,4 @@
-from tests.unit_tests.test_model import TestCascadeUpdateAndDeleteOnTagOfItem
+from tests.unit_tests.models.test_model import TestCascadeUpdateAndDeleteOnTagOfItem
 
 
 class TestCascadeUpdateAndDeleteOnTagOfItemWithMariaDB(

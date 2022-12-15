@@ -21,7 +21,7 @@ from response_message import (
     INVALID_UUID,
     WRONG_DATA_FORMAT,
 )
-from util import SingleMessageStatus, route_with_doc
+from util import make_single_message_response, route_with_doc
 
 if TYPE_CHECKING:
     from flask.wrappers import Response
@@ -98,10 +98,3 @@ def delete_image_with_specific_id(uuid: str) -> Response:
     delete_image(uuid)
 
     return make_single_message_response(HTTPStatus.OK)
-
-
-def make_single_message_response(
-    http_status: HTTPStatus, message: str = None
-) -> Response:
-    status = SingleMessageStatus(http_status, message)
-    return make_response(status.message, status.code)
