@@ -1,6 +1,8 @@
 # FastShop
 
 [![codecov](https://codecov.io/gh/ntut-xuan/FastShop/branch/main/graph/badge.svg?token=2LF2YOVAZA)](https://codecov.io/gh/ntut-xuan/FastShop)
+![Unit Test](https://github.com/ntut-xuan/fastshop/actions/workflows/backend-unit-test.yml/badge.svg)
+
 
 ## Introduction
 
