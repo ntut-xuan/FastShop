@@ -30,14 +30,12 @@ static_bp = Blueprint("static", __name__)
 @swag_from("../api/static/static_images_id_get.yml")
 def fetch_image_with_specific_id(uuid: str):
     if not verify_uuid(uuid):
-        status = SingleMessageStatus(HTTPStatus.FORBIDDEN, INVALID_UUID)
-        return make_response(status.message, status.code)
+        return make_single_message_response(HTTPStatus.FORBIDDEN, INVALID_UUID)
 
     if not has_image_with_specific_uuid(uuid):
-        status = SingleMessageStatus(
+        return make_single_message_response(
             HTTPStatus.NOT_FOUND, ABSENT_IMAGE_WITH_SPECIFIC_UUID
         )
-        return make_response(status.message, status.code)
     return send_file(get_file_path_by_image_uuid(uuid), mimetype="image/png")
 
 
@@ -48,8 +46,7 @@ def upload_image():
     image_base64_content: str = request.data.decode("utf-8")
 
     if not verify_image_base64_content(image_base64_content):
-        status = SingleMessageStatus(HTTPStatus.BAD_REQUEST, WRONG_DATA_FORMAT)
-        return make_response(status.message, status.code)
+        return make_single_message_response(HTTPStatus.BAD_REQUEST, WRONG_DATA_FORMAT)
 
     image_byte_data: bytes = get_image_byte_data_from_base64_content(
         image_base64_content
@@ -68,26 +65,22 @@ def modify_image_with_specific_id(uuid: str):
     image_base64_content: str = request.data.decode("utf-8")
 
     if not verify_uuid(uuid):
-        status = SingleMessageStatus(HTTPStatus.FORBIDDEN, INVALID_UUID)
-        return make_response(status.message, status.code)
+        return make_single_message_response(HTTPStatus.FORBIDDEN, INVALID_UUID)
 
     if not has_image_with_specific_uuid(uuid):
-        status = SingleMessageStatus(
+        return make_single_message_response(
             HTTPStatus.FORBIDDEN, ABSENT_IMAGE_WITH_SPECIFIC_UUID
         )
-        return make_response(status.message, status.code)
 
     if not verify_image_base64_content(image_base64_content):
-        status = SingleMessageStatus(HTTPStatus.BAD_REQUEST, WRONG_DATA_FORMAT)
-        return make_response(status.message, status.code)
+        return make_single_message_response(HTTPStatus.BAD_REQUEST, WRONG_DATA_FORMAT)
 
     image_byte_data: bytes = get_image_byte_data_from_base64_content(
         image_base64_content
     )
     write_image_with_byte_data(image_byte_data, uuid)
 
-    status = SingleMessageStatus(HTTPStatus.OK)
-    return make_response(status.message, status.code)
+    return make_single_message_response(HTTPStatus.OK)
 
 
 @static_bp.route("/static/images/<string:uuid>", methods=["DELETE"])
@@ -95,16 +88,18 @@ def modify_image_with_specific_id(uuid: str):
 @verify_login_or_return_401
 def delete_image_with_specific_id(uuid: str):
     if not verify_uuid(uuid):
-        status = SingleMessageStatus(HTTPStatus.FORBIDDEN, INVALID_UUID)
-        return make_response(status.message, status.code)
+        return make_single_message_response(HTTPStatus.FORBIDDEN, INVALID_UUID)
 
     if not has_image_with_specific_uuid(uuid):
-        status = SingleMessageStatus(
+        return make_single_message_response(
             HTTPStatus.FORBIDDEN, ABSENT_IMAGE_WITH_SPECIFIC_UUID
         )
-        return make_response(status.message, status.code)
 
     delete_image(uuid)
 
-    status = SingleMessageStatus(HTTPStatus.OK)
+    return make_single_message_response(HTTPStatus.OK)
+
+
+def make_single_message_response(http_status: HTTPStatus, message: str = None):
+    status = SingleMessageStatus(http_status, message)
     return make_response(status.message, status.code)
