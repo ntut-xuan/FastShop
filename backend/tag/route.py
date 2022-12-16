@@ -62,7 +62,7 @@ def has_tag(name: str) -> bool:
 
 @route_with_doc(tag_bp, "/tags/<int:id>", methods=["GET"])
 def fetch_tag(id: int):
-    tag: Tag | None = db.session.execute(db.select(Tag)).scalar()
+    tag: Tag | None = db.session.execute(db.select(Tag).where(Tag.id == id)).scalar()
     if tag is None:
         # TODO: handle absent tag id
         return

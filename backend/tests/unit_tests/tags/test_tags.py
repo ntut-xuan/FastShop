@@ -131,6 +131,7 @@ def test_get_tags_by_id_should_return_the_tag_if_exist(
     existing_tag: dict[str, Any] = {"id": 1, "name": "black magic"}
     with app.app_context():
         db.session.add(Tag(**existing_tag))
+        db.session.add(Tag(id=2, name="some other tag"))
         db.session.commit()
 
     response: TestResponse = client.get(f"/tags/{existing_tag['id']}")
