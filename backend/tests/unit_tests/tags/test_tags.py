@@ -181,3 +181,15 @@ class TestDeleteTagsByIdRoute:
                 db.select(Tag).where(Tag.id == target["id"])
             ).scalar()
             assert tag is None
+
+    def test_should_respond_forbidden_with_message_if_tag_is_absent(
+        self, client: FlaskClient
+    ) -> None:
+        absent_tag_id = 100
+
+        response: TestResponse = client.delete(f"/tags/{absent_tag_id}")
+
+        assert response.status_code == HTTPStatus.FORBIDDEN
+        assert response.get_json(silent=True) == {
+            "message": "The specific ID of tag is absent."
+        }

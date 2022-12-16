@@ -80,14 +80,17 @@ def update_tag(id):
 
 @route_with_doc(tag_bp, "/tags/<int:id>", methods=["DELETE"])
 def delete_tag(id: int):
-    # select_tag_with_id_stmt: Select = db.select(Tag).where(Tag.id == id)
-    # tags: list[Tag] = db.session.execute(select_tag_with_id_stmt).scalars().all()
     tag: Tag | None = db.session.get(Tag, id)
-    if tag is not None:
-        delete_tag_with_id_stmt: Delete = db.delete(Tag).where(Tag.id == id)
-        db.session.execute(delete_tag_with_id_stmt)
-        db.session.commit()
-        return make_single_message_response(HTTPStatus.OK)
+
+    if tag is None:
+        return make_single_message_response(
+            HTTPStatus.FORBIDDEN, "The specific ID of tag is absent."
+        )
+
+    delete_tag_with_id_stmt: Delete = db.delete(Tag).where(Tag.id == id)
+    db.session.execute(delete_tag_with_id_stmt)
+    db.session.commit()
+    return make_single_message_response(HTTPStatus.OK)
 
 
 @route_with_doc(tag_bp, "/tags/<string:id>/items", methods=["GET"])
