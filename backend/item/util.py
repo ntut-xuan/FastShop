@@ -37,7 +37,7 @@ class ItemData:
     tags: list[TagData] = Field([])
 
 
-def covert_item_object(item_data_dict: dict[str, Any]) -> ItemData:
+def convert_item_object(item_data_dict: dict[str, Any]) -> ItemData:
     item = ItemData(
         avatar=item_data_dict["avatar"],
         count=item_data_dict["count"],

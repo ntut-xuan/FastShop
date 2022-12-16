@@ -14,8 +14,8 @@ from item.util import (
     TagData,
     add_item_data,
     convert_database_tuple_to_item_data,
+    convert_item_object,
     convert_tags_object_list,
-    covert_item_object,
     delete_item_with_specific_id,
     get_item_with_specific_id,
     has_item_with_specific_id,
@@ -57,7 +57,7 @@ def is_item_data_equals_another_item_data_without_tag_attribute(
 
 @pytest.fixture
 def item_data(item_data_dict: dict[str, Any]) -> ItemData:
-    converted_item: ItemData = covert_item_object(item_data_dict)
+    converted_item: ItemData = convert_item_object(item_data_dict)
     return converted_item
 
 
@@ -70,14 +70,14 @@ def another_item_data() -> ItemData:
         "price": {"discount": 98765, "original": 90000},
         "tags": [{"id": 44, "name": "more-dian"}],
     }
-    converted_item: ItemData = covert_item_object(another_item_data)
+    converted_item: ItemData = convert_item_object(another_item_data)
     return converted_item
 
 
 @pytest.fixture
 def place_item(app: Flask, item_data_dict: dict[str, Any]) -> int:
     with app.app_context():
-        item_data_object: ItemData = covert_item_object(item_data_dict)
+        item_data_object: ItemData = convert_item_object(item_data_dict)
         return add_item_data(item_data_object)
 
 
@@ -85,7 +85,7 @@ class TestCovertItemDataObjectFromItemDataDict:
     def test_valid_dict_should_return_correct_item_object(
         self, item_data_dict: dict[str, Any]
     ):
-        item: ItemData = covert_item_object(item_data_dict)
+        item: ItemData = convert_item_object(item_data_dict)
 
         assert item.avatar == "f692073a-7ac1-11ed-a1eb-0242ac120002"
         assert item.count == 44
@@ -97,7 +97,7 @@ class TestCovertItemDataObjectFromItemDataDict:
 
     def test_incorrect_format_dict_should_raise_missing_fields_error(self):
         with pytest.raises(KeyError):
-            covert_item_object({"wrong_column": "wrong_value"})
+            convert_item_object({"wrong_column": "wrong_value"})
 
     def test_invalid_data_dict_should_raise_error(self, item_data_dict: dict[str, Any]):
         item_data_dict[
@@ -105,12 +105,12 @@ class TestCovertItemDataObjectFromItemDataDict:
         ] = "5"  # Since count require integer-type data, it should cause error.
 
         with pytest.raises(ValidationError):
-            covert_item_object(item_data_dict)
+            convert_item_object(item_data_dict)
 
     def test_no_tags_dict_should_ok(self, item_data_dict: dict[str, Any]):
         del item_data_dict["tags"]
 
-        covert_item_object(item_data_dict)
+        convert_item_object(item_data_dict)
 
 
 class TestItemManipulation:
