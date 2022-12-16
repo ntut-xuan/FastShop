@@ -9,8 +9,9 @@ from models import Item
 
 if TYPE_CHECKING:
     from dataclasses import dataclass
+
+    from sqlalchemy.sql.dml import Delete, Insert, Update
     from sqlalchemy.sql.selectable import Select
-    from sqlalchemy.sql.dml import Insert, Update, Delete
 else:
     from pydantic.dataclasses import dataclass
 
