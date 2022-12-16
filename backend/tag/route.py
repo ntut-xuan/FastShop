@@ -29,13 +29,6 @@ def fetch_all_tags() -> Response:
     return make_response(payload)
 
 
-def filter_sqlalchemy_meta_key(tag: Tag) -> dict:
-    """Returns `tag.__dict__` while filtering the metadata, which have leading underscore,
-    e.g., `_sa_instance_state`.
-    """
-    return {k: getattr(tag, k) for k in tag.__dict__ if not k.startswith("_")}
-
-
 @route_with_doc(tag_bp, "/tags", methods=["POST"])
 @verify_login_or_return_401
 def add_tag() -> Response:
@@ -67,9 +60,14 @@ def has_tag(name: str) -> bool:
     return len(tags) != 0
 
 
-@route_with_doc(tag_bp, "/tags/<string:id>", methods=["GET"])
-def fetch_tag(id):
-    pass  # pragma: no cover
+@route_with_doc(tag_bp, "/tags/<int:id>", methods=["GET"])
+def fetch_tag(id: int):
+    tag: Tag | None = db.session.execute(db.select(Tag)).scalar()
+    if tag is None:
+        # TODO: handle absent tag id
+        return
+    payload: dict = filter_sqlalchemy_meta_key(tag)
+    return make_response(payload)
 
 
 @route_with_doc(tag_bp, "/tags/<string:id>", methods=["PUT"])
@@ -85,3 +83,10 @@ def delete_tag(id):
 @route_with_doc(tag_bp, "/tags/<string:id>/items", methods=["GET"])
 def get_items_by_tag(id):
     pass  # pragma: no cover
+
+
+def filter_sqlalchemy_meta_key(tag: Tag) -> dict:
+    """Returns `tag.__dict__` while filtering the metadata, which have leading underscore,
+    e.g., `_sa_instance_state`.
+    """
+    return {k: getattr(tag, k) for k in tag.__dict__ if not k.startswith("_")}

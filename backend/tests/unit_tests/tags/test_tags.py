@@ -123,3 +123,17 @@ def test_post_tags_with_wrong_value_type_should_respond_unprocessable_entity_wit
 
     assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
     assert response.get_json(silent=True) == {"message": INVALID_DATA}
+
+
+def test_get_tags_by_id_should_return_the_tag_if_exist(
+    app: Flask, client: FlaskClient
+) -> None:
+    existing_tag: dict[str, Any] = {"id": 1, "name": "black magic"}
+    with app.app_context():
+        db.session.add(Tag(**existing_tag))
+        db.session.commit()
+
+    response: TestResponse = client.get(f"/tags/{existing_tag['id']}")
+
+    assert response.status_code == HTTPStatus.OK
+    assert response.get_json(silent=True) == existing_tag
