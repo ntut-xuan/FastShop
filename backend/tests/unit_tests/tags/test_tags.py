@@ -148,3 +148,36 @@ class TestGetTagsByIdRoute:
         assert response.get_json(silent=True) == {
             "message": "The specific ID of tag is absent."
         }
+
+
+class TestDeleteTagsByIdRoute:
+    def test_should_response_ok_with_message_if_exist(
+        self, app: Flask, logged_in_client: FlaskClient
+    ) -> None:
+        existing_tag: dict[str, Any] = {"id": 1, "name": "black magic"}
+        with app.app_context():
+            db.session.add(Tag(**existing_tag))
+            db.session.add(Tag(id=2, name="some other tag"))
+            db.session.commit()
+
+        response: TestResponse = logged_in_client.delete(f"/tags/{existing_tag['id']}")
+
+        assert response.status_code == HTTPStatus.OK
+        assert response.get_json(silent=True) == {"message": "OK"}
+
+    def test_should_delete_the_tag_if_exist(
+        self, app: Flask, logged_in_client: FlaskClient
+    ) -> None:
+        target: dict[str, Any] = {"id": 1, "name": "black magic"}
+        with app.app_context():
+            db.session.add(Tag(**target))
+            db.session.add(Tag(id=2, name="some other tag"))
+            db.session.commit()
+
+        logged_in_client.delete(f"/tags/{target['id']}")
+
+        with app.app_context():
+            tag: Tag | None = db.session.execute(
+                db.select(Tag).where(Tag.id == target["id"])
+            ).scalar()
+            assert tag is None
