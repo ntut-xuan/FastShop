@@ -9,11 +9,13 @@ from sqlalchemy import func
 from database import db
 from item.util import (
     ItemData,
+    PriceData,
     TagData,
     add_item_data,
     covert_item_object,
     convert_tags_object_list,
     has_item_with_specific_id,
+    update_item_with_specific_id,
 )
 from models import Item
 
@@ -34,19 +36,39 @@ def item_data_dict() -> dict:
 
 
 def is_item_tuple_and_item_data_object_equals(item: tuple, item_data: ItemData) -> bool:
-    compare_result: bool = (
-        item[1] == item_data.name  # Column 2 is name
-        and item[2] == item_data.count  # Column 3 is count
-        and item[3] == item_data.price.original  # Column 4 is original price
-        and item[4] == item_data.price.discount  # Column 5 is discount price
-        and item[5] == item_data.avatar  # Column 6 is avatar
-    )
+    item_data.tags = (
+        []
+    )  # Query data doesn't have tags field, set compared item_data tags attribute to default.
+    compare_result: bool = convert_database_tuple_to_item_data(item) == item_data
+    print(convert_database_tuple_to_item_data(item))
     return compare_result
+
+
+def convert_database_tuple_to_item_data(item: tuple) -> ItemData:
+    return ItemData(
+        item[5],  # Column 6 is avatar
+        item[2],  # Column 3 is count
+        item[1],  # Column 2 is name
+        PriceData(item[3], item[4]),  # Column 4, 5 is discount, original price
+    )
 
 
 @pytest.fixture
 def item_data(item_data_dict: dict[str, Any]) -> ItemData:
     converted_item: ItemData = covert_item_object(item_data_dict)
+    return converted_item
+
+
+@pytest.fixture
+def another_item_data() -> dict:
+    another_item_data: dict = {
+        "avatar": "f32aa7ea-c092-4e92-b4c9-d4b41141fd7d",
+        "count": 66,
+        "name": "Entropy-2",
+        "price": {"discount": 98765, "original": 90000},
+        "tags": [{"id": 44, "name": "more-dian"}],
+    }
+    converted_item: ItemData = covert_item_object(another_item_data)
     return converted_item
 
 
@@ -122,3 +144,51 @@ def test_check_count_of_exist_id_should_return_true(app: Flask, place_item: int)
     with app.app_context():
 
         assert has_item_with_specific_id(place_item_id)
+
+
+def test_update_all_item_column_value_should_ok(
+    app: Flask, place_item: int, another_item_data: ItemData
+):
+    place_item_id = place_item
+    with app.app_context():
+
+        update_item_with_specific_id(
+            place_item_id,
+            avatar=another_item_data.avatar,
+            count=another_item_data.count,
+            discount=another_item_data.price.discount,
+            name=another_item_data.name,
+            original=another_item_data.price.original,
+        )
+        item_data_select_stmt: Select = (
+            db.select(["*"]).select_from(Item).where(Item.id == place_item_id)
+        )
+        query_item_data: tuple = db.session.execute(item_data_select_stmt).one()
+
+        assert is_item_tuple_and_item_data_object_equals(
+            query_item_data, another_item_data
+        )
+
+
+def test_update_part_of_item_column_value_should_ok(
+    app: Flask, place_item: int, item_data: ItemData, another_item_data: ItemData
+):
+    place_item_id = place_item
+    with app.app_context():
+
+        update_item_with_specific_id(
+            place_item_id,
+            avatar=another_item_data.avatar,
+            count=another_item_data.count,
+        )
+        item_data_select_stmt: Select = (
+            db.select(["*"]).select_from(Item).where(Item.id == place_item_id)
+        )
+        query_item: tuple = db.session.execute(item_data_select_stmt).one()
+
+        prepare_compare_item_data = item_data
+        prepare_compare_item_data.avatar = another_item_data.avatar
+        prepare_compare_item_data.count = another_item_data.count
+        assert is_item_tuple_and_item_data_object_equals(
+            query_item, prepare_compare_item_data
+        )

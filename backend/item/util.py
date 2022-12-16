@@ -77,6 +77,34 @@ def add_item_data(data: ItemData) -> int:
     return id
 
 
+def update_item_with_specific_id(
+    id: int,
+    avatar: str | None = None,
+    count: int | None = None,
+    discount: int | None = None,
+    name: str | None = None,
+    original: int | None = None,
+) -> None:
+    update_value = {
+        "avatar": avatar,
+        "count": count,
+        "discount": discount,
+        "name": name,
+        "original": original,
+    }
+
+    # Delete all key with None value.
+    for key, value in dict(update_value).items():
+        if value is None:
+            del update_value[key]
+
+    update_data_stmts: Update = (
+        db.update(Item).values(update_value).where(Item.id == id)
+    )
+    db.session.execute(update_data_stmts)
+    db.session.commit()
+
+
 def has_item_with_specific_id(id: int) -> bool:
     select_data_stmts: Select = (
         db.select([func.count(Item.id)]).select_from(Item).where(Item.id == id)
