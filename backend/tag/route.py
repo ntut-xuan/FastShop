@@ -61,11 +61,14 @@ def has_tag(name: str) -> bool:
 
 
 @route_with_doc(tag_bp, "/tags/<int:id>", methods=["GET"])
-def fetch_tag(id: int):
+def fetch_tag(id: int) -> Response:
     tag: Tag | None = db.session.execute(db.select(Tag).where(Tag.id == id)).scalar()
+
     if tag is None:
-        # TODO: handle absent tag id
-        return
+        return make_single_message_response(
+            HTTPStatus.FORBIDDEN, "The specific ID of tag is absent."
+        )
+
     payload: dict = filter_sqlalchemy_meta_key(tag)
     return make_response(payload)
 

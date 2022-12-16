@@ -138,3 +138,16 @@ def test_get_tags_by_id_should_return_the_tag_if_exist(
 
     assert response.status_code == HTTPStatus.OK
     assert response.get_json(silent=True) == existing_tag
+
+
+def test_get_tags_by_id_should_respond_forbidden_with_message_if_tag_is_absent(
+    client: FlaskClient,
+) -> None:
+    absent_tag_id = 100
+
+    response: TestResponse = client.get(f"/tags/{absent_tag_id}")
+
+    assert response.status_code == HTTPStatus.FORBIDDEN
+    assert response.get_json(silent=True) == {
+        "message": "The specific ID of tag is absent."
+    }
