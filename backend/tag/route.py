@@ -13,7 +13,7 @@ from util import make_single_message_response, route_with_doc
 
 if TYPE_CHECKING:
     from flask import Response
-    from sqlalchemy.sql.expression import Delete, Select
+    from sqlalchemy.sql.expression import Select
 
 tag_bp = Blueprint("tag", __name__)
 
@@ -62,7 +62,7 @@ def has_tag(name: str) -> bool:
 
 @route_with_doc(tag_bp, "/tags/<int:id>", methods=["GET"])
 def fetch_tag(id: int) -> Response:
-    tag: Tag | None = db.session.get(Tag, id)
+    tag: Tag | None = db.session.get(Tag, id)  # type: ignore[attr-defined]
 
     if tag is None:
         return make_single_message_response(
@@ -81,7 +81,7 @@ def update_tag(id):
 @route_with_doc(tag_bp, "/tags/<int:id>", methods=["DELETE"])
 @verify_login_or_return_401
 def delete_tag(id: int) -> Response:
-    tag: Tag | None = db.session.get(Tag, id)
+    tag: Tag | None = db.session.get(Tag, id)  # type: ignore[attr-defined]
 
     if tag is None:
         return make_single_message_response(
