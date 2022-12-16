@@ -78,7 +78,9 @@ def update_tag(id: int) -> Response:
     tag: Tag | None = db.session.get(Tag, id)  # type: ignore[attr-defined]
 
     if tag is None:
-        pass
+        return make_single_message_response(
+            HTTPStatus.FORBIDDEN, "The specific ID of tag is absent."
+        )
 
     payload: dict[str, Any] | None = request.get_json(silent=True)
 
