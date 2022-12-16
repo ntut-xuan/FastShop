@@ -79,7 +79,8 @@ def update_tag(id):
 
 
 @route_with_doc(tag_bp, "/tags/<int:id>", methods=["DELETE"])
-def delete_tag(id: int):
+@verify_login_or_return_401
+def delete_tag(id: int) -> Response:
     tag: Tag | None = db.session.get(Tag, id)
 
     if tag is None:

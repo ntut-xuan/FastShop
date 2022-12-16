@@ -182,12 +182,25 @@ class TestDeleteTagsByIdRoute:
             ).scalar()
             assert tag is None
 
+    def test_without_logging_in_should_respond_unauthorized_with_message(
+        self, app: Flask, client: FlaskClient
+    ) -> None:
+        existing_tag: dict[str, Any] = {"id": 1, "name": "black magic"}
+        with app.app_context():
+            db.session.add(Tag(**existing_tag))
+            db.session.commit()
+
+        response: TestResponse = client.delete(f"/tags/{existing_tag['id']}")
+
+        assert response.status_code == HTTPStatus.UNAUTHORIZED
+        assert response.get_json(silent=True) == {"message": "Unauthorized."}
+
     def test_should_respond_forbidden_with_message_if_tag_is_absent(
-        self, client: FlaskClient
+        self, logged_in_client: FlaskClient
     ) -> None:
         absent_tag_id = 100
 
-        response: TestResponse = client.delete(f"/tags/{absent_tag_id}")
+        response: TestResponse = logged_in_client.delete(f"/tags/{absent_tag_id}")
 
         assert response.status_code == HTTPStatus.FORBIDDEN
         assert response.get_json(silent=True) == {
