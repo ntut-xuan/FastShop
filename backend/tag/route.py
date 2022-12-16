@@ -1,15 +1,19 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from http import HTTPStatus
+from typing import Any, TYPE_CHECKING
 
-from flask import Blueprint, make_response
+from flask import Blueprint, make_response, request
 
+from auth.util import verify_login_or_return_401
 from database import db
 from models import Tag
-from util import route_with_doc
+from response_message import INVALID_DATA, WRONG_DATA_FORMAT
+from util import make_single_message_response, route_with_doc
 
 if TYPE_CHECKING:
     from flask import Response
+    from sqlalchemy.sql.expression import Select
 
 tag_bp = Blueprint("tag", __name__)
 
@@ -33,8 +37,34 @@ def filter_sqlalchemy_meta_key(tag: Tag) -> dict:
 
 
 @route_with_doc(tag_bp, "/tags", methods=["POST"])
-def add_tag():
-    pass  # pragma: no cover
+@verify_login_or_return_401
+def add_tag() -> Response:
+    payload: dict[str, Any] | None = request.get_json(silent=True)
+
+    if payload is None or "name" not in payload:
+        return make_single_message_response(HTTPStatus.BAD_REQUEST, WRONG_DATA_FORMAT)
+
+    if not type(payload["name"]) is str:
+        return make_single_message_response(
+            HTTPStatus.UNPROCESSABLE_ENTITY, INVALID_DATA
+        )
+
+    tag_name: str = payload["name"]
+
+    if has_tag(tag_name):
+        return make_single_message_response(
+            HTTPStatus.FORBIDDEN, "The tag already exists in the database."
+        )
+
+    db.session.execute(db.insert(Tag).values(name=tag_name))
+    db.session.commit()
+    return make_single_message_response(HTTPStatus.OK)
+
+
+def has_tag(name: str) -> bool:
+    select_tag_with_name_stmt: Select = db.select(Tag).where(Tag.name == name)
+    tags: list[Tag] = db.session.execute(select_tag_with_name_stmt).scalars().all()
+    return len(tags) != 0
 
 
 @route_with_doc(tag_bp, "/tags/<string:id>", methods=["GET"])
