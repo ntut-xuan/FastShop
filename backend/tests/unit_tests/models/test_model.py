@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Final, TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 import pytest
 from sqlalchemy.sql.expression import Select

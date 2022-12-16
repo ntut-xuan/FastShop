@@ -9,7 +9,6 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 
-
 db: Final[SQLAlchemy] = SQLAlchemy()
 
 # For SQLAlchemy.create_all to know what to create.

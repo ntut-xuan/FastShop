@@ -11,10 +11,7 @@ import jwt
 from flask import current_app, make_response, request
 from sqlalchemy import select
 
-from auth.exception import (
-    EmailAlreadyRegisteredError,
-    UserNotFoundError,
-)
+from auth.exception import EmailAlreadyRegisteredError, UserNotFoundError
 from database import db
 from models import User
 from util import SingleMessageStatus
