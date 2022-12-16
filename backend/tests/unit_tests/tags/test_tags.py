@@ -195,3 +195,31 @@ class TestDeleteTagsByIdRoute:
         assert response.get_json(silent=True) == {
             "message": "The specific ID of tag is absent."
         }
+
+
+class TestPutTagsByIdRoute:
+    def test_should_update_the_tag_if_exist(
+        self, app: Flask, logged_in_client: FlaskClient, test_tags: list[dict[str, Any]]
+    ) -> None:
+        new_tag_name = "new tag name"
+        existing_tag: dict[str, Any] = test_tags[0]
+
+        logged_in_client.put(f"/tags/{existing_tag['id']}", json={"name": new_tag_name})
+
+        with app.app_context():
+            tag: Tag | None = db.session.get(Tag, existing_tag["id"])
+            assert tag is not None
+            assert tag.name == new_tag_name
+
+    def test_should_response_ok_with_message_if_exist(
+        self, logged_in_client: FlaskClient, test_tags: list[dict[str, Any]]
+    ) -> None:
+        new_tag_name = "new tag name"
+        existing_tag: dict[str, Any] = test_tags[0]
+
+        response: TestResponse = logged_in_client.put(
+            f"/tags/{existing_tag['id']}", json={"name": new_tag_name}
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        assert response.get_json(silent=True) == {"message": "OK"}

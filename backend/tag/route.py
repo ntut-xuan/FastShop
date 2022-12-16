@@ -73,9 +73,19 @@ def fetch_tag(id: int) -> Response:
     return make_response(payload)
 
 
-@route_with_doc(tag_bp, "/tags/<string:id>", methods=["PUT"])
-def update_tag(id):
-    pass  # pragma: no cover
+@route_with_doc(tag_bp, "/tags/<int:id>", methods=["PUT"])
+def update_tag(id: int) -> Response:
+    tag: Tag | None = db.session.get(Tag, id)  # type: ignore[attr-defined]
+
+    if tag is None:
+        pass
+
+    payload: dict[str, Any] | None = request.get_json(silent=True)
+    tag_name: str = payload["name"]
+
+    db.session.execute(db.update(Tag).where(Tag.id == id).values(name=tag_name))
+    db.session.commit()
+    return make_single_message_response(HTTPStatus.OK)
 
 
 @route_with_doc(tag_bp, "/tags/<int:id>", methods=["DELETE"])
