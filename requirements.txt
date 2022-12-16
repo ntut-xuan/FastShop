@@ -26,6 +26,7 @@ platformdirs==2.5.2
 pluggy==1.0.0
 pre-commit==2.20.0
 py==1.11.0
+pydantic==1.10.2
 PyJWT==2.6.0
 PyMySQL==1.0.2
 pyparsing==3.0.9
@@ -43,4 +44,3 @@ types-setuptools==65.5.0.3
 typing_extensions==4.3.0
 virtualenv==20.17.0
 Werkzeug==2.2.2
-setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
