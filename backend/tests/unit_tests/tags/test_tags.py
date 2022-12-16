@@ -223,3 +223,25 @@ class TestPutTagsByIdRoute:
 
         assert response.status_code == HTTPStatus.OK
         assert response.get_json(silent=True) == {"message": "OK"}
+
+    @pytest.mark.parametrize(
+        argnames=("payload",),
+        argvalues=(
+            (None,),  # missing payload
+            ({"should be name": "xxx"},),  # missing key "name"
+        ),
+    )
+    def test_with_wrong_data_format_should_respond_bad_request_with_message(
+        self,
+        logged_in_client: FlaskClient,
+        test_tags: list[dict[str, Any]],
+        payload: dict[str, Any] | None,
+    ) -> None:
+        existing_tag: dict[str, Any] = test_tags[0]
+
+        response: TestResponse = logged_in_client.put(
+            f"/tags/{existing_tag['id']}", json=payload
+        )
+
+        assert response.status_code == HTTPStatus.BAD_REQUEST
+        assert response.get_json(silent=True) == {"message": WRONG_DATA_FORMAT}

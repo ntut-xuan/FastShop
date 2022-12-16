@@ -81,6 +81,10 @@ def update_tag(id: int) -> Response:
         pass
 
     payload: dict[str, Any] | None = request.get_json(silent=True)
+
+    if payload is None or "name" not in payload:
+        return make_single_message_response(HTTPStatus.BAD_REQUEST, WRONG_DATA_FORMAT)
+
     tag_name: str = payload["name"]
 
     db.session.execute(db.update(Tag).where(Tag.id == id).values(name=tag_name))
