@@ -257,3 +257,16 @@ class TestPutTagsByIdRoute:
         assert response.get_json(silent=True) == {
             "message": "The specific ID of tag is absent."
         }
+
+    def test_with_wrong_value_type_should_respond_unprocessable_entity_with_message(
+        self, logged_in_client: FlaskClient, test_tags: list[dict[str, Any]]
+    ) -> None:
+        existing_tag: dict[str, Any] = test_tags[0]
+        tag_name_in_int_type = 0
+
+        response: TestResponse = logged_in_client.put(
+            f"/tags/{existing_tag['id']}", json={"name": tag_name_in_int_type}
+        )
+
+        assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+        assert response.get_json(silent=True) == {"message": INVALID_DATA}
