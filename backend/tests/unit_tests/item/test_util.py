@@ -19,7 +19,7 @@ def item_data_dict() -> dict:
     }
 
 
-class TestGetItemFromItemDataDict:
+class TestCovertItemDataObjectFromItemDataDict:
     def test_valid_dict_should_return_correct_item_object(
         self, item_data_dict: dict[str, Any]
     ):
