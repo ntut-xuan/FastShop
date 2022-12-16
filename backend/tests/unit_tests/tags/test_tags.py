@@ -282,3 +282,17 @@ class TestPutTagsByIdRoute:
 
         assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
         assert response.get_json(silent=True) == {"message": INVALID_DATA}
+
+
+class TestGetItemsByIdOfTagRoute:
+    def test_should_respond_forbidden_with_message_if_tag_is_absent(
+        self, client: FlaskClient
+    ) -> None:
+        absent_tag_id = 100
+
+        response: TestResponse = client.get(f"/tags/{absent_tag_id}/items")
+
+        assert response.status_code == HTTPStatus.FORBIDDEN
+        assert response.get_json(silent=True) == {
+            "message": "The specific ID of tag is absent."
+        }

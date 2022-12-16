@@ -115,9 +115,14 @@ def delete_tag(id: int) -> Response:
     return make_single_message_response(HTTPStatus.OK)
 
 
-@route_with_doc(tag_bp, "/tags/<string:id>/items", methods=["GET"])
-def get_items_by_tag(id):
-    pass  # pragma: no cover
+@route_with_doc(tag_bp, "/tags/<int:id>/items", methods=["GET"])
+def get_items_by_tag(id: int):
+    tag: Tag | None = db.session.get(Tag, id)  # type: ignore[attr-defined]
+
+    if tag is None:
+        return make_single_message_response(
+            HTTPStatus.FORBIDDEN, "The specific ID of tag is absent."
+        )
 
 
 def filter_sqlalchemy_meta_key(tag: Tag) -> dict:
