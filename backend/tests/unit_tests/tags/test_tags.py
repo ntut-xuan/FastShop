@@ -6,7 +6,7 @@ from typing import Any, TYPE_CHECKING, cast
 import pytest
 
 from database import db
-from models import Tag
+from models import Item, Tag, TagOfItem
 from response_message import INVALID_DATA, WRONG_DATA_FORMAT
 
 if TYPE_CHECKING:
@@ -296,3 +296,64 @@ class TestGetItemsByIdOfTagRoute:
         assert response.get_json(silent=True) == {
             "message": "The specific ID of tag is absent."
         }
+
+    def test_should_return_all_items_of_the_tag(
+        self, app: Flask, client: FlaskClient
+    ) -> None:
+        with app.app_context():
+            db.session.execute(
+                db.insert(Item),
+                [
+                    {
+                        "id": 1,
+                        "name": "apple",
+                        "count": 10,
+                        "original": 30,
+                        "discount": 25,
+                        "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
+                    },
+                    {
+                        "id": 2,
+                        "name": "tilapia",
+                        "count": 3,
+                        "original": 50,
+                        "discount": 45,
+                        "avatar": "xx-S0m3-aVA7aR-0f-ti1a9iA-xx",
+                    },
+                ],
+            )
+            db.session.execute(
+                db.insert(Tag),
+                [
+                    {"id": 1, "name": "fruit"},
+                    {"id": 2, "name": "fish"},
+                    {"id": 3, "name": "grocery"},
+                ],
+            )
+            db.session.execute(
+                db.insert(TagOfItem),
+                [
+                    {"item_id": 1, "tag_id": 1},
+                    {"item_id": 2, "tag_id": 2},
+                    {"item_id": 1, "tag_id": 3},
+                    {"item_id": 2, "tag_id": 3},
+                ],
+            )
+            db.session.commit()
+
+        response: TestResponse = client.get("/tags/1/items")
+
+        assert response.json is not None
+        data: dict[str, Any] = response.json
+        assert data["count"] == 1
+        responded_tags: list[dict[str, Any]] = data["items"]
+        assert responded_tags == [
+            {
+                "id": 1,
+                "name": "apple",
+                "count": 10,
+                "original": 30,
+                "discount": 25,
+                "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
+            }
+        ]

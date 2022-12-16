@@ -7,7 +7,7 @@ from flask import Blueprint, make_response, request
 
 from auth.util import verify_login_or_return_401
 from database import db
-from models import Tag
+from models import Item, Tag, TagOfItem
 from response_message import INVALID_DATA, WRONG_DATA_FORMAT
 from util import make_single_message_response, route_with_doc
 
@@ -116,7 +116,7 @@ def delete_tag(id: int) -> Response:
 
 
 @route_with_doc(tag_bp, "/tags/<int:id>/items", methods=["GET"])
-def get_items_by_tag(id: int):
+def get_items_by_tag(id: int) -> Response:
     tag: Tag | None = db.session.get(Tag, id)  # type: ignore[attr-defined]
 
     if tag is None:
@@ -124,9 +124,21 @@ def get_items_by_tag(id: int):
             HTTPStatus.FORBIDDEN, "The specific ID of tag is absent."
         )
 
+    select_items_by_tag_stmt: Select = (
+        db.select(Item)
+        .select_from(db.join(Item, TagOfItem, Item.id == TagOfItem.item_id))
+        .where(TagOfItem.tag_id == id)
+    )
+    items: list[Item] = db.session.execute(select_items_by_tag_stmt).scalars().all()
+    payload: dict[str, Any] = {
+        "count": len(items),
+        "items": [filter_sqlalchemy_meta_key(item) for item in items],
+    }
+    return make_response(payload)
 
-def filter_sqlalchemy_meta_key(tag: Tag) -> dict:
-    """Returns `tag.__dict__` while filtering the metadata, which have leading underscore,
+
+def filter_sqlalchemy_meta_key(model: Tag | Item) -> dict:
+    """Returns `__dict__` of `model` while filtering the metadata, which have leading underscore,
     e.g., `_sa_instance_state`.
     """
-    return {k: getattr(tag, k) for k in tag.__dict__ if not k.startswith("_")}
+    return {k: getattr(model, k) for k in model.__dict__ if not k.startswith("_")}
