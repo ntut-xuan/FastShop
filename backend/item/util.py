@@ -119,6 +119,17 @@ def get_item_with_specific_id(id: int) -> ItemData:
     return query_item_data
 
 
+def get_all_items() -> list[ItemData]:
+    select_data_stmts: Select = db.select(["*"]).select_from(Item)
+    query_item_list: list[tuple] = db.session.execute(select_data_stmts).fetchall()
+    query_item_data_list = [
+        convert_database_tuple_to_item_data(query_item_tuple)
+        for query_item_tuple in query_item_list
+    ]
+
+    return query_item_data_list
+
+
 def delete_item_with_specific_id(id: int) -> None:
     if not has_item_with_specific_id(id):
         raise ItemNotExistError

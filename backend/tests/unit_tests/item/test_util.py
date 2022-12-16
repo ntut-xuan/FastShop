@@ -17,6 +17,7 @@ from item.util import (
     convert_item_object,
     convert_tags_object_list,
     delete_item_with_specific_id,
+    get_all_items,
     get_item_with_specific_id,
     has_item_with_specific_id,
     update_item_with_specific_id,
@@ -210,6 +211,16 @@ class TestItemManipulation:
 
             assert is_item_data_equals_another_item_data_without_tag_attribute(
                 query_item_data, item_data
+            )
+
+    def test_get_all_item_should_return_item_data_object_list(
+        self, app: Flask, item_data: ItemData, place_item: int
+    ):
+        with app.app_context():
+
+            query_item_data_list: list[ItemData] = get_all_items()
+            assert is_item_data_equals_another_item_data_without_tag_attribute(
+                query_item_data_list[0], item_data
             )
 
     def test_delete_item_by_absent_id_should_raise_error(self, app: Flask):
