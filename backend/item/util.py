@@ -41,7 +41,10 @@ def covert_item_object(item_data_dict: dict[str, Any]):
         avatar=item_data_dict["avatar"],
         count=item_data_dict["count"],
         name=item_data_dict["name"],
-        price=PriceData(original=item_data_dict["price"]["original"]),
+        price=PriceData(
+            original=item_data_dict["price"]["original"],
+            discount=item_data_dict["price"]["discount"],
+        ),
     )
     if "tags" in item_data_dict:
         item.tags = convert_tags_object_list(item_data_dict["tags"])
@@ -67,7 +70,15 @@ def add_item_data(data: ItemData) -> int:
     )
     db.session.execute(insert_data_stmts)
     db.session.commit()
-    
+
     select_data_count_stmts: Select = db.select([func.count(Item.id)]).select_from(Item)
     id = db.session.execute(select_data_count_stmts).scalar_one()
     return id
+
+
+def has_item_with_specific_id(id: int) -> bool:
+    select_data_stmts: Select = (
+        db.select([func.count(Item.id)]).select_from(Item).where(Item.id == id)
+    )
+    count = db.session.execute(select_data_stmts).scalar()
+    return count > 0
