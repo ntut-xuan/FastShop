@@ -61,18 +61,19 @@ def convert_tags_object_list(tags_dict_list: list[dict[str, Any]]):
 
 
 def add_item_data(data: ItemData) -> int:
-    insert_data_stmts: Insert = db.insert(Item).values(
+    new_item = Item(
         avatar=data.avatar,
         count=data.count,
         discount=data.price.discount,
         name=data.name,
         original=data.price.original,
     )
-    db.session.execute(insert_data_stmts)
-    db.session.commit()
 
-    select_data_count_stmts: Select = db.select([func.count(Item.id)]).select_from(Item)
-    id = db.session.execute(select_data_count_stmts).scalar_one()
+    id = db.session.add(new_item)
+    db.session.flush()
+    id: int = new_item.id
+
+    db.session.commit()
     return id
 
 
