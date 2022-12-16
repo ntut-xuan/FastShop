@@ -1,7 +1,11 @@
 from typing import TYPE_CHECKING, Any
 
 from pydantic import Field, StrictInt, StrictStr
-from pydantic.dataclasses import dataclass
+
+if TYPE_CHECKING:
+    from dataclasses import dataclass
+else:
+    from pydantic.dataclasses import dataclass
 
 
 @dataclass
