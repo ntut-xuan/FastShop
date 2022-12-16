@@ -114,15 +114,6 @@ class TestCovertItemDataObjectFromItemDataDict:
 
 
 class TestItemManipulation:
-    def test_tags_dict_list_convert_to_tags_object_list_should_ok(
-        self, item_data_dict: dict[str, Any]
-    ):
-        tags_object_list = convert_tags_object_list(item_data_dict["tags"])
-
-        assert isinstance(tags_object_list, list)
-        for object in tags_object_list:
-            assert isinstance(object, TagData)
-
     def test_add_item_should_ok(self, app: Flask, item_data: ItemData):
         with app.app_context():
 
@@ -234,3 +225,13 @@ class TestItemManipulation:
             delete_item_with_specific_id(place_item_id)
 
             assert not has_item_with_specific_id(place_item_id)
+
+
+def test_tags_dict_list_convert_to_tags_object_list_should_ok(
+    item_data_dict: dict[str, Any]
+):
+    tags_object_list = convert_tags_object_list(item_data_dict["tags"])
+
+    assert isinstance(tags_object_list, list)
+    for object in tags_object_list:
+        assert isinstance(object, TagData)
