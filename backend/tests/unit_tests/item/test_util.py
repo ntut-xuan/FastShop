@@ -33,22 +33,21 @@ def item_data_dict() -> dict:
     }
 
 
-def is_item_tuple_and_item_data_object_equals(
-    item: tuple[Any], item_data: ItemData
-) -> bool:
-    return (
-        item[1] == item_data.name
-        and item[2] == item_data.count  # Column 2 is name
-        and item[3] == item_data.price.original  # Column 3 is count
-        and item[4] == item_data.price.discount  # Column 4 is original price
-        and item[5]  # Column 5 is discount price
-        == item_data.avatar  # Column 6 is avatar
+def is_item_tuple_and_item_data_object_equals(item: tuple, item_data: ItemData) -> bool:
+    compare_result: bool = (
+        item[1] == item_data.name  # Column 2 is name
+        and item[2] == item_data.count  # Column 3 is count
+        and item[3] == item_data.price.original  # Column 4 is original price
+        and item[4] == item_data.price.discount  # Column 5 is discount price
+        and item[5] == item_data.avatar  # Column 6 is avatar
     )
+    return compare_result
 
 
 @pytest.fixture
 def item_data(item_data_dict: dict[str, Any]) -> ItemData:
-    return covert_item_object(item_data_dict)
+    converted_item: ItemData = covert_item_object(item_data_dict)
+    return converted_item
 
 
 @pytest.fixture
@@ -89,11 +88,6 @@ class TestCovertItemDataObjectFromItemDataDict:
 
         covert_item_object(item_data_dict)
 
-    def test_no_discount_price_dict_should_ok(self, item_data_dict: dict[str, Any]):
-        del item_data_dict["price"]["discount"]
-
-        covert_item_object(item_data_dict)
-
 
 def test_tags_dict_list_convert_to_tags_object_list_should_ok(
     item_data_dict: dict[str, Any]
@@ -106,19 +100,14 @@ def test_tags_dict_list_convert_to_tags_object_list_should_ok(
 
 
 def test_add_item_should_ok(app: Flask, item_data: ItemData):
-    count_item_stmt: Select = (
-        db.select([func.count(Item.id)]).select_from(Item).where(Item.id == id)
-    )
-    item_data_select_stmt: Select = (
-        db.select(["*"]).select_from(Item).where(Item.id == id)
-    )
     with app.app_context():
 
         id = add_item_data(item_data)
-        count: int = db.session.execute(count_item_stmt).scalar_one()
+        item_data_select_stmt: Select = (
+            db.select(["*"]).select_from(Item).where(Item.id == id)
+        )
         item: tuple = db.session.execute(item_data_select_stmt).one()
 
-        assert count == 1
         assert is_item_tuple_and_item_data_object_equals(item, item_data)
 
 

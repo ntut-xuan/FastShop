@@ -69,7 +69,7 @@ def add_item_data(data: ItemData) -> int:
         original=data.price.original,
     )
 
-    id = db.session.add(new_item)
+    db.session.add(new_item)
     db.session.flush()
     id: int = new_item.id
 
@@ -81,5 +81,5 @@ def has_item_with_specific_id(id: int) -> bool:
     select_data_stmts: Select = (
         db.select([func.count(Item.id)]).select_from(Item).where(Item.id == id)
     )
-    count = db.session.execute(select_data_stmts).scalar()
+    count: int = db.session.execute(select_data_stmts).scalar()
     return count > 0
