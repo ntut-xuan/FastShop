@@ -207,7 +207,7 @@ class TestPutTagsByIdRoute:
         logged_in_client.put(f"/tags/{existing_tag['id']}", json={"name": new_tag_name})
 
         with app.app_context():
-            tag: Tag | None = db.session.get(Tag, existing_tag["id"])
+            tag: Tag | None = db.session.get(Tag, existing_tag["id"])  # type: ignore[attr-defined]
             assert tag is not None
             assert tag.name == new_tag_name
 

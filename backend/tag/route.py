@@ -104,7 +104,7 @@ def delete_tag(id: int) -> Response:
             HTTPStatus.FORBIDDEN, "The specific ID of tag is absent."
         )
 
-    db.session.execute(db.delete(Tag).where(Tag.id == id))
+    db.session.delete(tag)
     db.session.commit()
     return make_single_message_response(HTTPStatus.OK)
 
