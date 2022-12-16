@@ -28,7 +28,7 @@ responses:
           $ref: '#/definitions/message'
         example:
           message: The data has the wrong format and the server can't understand it.
-  402:
+  401:
     description: Unauthorized.
     content:
       application/json:
