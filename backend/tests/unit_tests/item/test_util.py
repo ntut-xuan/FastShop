@@ -147,6 +147,12 @@ class TestItemManipulation:
 
             assert has_item_with_specific_id(place_item_id)
 
+    def test_update_item_with_absent_id_should_raise_error(self, app: Flask):
+        with app.app_context():
+
+            with pytest.raises(ItemNotExistError):
+                update_item_with_specific_id(65536)
+
     def test_update_all_item_column_value_should_ok(
         self, app: Flask, place_item: int, another_item_data: ItemData
     ):

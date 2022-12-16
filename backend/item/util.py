@@ -86,6 +86,9 @@ def update_item_with_specific_id(
     name: str | None = None,
     original: int | None = None,
 ) -> None:
+    if not has_item_with_specific_id(id):
+        raise ItemNotExistError
+
     update_value = {
         "avatar": avatar,
         "count": count,
