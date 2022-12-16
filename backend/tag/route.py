@@ -24,7 +24,7 @@ def fetch_all_tags() -> Response:
 
     payload: dict[str, Any] = {
         "count": len(tags),
-        "tags": [filter_sqlalchemy_meta_key(tag) for tag in tags],
+        "tags": [_filter_sa_instance_state(tag) for tag in tags],
     }
     return make_response(payload)
 
@@ -44,7 +44,7 @@ def add_tag() -> Response:
 
     tag_name: str = payload["name"]
 
-    if has_tag(tag_name):
+    if _has_tag(tag_name):
         return make_single_message_response(
             HTTPStatus.FORBIDDEN, "The tag already exists in the database."
         )
@@ -54,7 +54,7 @@ def add_tag() -> Response:
     return make_single_message_response(HTTPStatus.OK)
 
 
-def has_tag(name: str) -> bool:
+def _has_tag(name: str) -> bool:
     select_tag_with_name_stmt: Select = db.select(Tag).where(Tag.name == name)
     tags: list[Tag] = db.session.execute(select_tag_with_name_stmt).scalars().all()
     return len(tags) != 0
@@ -69,7 +69,7 @@ def fetch_tag(id: int) -> Response:
             HTTPStatus.FORBIDDEN, "The specific ID of tag is absent."
         )
 
-    payload: dict = filter_sqlalchemy_meta_key(tag)
+    payload: dict = _filter_sa_instance_state(tag)
     return make_response(payload)
 
 
@@ -132,13 +132,24 @@ def get_items_by_tag(id: int) -> Response:
     items: list[Item] = db.session.execute(select_items_by_tag_stmt).scalars().all()
     payload: dict[str, Any] = {
         "count": len(items),
-        "items": [filter_sqlalchemy_meta_key(item) for item in items],
+        "items": [_filter_sa_instance_state(item) for item in items],
     }
     return make_response(payload)
 
 
-def filter_sqlalchemy_meta_key(model: Tag | Item) -> dict:
-    """Returns `__dict__` of `model` while filtering the metadata, which have leading underscore,
-    e.g., `_sa_instance_state`.
+def _filter_sa_instance_state(model: object) -> dict[str, Any]:
     """
-    return {k: getattr(model, k) for k in model.__dict__ if not k.startswith("_")}
+    SQLAlchemy inserts an additional attribute to manage object state,
+    so there's an extra key `_sa_instance_state` after getting attributes with `__dict__`.
+
+    NOTE: `model` is likely an instance of SQLAlchemy.Model.
+
+    Args:
+        model : The object to get `__dict__` and to remove instance state on.
+
+    Returns:
+       `__dict__` of `model` with key `_sa_instance_state` removed.
+    """
+    d: dict = model.__dict__
+    d.pop("_sa_instance_state", None)
+    return d
