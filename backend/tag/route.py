@@ -62,7 +62,7 @@ def has_tag(name: str) -> bool:
 
 @route_with_doc(tag_bp, "/tags/<int:id>", methods=["GET"])
 def fetch_tag(id: int) -> Response:
-    tag: Tag | None = db.session.execute(db.select(Tag).where(Tag.id == id)).scalar()
+    tag: Tag | None = db.session.get(Tag, id)
 
     if tag is None:
         return make_single_message_response(
@@ -88,8 +88,7 @@ def delete_tag(id: int) -> Response:
             HTTPStatus.FORBIDDEN, "The specific ID of tag is absent."
         )
 
-    delete_tag_with_id_stmt: Delete = db.delete(Tag).where(Tag.id == id)
-    db.session.execute(delete_tag_with_id_stmt)
+    db.session.execute(db.delete(Tag).where(Tag.id == id))
     db.session.commit()
     return make_single_message_response(HTTPStatus.OK)
 
