@@ -1,7 +1,7 @@
 from database import db
 
 
-class User(db.Model):  # type: ignore
+class User(db.Model):  # type: ignore[name-defined]
     uid = db.Column(db.Integer, primary_key=True, autoincrement=True)
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(1000), nullable=False)
@@ -13,7 +13,7 @@ class User(db.Model):  # type: ignore
     __table_args__ = (db.CheckConstraint(gender.in_({0, 1})),)
 
 
-class Tag(db.Model):  # type: ignore
+class Tag(db.Model):  # type: ignore[name-defined]
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(100), unique=True)
 
@@ -28,7 +28,7 @@ def same_as(column_name: str):
     return default_function
 
 
-class Item(db.Model):  # type: ignore
+class Item(db.Model):  # type: ignore[name-defined]
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(100), nullable=False)
     count = db.Column(db.Integer, default=0, nullable=False)
@@ -41,7 +41,7 @@ class Item(db.Model):  # type: ignore
     __table_args__ = (db.CheckConstraint(count > 0),)
 
 
-class TagOfItem(db.Model):  # type: ignore
+class TagOfItem(db.Model):  # type: ignore[name-defined]
     item_id = db.Column(
         db.ForeignKey(
             Item.id,

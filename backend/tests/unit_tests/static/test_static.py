@@ -49,7 +49,7 @@ def add_image(logged_in_client: FlaskClient) -> SomeImage:
     )
 
     # ignore type because response.json returns "Any | None" but we're sure it's a string
-    uuid: str = response.json["uuid"]  # type: ignore
+    uuid: str = response.json["uuid"]  # type: ignore[index]
     image_byte_data: bytes = get_image_byte_data_from_base64_content(
         base64_image_content
     )
@@ -258,7 +258,7 @@ class TestImageRoute:
         # [Assert] It should return HTTP status code FORBIDDEN.
         response_data = cast(dict, response.json)
         assert response.status_code == HTTPStatus.FORBIDDEN
-        assert response_data["message"] == ABSENT_IMAGE_WITH_SPECIFIC_UUID  # type: ignore
+        assert response_data["message"] == ABSENT_IMAGE_WITH_SPECIFIC_UUID
 
     def test_delete_image_with_exist_uuid_should_delete_successfully(
         self, app: Flask, logged_in_client: FlaskClient, add_image: SomeImage
