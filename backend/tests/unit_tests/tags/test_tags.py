@@ -224,6 +224,18 @@ class TestPutTagsByIdRoute:
         assert response.status_code == HTTPStatus.OK
         assert response.get_json(silent=True) == {"message": "OK"}
 
+    def test_without_logging_in_should_respond_unauthorized_with_message(
+        self, client: FlaskClient, test_tags: list[dict[str, Any]]
+    ) -> None:
+        existing_tag: dict[str, Any] = test_tags[0]
+
+        response: TestResponse = client.put(
+            f"/tags/{existing_tag['id']}", json={"name": "some tag name"}
+        )
+
+        assert response.status_code == HTTPStatus.UNAUTHORIZED
+        assert response.get_json(silent=True) == {"message": "Unauthorized."}
+
     @pytest.mark.parametrize(
         argnames=("payload",),
         argvalues=(
@@ -247,11 +259,11 @@ class TestPutTagsByIdRoute:
         assert response.get_json(silent=True) == {"message": WRONG_DATA_FORMAT}
 
     def test_should_respond_forbidden_with_message_if_tag_is_absent(
-        self, client: FlaskClient
+        self, logged_in_client: FlaskClient
     ) -> None:
         absent_tag_id = 100
 
-        response: TestResponse = client.put(f"/tags/{absent_tag_id}")
+        response: TestResponse = logged_in_client.put(f"/tags/{absent_tag_id}")
 
         assert response.status_code == HTTPStatus.FORBIDDEN
         assert response.get_json(silent=True) == {

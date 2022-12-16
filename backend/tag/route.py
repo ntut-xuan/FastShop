@@ -74,6 +74,7 @@ def fetch_tag(id: int) -> Response:
 
 
 @route_with_doc(tag_bp, "/tags/<int:id>", methods=["PUT"])
+@verify_login_or_return_401
 def update_tag(id: int) -> Response:
     tag: Tag | None = db.session.get(Tag, id)  # type: ignore[attr-defined]
 
