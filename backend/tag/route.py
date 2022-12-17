@@ -49,7 +49,7 @@ def add_tag() -> Response:
             HTTPStatus.FORBIDDEN, "The tag already exists in the database."
         )
 
-    db.session.execute(db.insert(Tag).values(name=tag_name))
+    db.session.add(Tag(name=tag_name))
     db.session.commit()
     return make_single_message_response(HTTPStatus.OK)
 
@@ -95,7 +95,7 @@ def update_tag(id: int) -> Response:
 
     tag_name: str = payload["name"]
 
-    db.session.execute(db.update(Tag).where(Tag.id == id).values(name=tag_name))
+    tag.name = tag_name
     db.session.commit()
     return make_single_message_response(HTTPStatus.OK)
 
@@ -125,9 +125,7 @@ def get_items_by_tag(id: int) -> Response:
         )
 
     select_items_by_tag_stmt: Select = (
-        db.select(Item)
-        .select_from(db.join(Item, TagOfItem, Item.id == TagOfItem.item_id))
-        .where(TagOfItem.tag_id == id)
+        db.select(Item).join(TagOfItem).where(TagOfItem.tag_id == tag.id)
     )
     items: list[Item] = db.session.execute(select_items_by_tag_stmt).scalars().all()
     payload: dict[str, Any] = {

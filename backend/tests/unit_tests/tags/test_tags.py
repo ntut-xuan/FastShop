@@ -75,7 +75,7 @@ class PostTagsRoute:
         with app.app_context():
             tag: Tag | None = db.session.execute(
                 db.select(Tag).where(Tag.name == tag_name)
-            ).scalar_one_or_none()
+            ).one_or_none()
         assert tag is not None
 
     @pytest.mark.parametrize(
@@ -169,9 +169,7 @@ class TestDeleteTagsByIdRoute:
         logged_in_client.delete(f"/tags/{target['id']}")
 
         with app.app_context():
-            tag: Tag | None = db.session.execute(
-                db.select(Tag).where(Tag.id == target["id"])
-            ).scalar()
+            tag: Tag | None = db.session.get(Tag, target["id"])  # type: ignore[attr-defined]
             assert tag is None
 
     def test_without_logging_in_should_respond_unauthorized_with_message(
@@ -300,18 +298,19 @@ class TestGetItemsByIdOfTagRoute:
     def test_should_return_all_items_of_the_tag(
         self, app: Flask, client: FlaskClient
     ) -> None:
+        target_item: dict[str, Any] = {
+            "id": 1,
+            "name": "apple",
+            "count": 10,
+            "original": 30,
+            "discount": 25,
+            "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
+        }
         with app.app_context():
             db.session.execute(
                 db.insert(Item),
                 [
-                    {
-                        "id": 1,
-                        "name": "apple",
-                        "count": 10,
-                        "original": 30,
-                        "discount": 25,
-                        "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
-                    },
+                    target_item,
                     {
                         "id": 2,
                         "name": "tilapia",
@@ -341,19 +340,11 @@ class TestGetItemsByIdOfTagRoute:
             )
             db.session.commit()
 
-        response: TestResponse = client.get("/tags/1/items")
+        response: TestResponse = client.get(f"/tags/{target_item['id']}/items")
 
         assert response.json is not None
         data: dict[str, Any] = response.json
         assert data["count"] == 1
-        responded_tags: list[dict[str, Any]] = data["items"]
-        assert responded_tags == [
-            {
-                "id": 1,
-                "name": "apple",
-                "count": 10,
-                "original": 30,
-                "discount": 25,
-                "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
-            }
-        ]
+        assert len(data["items"]) == 1
+        (responded_item,) = data["items"]
+        assert responded_item == target_item
