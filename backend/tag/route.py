@@ -24,7 +24,7 @@ def fetch_all_tags() -> Response:
 
     payload: dict[str, Any] = {
         "count": len(tags),
-        "tags": [_filter_sa_instance_state(tag) for tag in tags],
+        "tags": [_filter_sa_instance_state(tag.__dict__) for tag in tags],
     }
     return make_response(payload)
 
@@ -69,7 +69,7 @@ def fetch_tag(id: int) -> Response:
             HTTPStatus.FORBIDDEN, "The specific ID of tag is absent."
         )
 
-    payload: dict = _filter_sa_instance_state(tag)
+    payload: dict = _filter_sa_instance_state(tag.__dict__)
     return make_response(payload)
 
 
@@ -130,24 +130,22 @@ def get_items_by_tag(id: int) -> Response:
     items: list[Item] = db.session.execute(select_items_by_tag_stmt).scalars().all()
     payload: dict[str, Any] = {
         "count": len(items),
-        "items": [_filter_sa_instance_state(item) for item in items],
+        "items": [_filter_sa_instance_state(item.__dict__) for item in items],
     }
     return make_response(payload)
 
 
-def _filter_sa_instance_state(model: object) -> dict[str, Any]:
+def _filter_sa_instance_state(sa_dict: dict) -> dict:
     """
     SQLAlchemy inserts an additional attribute to manage object state,
     so there's an extra key `_sa_instance_state` after getting attributes with `__dict__`.
 
-    NOTE: `model` is likely an instance of SQLAlchemy.Model.
-
     Args:
-        model : The object to get `__dict__` and to remove instance state on.
+        sa_dict: The dict to filter instance state from. Not modified.
 
     Returns:
-       `__dict__` of `model` with key `_sa_instance_state` removed.
+       A shallow copy of `sa_dict` with key `_sa_instance_state` removed.
     """
-    d: dict = model.__dict__
-    d.pop("_sa_instance_state", None)
-    return d
+    sa_dict_copy: dict = sa_dict.copy()
+    sa_dict_copy.pop("_sa_instance_state", None)
+    return sa_dict_copy
