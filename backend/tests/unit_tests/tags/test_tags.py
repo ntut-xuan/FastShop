@@ -62,7 +62,7 @@ class TestGetTagsRoute:
             assert tag in test_tags
 
 
-class PostTagsRoute:
+class TestPostTagsRoute:
     def test_with_non_existent_name_should_add_tag_into_database(
         self, app: Flask, logged_in_client: FlaskClient
     ) -> None:
