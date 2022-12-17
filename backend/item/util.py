@@ -5,7 +5,7 @@ from sqlalchemy import func
 
 from database import db
 from item.exception import ItemNotExistError
-from models import Item
+from models import Item, Tag, TagOfItem
 
 if TYPE_CHECKING:
     from dataclasses import dataclass
@@ -113,9 +113,27 @@ def get_item_with_specific_id(id: int) -> ItemData:
     if not has_item_with_specific_id(id):
         raise ItemNotExistError
 
-    select_data_stmts: Select = db.select(["*"]).select_from(Item).where(Item.id == id)
-    query_item: tuple = db.session.execute(select_data_stmts).one()
+    select_item_data_stmts: Select = (
+        db.select(["*"]).select_from(Item).where(Item.id == id)
+    )
+    select_tag_of_item_data_stmts: Select = (
+        db.select([Tag.id, Tag.name])
+        .select_from(Tag)
+        .join(TagOfItem)
+        .where(TagOfItem.item_id == id)
+    )
+
+    query_item: tuple = db.session.execute(select_item_data_stmts).one()
+    query_tag_of_item: list[tuple] = db.session.execute(
+        select_tag_of_item_data_stmts
+    ).fetchall()
+
     query_item_data: ItemData = convert_database_tuple_to_item_data(query_item)
+    query_tag_object_list: list[TagData] = convert_tuple_list_to_tag_object_list(
+        query_tag_of_item
+    )
+
+    query_item_data.tags = query_tag_object_list
     return query_item_data
 
 
@@ -153,3 +171,10 @@ def convert_database_tuple_to_item_data(item: tuple) -> ItemData:
         item[1],  # Column 2 is name
         PriceData(item[3], item[4]),  # Column 4, 5 is discount, original price
     )
+
+
+def convert_tuple_list_to_tag_object_list(tag_tuple_list: list[tuple]) -> list[Tag]:
+    tag_object_list: list[TagData] = [
+        TagData(id=tag_tuple[0], name=tag_tuple[1]) for tag_tuple in tag_tuple_list
+    ]
+    return tag_object_list

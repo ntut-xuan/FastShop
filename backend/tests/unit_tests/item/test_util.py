@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
+from dataclasses import dataclass
 
 import pytest
 from pydantic.error_wrappers import ValidationError
@@ -22,11 +23,17 @@ from item.util import (
     has_item_with_specific_id,
     update_item_with_specific_id,
 )
-from models import Item
+from models import Item, Tag, TagOfItem
 
 if TYPE_CHECKING:
     from flask import Flask
     from sqlalchemy.sql.selectable import Select
+
+
+@dataclass
+class ItemIdPackage:
+    item_id: int
+    another_item_id: int
 
 
 @pytest.fixture
@@ -41,9 +48,6 @@ def item_data_dict() -> dict:
 
 
 def is_item_tuple_and_item_data_object_equals(item: tuple, item_data: ItemData) -> bool:
-    item_data.tags = (
-        []
-    )  # Query data doesn't have tags field, set compared item_data tags attribute to default.
     compare_result: bool = convert_database_tuple_to_item_data(item) == item_data
     return compare_result
 
@@ -76,10 +80,34 @@ def another_item_data() -> ItemData:
 
 
 @pytest.fixture
-def place_item(app: Flask, item_data_dict: dict[str, Any]) -> int:
+def place_item(
+    app: Flask, item_data_dict: dict[str, Any], another_item_data: ItemData
+) -> ItemIdPackage:
     with app.app_context():
+        # Two different item will be place, item_data and another_item_data.
         item_data_object: ItemData = convert_item_object(item_data_dict)
-        return add_item_data(item_data_object)
+        another_item_data_object: ItemData = another_item_data
+
+        # Add item to database
+        item_data_id: int = add_item_data(item_data_object)
+        another_item_data_id: int = add_item_data(another_item_data_object)
+
+        # Add their tag to database
+        item_data_tag = Tag(id=33, name="dian")
+        another_item_data_tag = Tag(id=44, name="more-dian")
+        db.session.add(item_data_tag)
+        db.session.add(another_item_data_tag)
+
+        # Add their relationship
+        item_object_tag_of_item = TagOfItem(item_id=item_data_id, tag_id=33)
+        another_item_object_tag_of_item = TagOfItem(
+            item_id=another_item_data_id, tag_id=44
+        )
+        db.session.add(item_object_tag_of_item)
+        db.session.add(another_item_object_tag_of_item)
+        db.session.commit()
+
+        return ItemIdPackage(item_data_id, another_item_data_id)
 
 
 class TestCovertItemDataObjectFromItemDataDict:
@@ -119,12 +147,10 @@ class TestItemManipulation:
         with app.app_context():
 
             id = add_item_data(item_data)
-            item_data_select_stmt: Select = (
-                db.select(["*"]).select_from(Item).where(Item.id == id)
-            )
-            item: tuple = db.session.execute(item_data_select_stmt).one()
+            query_item_data: ItemData = get_item_with_specific_id(id)
 
-            assert is_item_tuple_and_item_data_object_equals(item, item_data)
+            query_item_data.tag = item_data.tags = []
+            assert query_item_data == item_data
 
     def test_check_count_of_non_exist_id_should_return_false(self, app: Flask):
         with app.app_context():
@@ -132,9 +158,9 @@ class TestItemManipulation:
             assert has_item_with_specific_id(111111) == False
 
     def test_check_count_of_exist_id_should_return_true(
-        self, app: Flask, place_item: int
+        self, app: Flask, place_item: ItemIdPackage
     ):
-        place_item_id = place_item
+        place_item_id = place_item.item_id
         with app.app_context():
 
             assert has_item_with_specific_id(place_item_id)
@@ -146,9 +172,9 @@ class TestItemManipulation:
                 update_item_with_specific_id(65536)
 
     def test_update_all_item_column_value_should_ok(
-        self, app: Flask, place_item: int, another_item_data: ItemData
+        self, app: Flask, place_item: ItemIdPackage, another_item_data: ItemData
     ):
-        place_item_id = place_item
+        place_item_id = place_item.item_id
         with app.app_context():
 
             update_item_with_specific_id(
@@ -159,23 +185,20 @@ class TestItemManipulation:
                 name=another_item_data.name,
                 original=another_item_data.price.original,
             )
-            item_data_select_stmt: Select = (
-                db.select(["*"]).select_from(Item).where(Item.id == place_item_id)
-            )
-            query_item_data: tuple = db.session.execute(item_data_select_stmt).one()
+            query_item_data: ItemData = get_item_with_specific_id(place_item_id)
 
-            assert is_item_tuple_and_item_data_object_equals(
-                query_item_data, another_item_data
-            )
+            # Since update column will update the column without tag, so we skip it.
+            another_item_data.tags = query_item_data.tags = []
+            assert query_item_data == another_item_data
 
     def test_update_part_of_item_column_value_should_ok(
         self,
         app: Flask,
-        place_item: int,
+        place_item: ItemIdPackage,
         item_data: ItemData,
         another_item_data: ItemData,
     ):
-        place_item_id = place_item
+        place_item_id = place_item.item_id
         with app.app_context():
 
             update_item_with_specific_id(
@@ -183,17 +206,15 @@ class TestItemManipulation:
                 avatar=another_item_data.avatar,
                 count=another_item_data.count,
             )
-            item_data_select_stmt: Select = (
-                db.select(["*"]).select_from(Item).where(Item.id == place_item_id)
-            )
-            query_item: tuple = db.session.execute(item_data_select_stmt).one()
+            query_item_data: ItemData = get_item_with_specific_id(place_item_id)
 
             prepare_compare_item_data = item_data
             prepare_compare_item_data.avatar = another_item_data.avatar
             prepare_compare_item_data.count = another_item_data.count
-            assert is_item_tuple_and_item_data_object_equals(
-                query_item, prepare_compare_item_data
-            )
+
+            # Since update column will update the column without tag, so we skip it.
+            query_item_data.tags = prepare_compare_item_data.tags = []
+            assert query_item_data == prepare_compare_item_data
 
     def test_get_item_by_absent_id_should_raise_error(self, app: Flask):
         with app.app_context():
@@ -202,9 +223,9 @@ class TestItemManipulation:
                 get_item_with_specific_id(65536)
 
     def test_get_item_by_exist_id_should_return_item_data_object(
-        self, app: Flask, item_data: ItemData, place_item: int
+        self, app: Flask, item_data: ItemData, place_item: ItemIdPackage
     ):
-        place_item_id = place_item
+        place_item_id = place_item.item_id
         with app.app_context():
 
             query_item_data: ItemData = get_item_with_specific_id(place_item_id)
@@ -214,7 +235,7 @@ class TestItemManipulation:
             )
 
     def test_get_all_item_should_return_item_data_object_list(
-        self, app: Flask, item_data: ItemData, place_item: int
+        self, app: Flask, item_data: ItemData, place_item: ItemIdPackage
     ):
         with app.app_context():
 
@@ -229,8 +250,10 @@ class TestItemManipulation:
             with pytest.raises(ItemNotExistError):
                 delete_item_with_specific_id(65536)
 
-    def test_delete_item_by_exist_id_should_ok(self, app: Flask, place_item: int):
-        place_item_id = place_item
+    def test_delete_item_by_exist_id_should_ok(
+        self, app: Flask, place_item: ItemIdPackage
+    ):
+        place_item_id = place_item.item_id
         with app.app_context():
 
             delete_item_with_specific_id(place_item_id)
