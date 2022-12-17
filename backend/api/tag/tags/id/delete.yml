@@ -20,7 +20,7 @@ responses:
           $ref: '#/definitions/message'
         example:
           message: OK
-  402:
+  401:
     description: Unauthorized.
     content:
       application/json:
