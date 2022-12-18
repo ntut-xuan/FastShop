@@ -54,14 +54,6 @@ def is_item_tuple_and_item_data_object_equals(item: tuple, item_data: ItemData) 
     return compare_result
 
 
-def is_item_data_equals_another_item_data_without_tag_attribute(
-    item_data: ItemData, another_item_data: ItemData
-):
-    item_data.tags = []
-    another_item_data.tags = []
-    return item_data == another_item_data
-
-
 @pytest.fixture
 def item_data(item_data_dict: dict[str, Any]) -> ItemDataWithTags:
     converted_item: ItemData = convert_item_data_dict_to_item_data(item_data_dict)
@@ -201,8 +193,6 @@ class TestItemManipulation:
             )
             query_item_data: ItemDataWithTags = get_item_with_specific_id(place_item_id)
 
-            # Since update column will update the column except tag, so we skip it.
-            another_item_data.tags = query_item_data.tags = []
             assert query_item_data == another_item_data
 
     def test_update_part_of_item_column_value_should_ok(
@@ -226,8 +216,6 @@ class TestItemManipulation:
             prepare_compare_item_data.avatar = another_item_data.avatar
             prepare_compare_item_data.count = another_item_data.count
 
-            # Since update column will update the column except tag, so we skip it.
-            query_item_data.tags = prepare_compare_item_data.tags = []
             assert query_item_data == prepare_compare_item_data
 
     def test_get_item_by_absent_id_should_raise_error(self, app: Flask):
@@ -247,11 +235,11 @@ class TestItemManipulation:
             assert query_item_data == item_data
 
     def test_get_all_item_should_return_item_data_object_list(
-        self, app: Flask, item_data: ItemData, place_item: ItemIdPackage
+        self, app: Flask, item_data: ItemDataWithTags, place_item: ItemIdPackage
     ):
         with app.app_context():
 
-            query_item_data_list: list[ItemData] = get_all_items()
+            query_item_data_list: list[ItemDataWithTags] = get_all_items()
             assert query_item_data_list[0] == item_data
 
     def test_delete_item_by_absent_id_should_raise_error(self, app: Flask):

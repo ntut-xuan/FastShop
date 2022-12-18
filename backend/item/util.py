@@ -204,7 +204,7 @@ def convert_database_tuple_to_item_data(item: tuple) -> ItemData:
     )
 
 
-def convert_tuple_list_to_tag_object_list(tag_tuple_list: list[tuple]) -> list[Tag]:
+def convert_tuple_list_to_tag_object_list(tag_tuple_list: list[tuple]) -> list[TagData]:
     tag_object_list: list[TagData] = [
         TagData(id=tag_tuple[0], name=tag_tuple[1]) for tag_tuple in tag_tuple_list
     ]
