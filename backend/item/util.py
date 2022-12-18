@@ -34,10 +34,14 @@ class ItemData:
     count: StrictInt
     name: StrictStr
     price: PriceData
-    tags: list[TagData] = Field([])
 
 
-def convert_item_object(item_data_dict: dict[str, Any]) -> ItemData:
+@dataclass
+class ItemDataWithTags(ItemData):
+    tags: list[TagData]
+
+
+def convert_item_data_dict_to_item_data(item_data_dict: dict[str, Any]) -> ItemData:
     item = ItemData(
         avatar=item_data_dict["avatar"],
         count=item_data_dict["count"],
@@ -47,18 +51,32 @@ def convert_item_object(item_data_dict: dict[str, Any]) -> ItemData:
             discount=item_data_dict["price"]["discount"],
         ),
     )
-    if "tags" in item_data_dict:
-        item.tags = convert_tags_object_list(item_data_dict["tags"])
     return item
 
 
-def convert_tags_object_list(tags_dict_list: list[dict[str, Any]]):
+def convert_tags_object_list(tags_dict_list: list[dict[str, Any]]) -> list[TagData]:
     tags_object_list = []
 
     for tags_data in tags_dict_list:
         tags_object_list.append(TagData(id=tags_data["id"], name=tags_data["name"]))
 
     return tags_object_list
+
+
+def add_tags_to_item_data(
+    item_data: ItemData, tags_list: list[TagData]
+) -> ItemDataWithTags:
+    item_data_with_tags = ItemDataWithTags(
+        avatar=item_data.avatar,
+        count=item_data.count,
+        name=item_data.name,
+        price=PriceData(
+            original=item_data.price.original,
+            discount=item_data.price.discount,
+        ),
+        tags=tags_list,
+    )
+    return item_data_with_tags
 
 
 def add_item_data(data: ItemData) -> int:
@@ -109,42 +127,55 @@ def update_item_with_specific_id(
     db.session.commit()
 
 
-def get_item_with_specific_id(id: int) -> ItemData:
+def get_item_with_specific_id(id: int) -> ItemDataWithTags:
     if not has_item_with_specific_id(id):
         raise ItemNotExistError
 
     select_item_data_stmts: Select = (
         db.select(["*"]).select_from(Item).where(Item.id == id)
     )
+
+    query_item: tuple = db.session.execute(select_item_data_stmts).one()
+
+    query_item_data: ItemData = convert_database_tuple_to_item_data(query_item)
+    query_tag_object_list: list[TagData] = get_all_tags_with_specific_item_id(id)
+
+    query_item_data_with_tags: ItemDataWithTags = add_tags_to_item_data(
+        query_item_data, query_tag_object_list
+    )
+    return query_item_data_with_tags
+
+
+def get_all_items() -> list[ItemDataWithTags]:
+    select_data_stmts: Select = db.select(["*"]).select_from(Item)
+    query_item_list: list[tuple] = db.session.execute(select_data_stmts).fetchall()
+    query_item_data_with_tags_list: list[ItemDataWithTags] = []
+
+    for item_data_tuple in query_item_list:
+        item_data = convert_database_tuple_to_item_data(item_data_tuple)
+        tag_object_list = get_all_tags_with_specific_item_id(
+            item_data_tuple[0]
+        )  # 0 for id.
+        item_data_with_tags = add_tags_to_item_data(item_data, tag_object_list)
+        query_item_data_with_tags_list.append(item_data_with_tags)
+
+    return query_item_data_with_tags_list
+
+
+def get_all_tags_with_specific_item_id(id: int) -> list[TagData]:
     select_tag_of_item_data_stmts: Select = (
         db.select([Tag.id, Tag.name])
         .select_from(Tag)
         .join(TagOfItem)
         .where(TagOfItem.item_id == id)
     )
-
-    query_item: tuple = db.session.execute(select_item_data_stmts).one()
     query_tag_of_item: list[tuple] = db.session.execute(
         select_tag_of_item_data_stmts
     ).fetchall()
-
-    query_item_data: ItemData = convert_database_tuple_to_item_data(query_item)
     query_tag_object_list: list[TagData] = convert_tuple_list_to_tag_object_list(
         query_tag_of_item
     )
-
-    query_item_data.tags = query_tag_object_list
-    return query_item_data
-
-
-def get_all_items() -> list[ItemData]:
-    select_data_stmts: Select = db.select(["*"]).select_from(Item)
-    query_item_list: list[tuple] = db.session.execute(select_data_stmts).fetchall()
-    query_item_data_list: list[ItemData] = [
-        convert_database_tuple_to_item_data(query_item_tuple)
-        for query_item_tuple in query_item_list
-    ]
-    return query_item_data_list
+    return query_tag_object_list
 
 
 def delete_item_with_specific_id(id: int) -> None:

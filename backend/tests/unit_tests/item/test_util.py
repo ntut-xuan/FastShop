@@ -11,11 +11,13 @@ from database import db
 from item.exception import ItemNotExistError
 from item.util import (
     ItemData,
+    ItemDataWithTags,
     PriceData,
     TagData,
     add_item_data,
+    add_tags_to_item_data,
     convert_database_tuple_to_item_data,
-    convert_item_object,
+    convert_item_data_dict_to_item_data,
     convert_tags_object_list,
     delete_item_with_specific_id,
     get_all_items,
@@ -61,13 +63,19 @@ def is_item_data_equals_another_item_data_without_tag_attribute(
 
 
 @pytest.fixture
-def item_data(item_data_dict: dict[str, Any]) -> ItemData:
-    converted_item: ItemData = convert_item_object(item_data_dict)
-    return converted_item
+def item_data(item_data_dict: dict[str, Any]) -> ItemDataWithTags:
+    converted_item: ItemData = convert_item_data_dict_to_item_data(item_data_dict)
+    converted_tags_list: list[TagData] = convert_tags_object_list(
+        item_data_dict["tags"]
+    )
+    item_data_with_tags: ItemDataWithTags = add_tags_to_item_data(
+        converted_item, converted_tags_list
+    )
+    return item_data_with_tags
 
 
 @pytest.fixture
-def another_item_data() -> ItemData:
+def another_item_data() -> ItemDataWithTags:
     another_item_data: dict = {
         "avatar": "f32aa7ea-c092-4e92-b4c9-d4b41141fd7d",
         "count": 66,
@@ -75,17 +83,23 @@ def another_item_data() -> ItemData:
         "price": {"discount": 98765, "original": 90000},
         "tags": [{"id": 44, "name": "more-dian"}],
     }
-    converted_item: ItemData = convert_item_object(another_item_data)
-    return converted_item
+    converted_item: ItemData = convert_item_data_dict_to_item_data(another_item_data)
+    converted_tags_list: list[TagData] = convert_tags_object_list(
+        another_item_data["tags"]
+    )
+    item_data_with_tags: ItemDataWithTags = add_tags_to_item_data(
+        converted_item, converted_tags_list
+    )
+    return item_data_with_tags
 
 
 @pytest.fixture
 def place_item(
-    app: Flask, item_data_dict: dict[str, Any], another_item_data: ItemData
+    app: Flask, item_data_dict: dict[str, Any], another_item_data: ItemDataWithTags
 ) -> ItemIdPackage:
     with app.app_context():
         # Two different item will be place, item_data and another_item_data.
-        item_data_object: ItemData = convert_item_object(item_data_dict)
+        item_data_object: ItemData = convert_item_data_dict_to_item_data(item_data_dict)
         another_item_data_object: ItemData = another_item_data
 
         # Add item to database
@@ -114,19 +128,17 @@ class TestCovertItemDataObjectFromItemDataDict:
     def test_valid_dict_should_return_correct_item_object(
         self, item_data_dict: dict[str, Any]
     ):
-        item: ItemData = convert_item_object(item_data_dict)
+        item_data: ItemData = convert_item_data_dict_to_item_data(item_data_dict)
 
-        assert item.avatar == "f692073a-7ac1-11ed-a1eb-0242ac120002"
-        assert item.count == 44
-        assert item.name == "Entropy"
-        assert item.price.discount == 43210
-        assert item.price.original == 48763
-        assert item.tags[0].id == 33
-        assert item.tags[0].name == "dian"
+        assert item_data.avatar == "f692073a-7ac1-11ed-a1eb-0242ac120002"
+        assert item_data.count == 44
+        assert item_data.name == "Entropy"
+        assert item_data.price.discount == 43210
+        assert item_data.price.original == 48763
 
     def test_incorrect_format_dict_should_raise_missing_fields_error(self):
         with pytest.raises(KeyError):
-            convert_item_object({"wrong_column": "wrong_value"})
+            convert_item_data_dict_to_item_data({"wrong_column": "wrong_value"})
 
     def test_invalid_data_dict_should_raise_error(self, item_data_dict: dict[str, Any]):
         item_data_dict[
@@ -134,23 +146,25 @@ class TestCovertItemDataObjectFromItemDataDict:
         ] = "5"  # Since count require integer-type data, it should cause error.
 
         with pytest.raises(ValidationError):
-            convert_item_object(item_data_dict)
+            convert_item_data_dict_to_item_data(item_data_dict)
 
     def test_no_tags_dict_should_ok(self, item_data_dict: dict[str, Any]):
         del item_data_dict["tags"]
 
-        convert_item_object(item_data_dict)
+        convert_item_data_dict_to_item_data(item_data_dict)
 
 
 class TestItemManipulation:
-    def test_add_item_should_ok(self, app: Flask, item_data: ItemData):
+    def test_add_item_should_ok(self, app: Flask, item_data: ItemDataWithTags):
         with app.app_context():
 
             id = add_item_data(item_data)
-            query_item_data: ItemData = get_item_with_specific_id(id)
 
-            query_item_data.tag = item_data.tags = []
-            assert query_item_data == item_data
+            query_item_data: ItemDataWithTags = get_item_with_specific_id(id)
+            query_item_data_with_tags: ItemDataWithTags = add_tags_to_item_data(
+                query_item_data, item_data.tags
+            )
+            assert query_item_data_with_tags == item_data
 
     def test_check_count_of_non_exist_id_should_return_false(self, app: Flask):
         with app.app_context():
@@ -185,9 +199,9 @@ class TestItemManipulation:
                 name=another_item_data.name,
                 original=another_item_data.price.original,
             )
-            query_item_data: ItemData = get_item_with_specific_id(place_item_id)
+            query_item_data: ItemDataWithTags = get_item_with_specific_id(place_item_id)
 
-            # Since update column will update the column without tag, so we skip it.
+            # Since update column will update the column except tag, so we skip it.
             another_item_data.tags = query_item_data.tags = []
             assert query_item_data == another_item_data
 
@@ -212,7 +226,7 @@ class TestItemManipulation:
             prepare_compare_item_data.avatar = another_item_data.avatar
             prepare_compare_item_data.count = another_item_data.count
 
-            # Since update column will update the column without tag, so we skip it.
+            # Since update column will update the column except tag, so we skip it.
             query_item_data.tags = prepare_compare_item_data.tags = []
             assert query_item_data == prepare_compare_item_data
 
@@ -230,9 +244,7 @@ class TestItemManipulation:
 
             query_item_data: ItemData = get_item_with_specific_id(place_item_id)
 
-            assert is_item_data_equals_another_item_data_without_tag_attribute(
-                query_item_data, item_data
-            )
+            assert query_item_data == item_data
 
     def test_get_all_item_should_return_item_data_object_list(
         self, app: Flask, item_data: ItemData, place_item: ItemIdPackage
@@ -240,9 +252,7 @@ class TestItemManipulation:
         with app.app_context():
 
             query_item_data_list: list[ItemData] = get_all_items()
-            assert is_item_data_equals_another_item_data_without_tag_attribute(
-                query_item_data_list[0], item_data
-            )
+            assert query_item_data_list[0] == item_data
 
     def test_delete_item_by_absent_id_should_raise_error(self, app: Flask):
         with app.app_context():
@@ -259,13 +269,3 @@ class TestItemManipulation:
             delete_item_with_specific_id(place_item_id)
 
             assert not has_item_with_specific_id(place_item_id)
-
-
-def test_tags_dict_list_convert_to_tags_object_list_should_ok(
-    item_data_dict: dict[str, Any]
-):
-    tags_object_list = convert_tags_object_list(item_data_dict["tags"])
-
-    assert isinstance(tags_object_list, list)
-    for object in tags_object_list:
-        assert isinstance(object, TagData)
