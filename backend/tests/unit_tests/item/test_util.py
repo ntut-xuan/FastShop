@@ -5,7 +5,6 @@ from dataclasses import dataclass
 
 import pytest
 from pydantic.error_wrappers import ValidationError
-from sqlalchemy import func
 
 from database import db
 from item.exception import ItemNotExistError
@@ -29,7 +28,6 @@ from models import Item, Tag, TagOfItem
 
 if TYPE_CHECKING:
     from flask import Flask
-    from sqlalchemy.sql.selectable import Select
 
 
 @dataclass
@@ -47,11 +45,6 @@ def item_data_dict() -> dict:
         "price": {"discount": 43210, "original": 48763},
         "tags": [{"id": 33, "name": "dian"}],
     }
-
-
-def is_item_tuple_and_item_data_object_equals(item: tuple, item_data: ItemData) -> bool:
-    compare_result: bool = convert_database_tuple_to_item_data(item) == item_data
-    return compare_result
 
 
 @pytest.fixture
@@ -86,29 +79,58 @@ def another_item_data() -> ItemDataWithTags:
 
 
 @pytest.fixture
-def place_item(
-    app: Flask, item_data_dict: dict[str, Any], another_item_data: ItemDataWithTags
+def setup_tags_of_item_data(app: Flask) -> None:
+    with app.app_context():
+        item_data_tag = Tag(id=33, name="dian")
+        db.session.add(item_data_tag)
+        db.session.commit()
+
+
+@pytest.fixture
+def setup_tags_of_another_item_data(app: Flask) -> None:
+    with app.app_context():
+        item_data_tag = Tag(id=44, name="more-dian")
+        db.session.add(item_data_tag)
+        db.session.commit()
+
+
+@pytest.fixture
+def place_item(app: Flask, item_data_dict: dict[str, Any]) -> int:
+    with app.app_context():
+        item_data_object: ItemData = convert_item_data_dict_to_item_data(item_data_dict)
+        item_data_id: int = add_item_data(item_data_object)
+        return item_data_id
+
+
+@pytest.fixture
+def place_another_item(app: Flask, another_item_data: ItemDataWithTags) -> int:
+    with app.app_context():
+        another_item_data_id: int = add_item_data(another_item_data)
+        return another_item_data_id
+
+
+@pytest.fixture
+def place_item_and_tags(
+    app: Flask,
+    place_item: int,
+    place_another_item: int,
+    setup_tags_of_item_data: None,
+    setup_tags_of_another_item_data: None,
 ) -> ItemIdPackage:
     with app.app_context():
-        # Two different item will be place, item_data and another_item_data.
-        item_data_object: ItemData = convert_item_data_dict_to_item_data(item_data_dict)
-        another_item_data_object: ItemData = another_item_data
+        item_data_id = place_item
+        another_item_data_id = place_another_item
 
-        # Add item to database
-        item_data_id: int = add_item_data(item_data_object)
-        another_item_data_id: int = add_item_data(another_item_data_object)
-
-        # Add their tag to database
-        item_data_tag = Tag(id=33, name="dian")
-        another_item_data_tag = Tag(id=44, name="more-dian")
-        db.session.add(item_data_tag)
-        db.session.add(another_item_data_tag)
-
-        # Add their relationship
+        # Since fixture already add tag to database, so we setup their relationship.
         setup_tags_relationship_of_item(item_data_id, [33])
         setup_tags_relationship_of_item(another_item_data_id, [44])
 
         return ItemIdPackage(item_data_id, another_item_data_id)
+
+
+def is_item_tuple_and_item_data_object_equals(item: tuple, item_data: ItemData) -> bool:
+    compare_result: bool = convert_database_tuple_to_item_data(item) == item_data
+    return compare_result
 
 
 class TestCovertItemDataObjectFromItemDataDict:
@@ -159,9 +181,9 @@ class TestItemManipulation:
             assert has_item_with_specific_id(111111) == False
 
     def test_check_count_of_exist_id_should_return_true(
-        self, app: Flask, place_item: ItemIdPackage
+        self, app: Flask, place_item_and_tags: ItemIdPackage
     ):
-        place_item_id = place_item.item_id
+        place_item_id = place_item_and_tags.item_id
         with app.app_context():
 
             assert has_item_with_specific_id(place_item_id)
@@ -173,9 +195,12 @@ class TestItemManipulation:
                 update_item_with_specific_id(65536)
 
     def test_update_all_item_column_value_should_ok(
-        self, app: Flask, place_item: ItemIdPackage, another_item_data: ItemDataWithTags
+        self,
+        app: Flask,
+        place_item_and_tags: ItemIdPackage,
+        another_item_data: ItemDataWithTags,
     ):
-        place_item_id = place_item.item_id
+        place_item_id = place_item_and_tags.item_id
         with app.app_context():
 
             update_item_with_specific_id(
@@ -191,14 +216,14 @@ class TestItemManipulation:
             another_item_data.tags = query_item_data.tags
             assert query_item_data == another_item_data
 
-    def test_update_part_of_item_column_value_should_ok(
+    def test_update_part_of_item_column_value_should_oplace_item_and_tagsk(
         self,
         app: Flask,
-        place_item: ItemIdPackage,
+        place_item_and_tags: ItemIdPackage,
         item_data: ItemDataWithTags,
         another_item_data: ItemDataWithTags,
     ):
-        place_item_id = place_item.item_id
+        place_item_id = place_item_and_tags.item_id
         with app.app_context():
 
             update_item_with_specific_id(
@@ -221,9 +246,9 @@ class TestItemManipulation:
                 get_item_with_specific_id(65536)
 
     def test_get_item_by_exist_id_should_return_item_data_object(
-        self, app: Flask, item_data: ItemData, place_item: ItemIdPackage
+        self, app: Flask, item_data: ItemData, place_item_and_tags: ItemIdPackage
     ):
-        place_item_id = place_item.item_id
+        place_item_id = place_item_and_tags.item_id
         with app.app_context():
 
             query_item_data: ItemData = get_item_with_specific_id(place_item_id)
@@ -231,7 +256,10 @@ class TestItemManipulation:
             assert query_item_data == item_data
 
     def test_get_all_item_should_return_item_data_object_list(
-        self, app: Flask, item_data: ItemDataWithTags, place_item: ItemIdPackage
+        self,
+        app: Flask,
+        item_data: ItemDataWithTags,
+        place_item_and_tags: ItemIdPackage,
     ):
         with app.app_context():
 
@@ -245,9 +273,9 @@ class TestItemManipulation:
                 delete_item_with_specific_id(65536)
 
     def test_delete_item_by_exist_id_should_ok(
-        self, app: Flask, place_item: ItemIdPackage
+        self, app: Flask, place_item_and_tags: ItemIdPackage
     ):
-        place_item_id = place_item.item_id
+        place_item_id = place_item_and_tags.item_id
         with app.app_context():
 
             delete_item_with_specific_id(place_item_id)
@@ -255,27 +283,77 @@ class TestItemManipulation:
             assert not has_item_with_specific_id(place_item_id)
 
 
-def test_bind_the_relationship_of_item_should_ok(app: Flask, item_data_dict: dict):
-    with app.app_context():
-        item_data: ItemData = convert_item_data_dict_to_item_data(item_data_dict)
-        item_id: int = add_item_data(item_data)
-        tags_id_relationship = [33, 44]
-        item_data_tag = Tag(id=33, name="dian")
-        another_item_data_tag = Tag(id=44, name="more-dian")
-        db.session.add(item_data_tag)
-        db.session.add(another_item_data_tag)
-        db.session.commit()
+class TestItemOfTagSetup:
+    def test_bind_single_relationship_of_item_should_ok(
+        self,
+        app: Flask,
+        item_data_dict: dict,
+        item_data: ItemDataWithTags,
+        place_item: int,
+        setup_tags_of_item_data: None,
+    ):
+        with app.app_context():
+            item_id = place_item
+            tags_id_relationship = [33]
 
-        setup_tags_relationship_of_item(item_id, tags_id_relationship)
+            setup_tags_relationship_of_item(item_id, tags_id_relationship)
 
-        tags_select_stmts: Select = db.select(TagOfItem.tag_id).where(
-            TagOfItem.item_id == item_id
-        )
-        query_tags_id_tuple_list: list[tuple] = db.session.execute(
-            tags_select_stmts
-        ).fetchall()
-        query_tags_id_list = [
-            tags_id_tuple[0] for tags_id_tuple in query_tags_id_tuple_list
-        ]
-        query_tags_id_list.sort()
-        assert tags_id_relationship == query_tags_id_list
+            assert get_item_with_specific_id(item_id) == item_data
+
+    def test_bind_multiple_relationship_of_item_should_ok(
+        self,
+        app: Flask,
+        item_data: ItemDataWithTags,
+        place_item: int,
+        setup_tags_of_item_data: None,
+        setup_tags_of_another_item_data: None,
+    ):
+        with app.app_context():
+            item_id = place_item
+            tags_id_relationship = [33, 44]
+
+            setup_tags_relationship_of_item(item_id, tags_id_relationship)
+
+            query_item_data: ItemDataWithTags = get_item_with_specific_id(item_id)
+            assert len(query_item_data.tags) == 2
+            assert query_item_data.tags[0] == TagData(id=33, name="dian")
+            assert query_item_data.tags[1] == TagData(id=44, name="more-dian")
+
+    def test_update_multiple_relationship_of_item_should_ok(
+        self,
+        app: Flask,
+        item_data: ItemDataWithTags,
+        place_item: int,
+        setup_tags_of_item_data: None,
+        setup_tags_of_another_item_data: None,
+    ):
+        with app.app_context():
+            item_id = place_item
+
+            setup_tags_relationship_of_item(item_id, [33])  # Setup the first time.
+            setup_tags_relationship_of_item(
+                item_id, [44]
+            )  # Setup the second time, replace the first time.
+
+            query_item_data: ItemDataWithTags = get_item_with_specific_id(item_id)
+            assert len(query_item_data.tags) == 1
+            assert query_item_data.tags[0] == TagData(id=44, name="more-dian")
+
+    def test_update_to_delete_multiple_relationship_of_item_should_ok(
+        self,
+        app: Flask,
+        item_data: ItemDataWithTags,
+        place_item: int,
+        setup_tags_of_item_data: None,
+        setup_tags_of_another_item_data: None,
+    ):
+        with app.app_context():
+            item_id = place_item
+
+            setup_tags_relationship_of_item(item_id, [33, 44])  # Setup the first time.
+            setup_tags_relationship_of_item(
+                item_id, []
+            )  # Setup the second time, replace the first time.
+
+            query_item_data: ItemDataWithTags = get_item_with_specific_id(item_id)
+            assert len(query_item_data.tags) == 0
