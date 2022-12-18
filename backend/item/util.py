@@ -195,6 +195,18 @@ def has_item_with_specific_id(id: int) -> bool:
     return count > 0
 
 
+def setup_tags_relationship_of_item(item_id: int, tags_id_list: list[int]):
+    # Step 1. Drop all tags of item if exists.
+    delete_tags_stmts: Delete = db.delete(TagOfItem).where(TagOfItem.item_id == item_id)
+    db.session.execute(delete_tags_stmts)
+    db.session.commit()
+
+    # Step 2. Insert all tags relationship
+    for tag_id in tags_id_list:
+        db.session.add(TagOfItem(item_id=item_id, tag_id=tag_id))
+    db.session.commit()
+
+
 def convert_database_tuple_to_item_data(item: tuple) -> ItemData:
     return ItemData(
         item[5],  # Column 6 is avatar

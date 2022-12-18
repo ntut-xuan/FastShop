@@ -12,7 +12,6 @@ from item.exception import ItemNotExistError
 from item.util import (
     ItemData,
     ItemDataWithTags,
-    PriceData,
     TagData,
     add_item_data,
     add_tags_to_item_data,
@@ -23,6 +22,7 @@ from item.util import (
     get_all_items,
     get_item_with_specific_id,
     has_item_with_specific_id,
+    setup_tags_relationship_of_item,
     update_item_with_specific_id,
 )
 from models import Item, Tag, TagOfItem
@@ -105,13 +105,8 @@ def place_item(
         db.session.add(another_item_data_tag)
 
         # Add their relationship
-        item_object_tag_of_item = TagOfItem(item_id=item_data_id, tag_id=33)
-        another_item_object_tag_of_item = TagOfItem(
-            item_id=another_item_data_id, tag_id=44
-        )
-        db.session.add(item_object_tag_of_item)
-        db.session.add(another_item_object_tag_of_item)
-        db.session.commit()
+        setup_tags_relationship_of_item(item_data_id, [33])
+        setup_tags_relationship_of_item(another_item_data_id, [44])
 
         return ItemIdPackage(item_data_id, another_item_data_id)
 
@@ -178,7 +173,7 @@ class TestItemManipulation:
                 update_item_with_specific_id(65536)
 
     def test_update_all_item_column_value_should_ok(
-        self, app: Flask, place_item: ItemIdPackage, another_item_data: ItemData
+        self, app: Flask, place_item: ItemIdPackage, another_item_data: ItemDataWithTags
     ):
         place_item_id = place_item.item_id
         with app.app_context():
@@ -193,14 +188,15 @@ class TestItemManipulation:
             )
             query_item_data: ItemDataWithTags = get_item_with_specific_id(place_item_id)
 
+            another_item_data.tags = query_item_data.tags
             assert query_item_data == another_item_data
 
     def test_update_part_of_item_column_value_should_ok(
         self,
         app: Flask,
         place_item: ItemIdPackage,
-        item_data: ItemData,
-        another_item_data: ItemData,
+        item_data: ItemDataWithTags,
+        another_item_data: ItemDataWithTags,
     ):
         place_item_id = place_item.item_id
         with app.app_context():
@@ -210,7 +206,7 @@ class TestItemManipulation:
                 avatar=another_item_data.avatar,
                 count=another_item_data.count,
             )
-            query_item_data: ItemData = get_item_with_specific_id(place_item_id)
+            query_item_data: ItemDataWithTags = get_item_with_specific_id(place_item_id)
 
             prepare_compare_item_data = item_data
             prepare_compare_item_data.avatar = another_item_data.avatar
@@ -257,3 +253,29 @@ class TestItemManipulation:
             delete_item_with_specific_id(place_item_id)
 
             assert not has_item_with_specific_id(place_item_id)
+
+
+def test_bind_the_relationship_of_item_should_ok(app: Flask, item_data_dict: dict):
+    with app.app_context():
+        item_data: ItemData = convert_item_data_dict_to_item_data(item_data_dict)
+        item_id: int = add_item_data(item_data)
+        tags_id_relationship = [33, 44]
+        item_data_tag = Tag(id=33, name="dian")
+        another_item_data_tag = Tag(id=44, name="more-dian")
+        db.session.add(item_data_tag)
+        db.session.add(another_item_data_tag)
+        db.session.commit()
+
+        setup_tags_relationship_of_item(item_id, tags_id_relationship)
+
+        tags_select_stmts: Select = db.select(TagOfItem.tag_id).where(
+            TagOfItem.item_id == item_id
+        )
+        query_tags_id_tuple_list: list[tuple] = db.session.execute(
+            tags_select_stmts
+        ).fetchall()
+        query_tags_id_list = [
+            tags_id_tuple[0] for tags_id_tuple in query_tags_id_tuple_list
+        ]
+        query_tags_id_list.sort()
+        assert tags_id_relationship == query_tags_id_list
