@@ -20,7 +20,42 @@ item_bp = Blueprint("item", __name__)
 
 @route_with_doc(item_bp, "/items", methods=["GET"])
 def fetch_all_items():
-    pass  # pragma: no cover
+    items: list[Item] = db.session.execute(db.select(Item)).scalars().all()
+    tag_of_items: list[tuple] = db.session.execute(
+        db.select(TagOfItem.item_id, TagOfItem.tag_id, Tag.name)
+        .select_from(TagOfItem)
+        .join(Tag)
+    ).fetchall()
+
+    tags_list_dict_by_item_id: dict[int, list[dict[str, Any]]] = {}
+
+    for tag_of_item in tag_of_items:
+        item_id = tag_of_item[0]
+        tag_id = tag_of_item[1]
+        tag_name = tag_of_item[2]
+
+        if item_id not in tags_list_dict_by_item_id:
+            tags_list_dict_by_item_id[item_id] = []
+        tags_list_dict_by_item_id[item_id].append({"id": tag_id, "name": tag_name})
+
+    item_represent_list: list[dict[str, Any]] = []
+
+    for item in items:
+        item_represent_list.append(
+            {
+                "avatar": item.avatar,
+                "count": item.count,
+                "id": item.id,
+                "name": item.name,
+                "price": {
+                    "discount": item.discount,
+                    "original": item.original,
+                },
+                "tags": tags_list_dict_by_item_id[item.id],
+            }
+        )
+
+    return make_response(item_represent_list)
 
 
 @route_with_doc(item_bp, "/items", methods=["POST"])

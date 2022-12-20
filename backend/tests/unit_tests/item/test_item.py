@@ -393,3 +393,37 @@ class TestGetItemsCountRoute:
         response: TestResponse = logged_in_client.get("/items/44/count")
 
         assert response.status_code == HTTPStatus.FORBIDDEN
+
+
+class TestGetItems:
+    def test_with_route_should_respond_correct_payload(
+        self, client: FlaskClient, setup_item: None
+    ):
+        excepted_payload: list[dict[str, Any]] = [
+            {
+                "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
+                "count": 10,
+                "id": 1,
+                "name": "apple",
+                "price": {
+                    "original": 30,
+                    "discount": 25,
+                },
+                "tags": [{"id": 1, "name": "fruit"}, {"id": 3, "name": "grocery"}],
+            },
+            {
+                "avatar": "xx-S0m3-aVA7aR-0f-ti1a9iA-xx",
+                "count": 3,
+                "id": 2,
+                "name": "tilapia",
+                "price": {
+                    "original": 50,
+                    "discount": 45,
+                },
+                "tags": [{"id": 2, "name": "fish"}, {"id": 3, "name": "grocery"}],
+            },
+        ]
+        response: TestResponse = client.get("/items")
+
+        response_payload: dict[str, Any] = cast(dict, response.json)
+        assert excepted_payload == response_payload
