@@ -6,8 +6,8 @@ from typing import Any, cast
 from flask import Blueprint, make_response, request
 from pydantic import ValidationError
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.sql.selectable import Select
 from sqlalchemy.sql.dml import Delete
+from sqlalchemy.sql.selectable import Select
 
 from auth.util import verify_login_or_return_401
 from database import db
