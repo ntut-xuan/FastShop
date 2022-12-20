@@ -162,7 +162,14 @@ def delete_specific_item(id):
 
 @route_with_doc(item_bp, "/items/<string:id>/count", methods=["GET"])
 def fetch_count_of_specific_item(id):
-    pass  # pragma: no cover
+    item: Item | None = db.session.get(Item, id)
+
+    if item is None:
+        return make_single_message_response(
+            HTTPStatus.FORBIDDEN, "The specific item is absent."
+        )
+
+    return make_response({"count": item.count})
 
 
 def _fetch_item_tags_list_from_item_id(id: int) -> list[dict[str, Any]]:

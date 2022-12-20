@@ -366,3 +366,30 @@ class TestDeleteItemsRoute:
         response: TestResponse = client.delete("/items/1")
 
         assert response.status_code == HTTPStatus.UNAUTHORIZED
+
+
+class TestGetItemsCountRoute:
+    def test_with_exists_id_should_respond_correct_count(
+        self, logged_in_client: FlaskClient, setup_item: None
+    ):
+        expected_payload: dict[str, Any] = {
+            "id": 1,
+            "name": "apple",
+            "count": 10,
+            "original": 30,
+            "discount": 25,
+            "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
+        }
+
+        response: TestResponse = logged_in_client.get("/items/1/count")
+
+        assert response.status_code == HTTPStatus.OK
+        response_payload = cast(dict, response.json)
+        assert response_payload["count"] == expected_payload["count"]
+
+    def test_with_absent_id_should_return_http_status_code_forbidden(
+        self, logged_in_client: FlaskClient, setup_item: None
+    ):
+        response: TestResponse = logged_in_client.get("/items/44/count")
+
+        assert response.status_code == HTTPStatus.FORBIDDEN
