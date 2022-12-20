@@ -348,7 +348,7 @@ class TestDeleteItemsRoute:
 
         assert response.status_code == HTTPStatus.OK
         with app.app_context():
-            item: Item | None = db.session.get(Item, 1)
+            item: Item | None = db.session.get(Item, 1)  # type: ignore[attr-defined]
             assert item is None
 
     def test_with_absent_id_should_return_http_status_code_forbidden(
