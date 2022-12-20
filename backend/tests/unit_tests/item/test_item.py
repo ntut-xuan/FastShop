@@ -191,7 +191,7 @@ class TestGetItemsRoute:
         assert response.status_code == HTTPStatus.FORBIDDEN
 
 
-class TestPutItemRoute:
+class TestPutItemsRoute:
     def test_with_correct_payload_should_update_item_to_database(
         self,
         logged_in_client: FlaskClient,
@@ -216,9 +216,122 @@ class TestPutItemRoute:
         response: TestResponse = logged_in_client.put(
             "/items/1", json=update_item_payload
         )
+        assert response.status_code == HTTPStatus.OK
 
         item_query_response: TestResponse = logged_in_client.get("/items/1")
         item_query_response_payload: dict[str, Any] = cast(
             dict, item_query_response.json
         )
         assert item_query_response_payload == expected_item_payload
+
+    def test_with_absent_tag_id_payload_should_return_http_status_code_unprocessable_entity(
+        self,
+        logged_in_client: FlaskClient,
+        setup_item: None,
+    ):
+        update_item_payload: dict[str, Any] = {
+            "tags": [48763],
+        }
+
+        response: TestResponse = logged_in_client.put(
+            "/items/1", json=update_item_payload
+        )
+
+        assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+
+    def test_with_incorrect_data_type_payload_should_return_http_status_code_unprocessable_entity(
+        self,
+        logged_in_client: FlaskClient,
+        setup_item: None,
+    ):
+        update_item_payload: dict[str, Any] = {
+            "count": "some_count",
+        }
+
+        response: TestResponse = logged_in_client.put(
+            "/items/1", json=update_item_payload
+        )
+
+        assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+
+    def test_with_incorrect_data_field_payload_should_return_http_status_code_bad_request(
+        self,
+        logged_in_client: FlaskClient,
+        setup_item: None,
+    ):
+        update_item_payload: dict[str, Any] = {
+            "invalid_field": "invalid_value",
+        }
+
+        response: TestResponse = logged_in_client.put(
+            "/items/1", json=update_item_payload
+        )
+
+        assert response.status_code == HTTPStatus.BAD_REQUEST
+
+    def test_with_payload_contains_id_should_return_http_status_code_bad_request(
+        self,
+        logged_in_client: FlaskClient,
+        setup_item: None,
+    ):
+        update_item_payload: dict[str, Any] = {
+            "id": 49,
+        }
+
+        response: TestResponse = logged_in_client.put(
+            "/items/1", json=update_item_payload
+        )
+
+        assert response.status_code == HTTPStatus.BAD_REQUEST
+
+    def test_with_absent_id_should_return_http_status_code_forbidden(
+        self,
+        logged_in_client: FlaskClient,
+        setup_item: None,
+    ):
+        expected_item_payload: dict[str, Any] = {
+            "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
+            "id": 1,
+            "name": "entropy",
+            "count": 3,
+            "price": {"discount": 60, "original": 40},
+            "tags": [{"id": 3, "name": "grocery"}],
+        }
+        update_item_payload: dict[str, Any] = {
+            "avatar": expected_item_payload["avatar"],
+            "name": expected_item_payload["name"],
+            "count": expected_item_payload["count"],
+            "price": expected_item_payload["price"],
+            "tags": [tag_dict["id"] for tag_dict in expected_item_payload["tags"]],
+        }
+
+        response: TestResponse = logged_in_client.put(
+            "/items/48763", json=update_item_payload
+        )
+
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_with_no_login_should_return_http_status_code_unauthorized(
+        self,
+        client: FlaskClient,
+        setup_item: None,
+    ):
+        expected_item_payload: dict[str, Any] = {
+            "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
+            "id": 1,
+            "name": "entropy",
+            "count": 3,
+            "price": {"discount": 60, "original": 40},
+            "tags": [{"id": 3, "name": "grocery"}],
+        }
+        update_item_payload: dict[str, Any] = {
+            "avatar": expected_item_payload["avatar"],
+            "name": expected_item_payload["name"],
+            "count": expected_item_payload["count"],
+            "price": expected_item_payload["price"],
+            "tags": [tag_dict["id"] for tag_dict in expected_item_payload["tags"]],
+        }
+
+        response: TestResponse = client.put("/items/1", json=update_item_payload)
+
+        assert response.status_code == HTTPStatus.UNAUTHORIZED

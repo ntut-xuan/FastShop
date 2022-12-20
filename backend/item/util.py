@@ -7,16 +7,16 @@ from pydantic.dataclasses import dataclass
 class PayloadTypeChecker:
     @dataclass
     class Item:
-        avatar: StrictStr
-        count: StrictInt
-        name: StrictStr
-        original: StrictInt
-        discount: StrictInt
+        avatar: StrictStr = Field(default="")
+        count: StrictInt = Field(default=0)
+        name: StrictStr = Field(default="")
+        original: StrictInt = Field(default=0)
+        discount: StrictInt = Field(default=0)
         id: StrictInt = Field(default=0)
 
     @dataclass
     class Tag:
-        id: StrictInt
+        id: StrictInt = Field(default=0)
         name: StrictStr = Field(default="")
 
 
