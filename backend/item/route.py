@@ -145,8 +145,19 @@ def update_specific_item(id):
 
 
 @route_with_doc(item_bp, "/items/<string:id>", methods=["DELETE"])
+@verify_login_or_return_401
 def delete_specific_item(id):
-    pass  # pragma: no cover
+    item: Item | None = db.session.get(Item, id)
+
+    if item is None:
+        return make_single_message_response(
+            HTTPStatus.FORBIDDEN, "The specific item is absent."
+        )
+
+    db.session.delete(item)
+    db.session.commit()
+
+    return make_single_message_response(HTTPStatus.OK)
 
 
 @route_with_doc(item_bp, "/items/<string:id>/count", methods=["GET"])

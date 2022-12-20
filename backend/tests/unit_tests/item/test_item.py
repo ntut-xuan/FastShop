@@ -335,3 +335,34 @@ class TestPutItemsRoute:
         response: TestResponse = client.put("/items/1", json=update_item_payload)
 
         assert response.status_code == HTTPStatus.UNAUTHORIZED
+
+
+class TestDeleteItemsRoute:
+    def test_with_exists_id_should_delete_the_item_in_database(
+        self,
+        app: Flask,
+        logged_in_client: FlaskClient,
+        setup_item: None,
+    ):
+        response: TestResponse = logged_in_client.delete("/items/1")
+
+        assert response.status_code == HTTPStatus.OK
+        with app.app_context():
+            item: Item | None = db.session.get(Item, 1)
+            assert item is None
+
+    def test_with_absent_id_should_return_http_status_code_forbidden(
+        self, logged_in_client: FlaskClient
+    ):
+        response: TestResponse = logged_in_client.delete("/items/48763")
+
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_with_no_login_should_return_http_status_code_unauthorized(
+        self,
+        client: FlaskClient,
+        setup_item: None,
+    ):
+        response: TestResponse = client.delete("/items/1")
+
+        assert response.status_code == HTTPStatus.UNAUTHORIZED
