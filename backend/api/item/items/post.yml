@@ -17,9 +17,10 @@ responses:
     content:
       application/json:
         schema:
-          $ref: '#/definitions/message'
+          id:
+            type: int
         example:
-          message: OK
+          id: 5
   400:
     description: The data has the wrong format and the server can't understand it.
     content:
@@ -36,14 +37,6 @@ responses:
           $ref: "#/definitions/message"
         example:
           message: Unauthorized.
-  403:
-    description: The item already exists in the database.
-    content:
-      application/json:
-        schema:
-          $ref: '#/definitions/message'
-        example:
-          message: The item already exists in the database.
   422:
     description: The posted data has the correct format, but the data is invalid.
     content:
@@ -82,11 +75,9 @@ definitions:
         type: string
         description: The UUID of the avatar.
         example: f692073a-7ac1-11ed-a1eb-0242ac120002
-      tags: # TODO: It can be ref if tags definitions exist. (#90)
+      tags:
+        description: The tags of the item. It's a list of integer.
         type: array
         items:
-          type: string
-        description: The tags of the item. It's a list of strings.
-        example:
-        - id: 33
-          name: dian
+          type: int
+        example: [33, 44]
