@@ -224,6 +224,118 @@ class TestPutItemsRoute:
         )
         assert item_query_response_payload == expected_item_payload
 
+    def test_with_only_price_payload_should_update_item_to_database(
+        self,
+        logged_in_client: FlaskClient,
+        setup_item: None,
+    ):
+        expected_item_payload: dict[str, Any] = {
+            "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
+            "id": 1,
+            "name": "apple",
+            "count": 10,
+            "price": {"discount": 50, "original": 40},
+            "tags": [{"id": 1, "name": "fruit"}, {"id": 3, "name": "grocery"}],
+        }
+        update_item_payload: dict[str, Any] = {
+            "price": expected_item_payload["price"],
+        }
+
+        response: TestResponse = logged_in_client.put(
+            "/items/1", json=update_item_payload
+        )
+        assert response.status_code == HTTPStatus.OK
+
+        item_query_response: TestResponse = logged_in_client.get("/items/1")
+        item_query_response_payload: dict[str, Any] = cast(
+            dict, item_query_response.json
+        )
+        assert item_query_response_payload == expected_item_payload
+
+    def test_with_only_original_price_payload_should_update_item_to_database(
+        self,
+        logged_in_client: FlaskClient,
+        setup_item: None,
+    ):
+        expected_item_payload: dict[str, Any] = {
+            "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
+            "id": 1,
+            "name": "apple",
+            "count": 10,
+            "price": {"discount": 25, "original": 40},
+            "tags": [{"id": 1, "name": "fruit"}, {"id": 3, "name": "grocery"}],
+        }
+        update_item_payload: dict[str, Any] = {
+            "price": {"original": expected_item_payload["price"]["original"]},
+        }
+
+        response: TestResponse = logged_in_client.put(
+            "/items/1", json=update_item_payload
+        )
+        assert response.status_code == HTTPStatus.OK
+
+        item_query_response: TestResponse = logged_in_client.get("/items/1")
+        item_query_response_payload: dict[str, Any] = cast(
+            dict, item_query_response.json
+        )
+        assert item_query_response_payload == expected_item_payload
+
+    def test_with_only_discount_price_payload_should_update_item_to_database(
+        self,
+        logged_in_client: FlaskClient,
+        setup_item: None,
+    ):
+        expected_item_payload: dict[str, Any] = {
+            "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
+            "id": 1,
+            "name": "apple",
+            "count": 10,
+            "price": {"discount": 29, "original": 30},
+            "tags": [{"id": 1, "name": "fruit"}, {"id": 3, "name": "grocery"}],
+        }
+        update_item_payload: dict[str, Any] = {
+            "price": {"discount": expected_item_payload["price"]["discount"]},
+        }
+
+        response: TestResponse = logged_in_client.put(
+            "/items/1", json=update_item_payload
+        )
+        assert response.status_code == HTTPStatus.OK
+
+        item_query_response: TestResponse = logged_in_client.get("/items/1")
+        item_query_response_payload: dict[str, Any] = cast(
+            dict, item_query_response.json
+        )
+        assert item_query_response_payload == expected_item_payload
+
+    def test_with_only_tag_payload_should_update_item_to_database(
+        self,
+        logged_in_client: FlaskClient,
+        setup_item: None,
+    ):
+        expected_item_payload: dict[str, Any] = {
+            "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
+            "id": 1,
+            "name": "apple",
+            "count": 10,
+            "price": {"discount": 25, "original": 30},
+            "tags": [{"id": 3, "name": "grocery"}],
+        }
+        update_item_payload: dict[str, Any] = {
+            "tags": [tag_dict["id"] for tag_dict in expected_item_payload["tags"]],
+        }
+
+        response: TestResponse = logged_in_client.put(
+            "/items/1", json=update_item_payload
+        )
+        assert response.status_code == HTTPStatus.OK
+
+        item_query_response: TestResponse = logged_in_client.get("/items/1")
+        item_query_response_payload: dict[str, Any] = cast(
+            dict, item_query_response.json
+        )
+        assert item_query_response_payload == expected_item_payload
+
     def test_with_absent_tag_id_payload_should_return_http_status_code_unprocessable_entity(
         self,
         logged_in_client: FlaskClient,
