@@ -5,11 +5,13 @@ from typing import Any, cast
 
 from flask import Blueprint, make_response, request
 from pydantic import ValidationError
+from sqlalchemy.engine.row import Row
+from sqlalchemy.sql.selectable import Select
 
 from auth.util import verify_login_or_return_401
 from database import db
 from item.util import PayloadTypeChecker, flatten_item_payload
-from models import Item, TagOfItem
+from models import Item, Tag, TagOfItem
 from util import make_single_message_response, route_with_doc
 
 item_bp = Blueprint("item", __name__)
@@ -56,7 +58,28 @@ def add_item():
 
 @route_with_doc(item_bp, "/items/<string:id>", methods=["GET"])
 def fetch_specific_item(id):
-    pass  # pragma: no cover
+    item: Item | None = db.session.get(Item, id)
+
+    if item is None:
+        return make_single_message_response(
+            HTTPStatus.FORBIDDEN, "The specific item is absent."
+        )
+
+    tags: list[dict[str, Any]] = _fetch_item_tags_list_from_item_id(item.id)
+
+    item_with_tags_data: dict[str, Any] = {
+        "avatar": item.avatar,
+        "count": item.count,
+        "id": item.id,
+        "name": item.name,
+        "price": {
+            "original": item.original,
+            "discount": item.discount,
+        },
+        "tags": tags,
+    }
+
+    return make_response(item_with_tags_data)
 
 
 @route_with_doc(item_bp, "/items/<string:id>", methods=["PUT"])
@@ -72,3 +95,19 @@ def delete_specific_item(id):
 @route_with_doc(item_bp, "/items/<string:id>/count", methods=["GET"])
 def fetch_count_of_specific_item(id):
     pass  # pragma: no cover
+
+
+def _fetch_item_tags_list_from_item_id(id: int) -> list[dict[str, Any]]:
+    tags_join_stmts: Select = (
+        db.select(TagOfItem.tag_id, Tag.name)
+        .select_from(TagOfItem)
+        .join(Tag)
+        .where(TagOfItem.item_id == id)
+    )
+    tags_query_result: list[tuple] = db.session.execute(tags_join_stmts).fetchall()
+
+    tags_dict_list: list[dict[str, Any]] = []
+    for tags_query in tags_query_result:
+        tags_dict_list.append({"id": tags_query[0], "name": tags_query[1]})
+
+    return tags_dict_list
