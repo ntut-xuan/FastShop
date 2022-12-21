@@ -42,6 +42,12 @@ def client(app: Flask) -> FlaskClient:
     return app.test_client()
 
 
+@pytest.fixture
+def logged_in_client(client: FlaskClient) -> FlaskClient:
+    client.post("/login", json={"e-mail": "test@email.com", "password": "test"})
+    return client
+
+
 def insert_test_data() -> None:
     data_sql: str = (Path(__file__).parent / "data.sql").read_text("utf-8")
     executescript(db, data_sql)
