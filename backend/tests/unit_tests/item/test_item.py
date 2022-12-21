@@ -208,7 +208,7 @@ class TestPutItemsRoute:
         self, app: Flask, item_id: int, expected_item_payload: dict[str, Any]
     ):
         with app.app_context():
-            item: Item = db.session.get(Item, item_id)
+            item: Item = db.session.get(Item, item_id)  # type: ignore[attr-defined]
             tags: list[TagOfItem] = db.session.execute(
                 db.select(TagOfItem.tag_id).where(TagOfItem.item_id == item_id)
             )
