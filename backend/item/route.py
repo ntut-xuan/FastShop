@@ -227,11 +227,11 @@ def _fetch_item_tags_list_from_item_id(id: int) -> list[dict[str, Any]]:
         .join(Tag)
         .where(TagOfItem.item_id == id)
     )
-    tags_query_result: list[tuple] = db.session.execute(tags_join_stmts).fetchall()
+    tags_query_result: list[Row] = db.session.execute(tags_join_stmts).all()
 
     tags_dict_list: list[dict[str, Any]] = []
     for tags_query in tags_query_result:
-        tags_dict_list.append({"id": tags_query[0], "name": tags_query[1]})
+        tags_dict_list.append({"id": tags_query.tag_id, "name": tags_query.name})
 
     return tags_dict_list
 
