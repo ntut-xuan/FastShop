@@ -7,17 +7,6 @@ class MainPlatform extends React.Component {
                         <p className="w-full text-center p-5 text-2xl"> 選項 </p>
                         <hr />
                         <div className="flex flex-col justify-start mt-8 gap-20 h-[75vh]">
-                            <div className="w-[60%] mx-auto" id="option-group-1">
-                                <p className="w-full text-center p-5 text-2xl"> 排列方式 </p>
-                                <select className="w-full text-center p-2 border-2">
-                                    <option> 按照字母順序 A-Z </option>
-                                    <option> 按照字母順序 Z-A </option>
-                                    <option> 價格, 由高到低 </option>
-                                    <option> 價格, 由低到高 </option>
-                                    <option> 日期, 由新到舊 </option>
-                                    <option> 日期, 由舊到新 </option>
-                                </select>
-                            </div>
                             <div className="w-[60%] mx-auto" id="option-group-2">
                                 <p className="w-full text-center p-5 text-2xl"> 類別 </p>
                                 <div>
