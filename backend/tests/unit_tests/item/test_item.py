@@ -228,8 +228,8 @@ class TestPutItemsRoute:
         response: TestResponse = logged_in_client.put(
             "/items/1", json=update_item_payload
         )
-        assert response.status_code == HTTPStatus.OK
 
+        assert response.status_code == HTTPStatus.OK
         item_query_response: TestResponse = logged_in_client.get("/items/1")
         item_query_response_payload: dict[str, Any] = cast(
             dict, item_query_response.json
@@ -256,8 +256,8 @@ class TestPutItemsRoute:
         response: TestResponse = logged_in_client.put(
             "/items/1", json=update_item_payload
         )
-        assert response.status_code == HTTPStatus.OK
 
+        assert response.status_code == HTTPStatus.OK
         item_query_response: TestResponse = logged_in_client.get("/items/1")
         item_query_response_payload: dict[str, Any] = cast(
             dict, item_query_response.json
@@ -284,8 +284,8 @@ class TestPutItemsRoute:
         response: TestResponse = logged_in_client.put(
             "/items/1", json=update_item_payload
         )
-        assert response.status_code == HTTPStatus.OK
 
+        assert response.status_code == HTTPStatus.OK
         item_query_response: TestResponse = logged_in_client.get("/items/1")
         item_query_response_payload: dict[str, Any] = cast(
             dict, item_query_response.json
@@ -312,8 +312,8 @@ class TestPutItemsRoute:
         response: TestResponse = logged_in_client.put(
             "/items/1", json=update_item_payload
         )
-        assert response.status_code == HTTPStatus.OK
 
+        assert response.status_code == HTTPStatus.OK
         item_query_response: TestResponse = logged_in_client.get("/items/1")
         item_query_response_payload: dict[str, Any] = cast(
             dict, item_query_response.json
@@ -340,8 +340,8 @@ class TestPutItemsRoute:
         response: TestResponse = logged_in_client.put(
             "/items/1", json=update_item_payload
         )
-        assert response.status_code == HTTPStatus.OK
 
+        assert response.status_code == HTTPStatus.OK
         item_query_response: TestResponse = logged_in_client.get("/items/1")
         item_query_response_payload: dict[str, Any] = cast(
             dict, item_query_response.json
