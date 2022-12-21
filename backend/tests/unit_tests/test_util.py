@@ -132,6 +132,6 @@ class TestRouteWithDocDecorator:
         # disable swag_from since it's irrelevant in this test
         monkeypatch.setattr("util.swag_from", lambda *x, **y: self.dummy_func)
         # monkeypatch route for the assertion
-        test_bp.route = self.RulePassedToRouteShouldNotChangeFunctor(rule)  # type: ignore
+        test_bp.route = self.RulePassedToRouteShouldNotChangeFunctor(rule)  # type: ignore[assignment]
 
         route_with_doc(test_bp, rule, methods=["GET"])(self.dummy_func)

@@ -53,7 +53,7 @@ def get_file_path_by_image_uuid(uuid: str) -> Path:
     Returns:
         Path: The path object contains the path of image file.
     """
-    static_resource_path: str = current_app.config.get("STATIC_RESOURCE_PATH")  # type: ignore
+    static_resource_path: str = current_app.config.get("STATIC_RESOURCE_PATH")  # type: ignore[assignment]
     path = Path(f"{static_resource_path}/{uuid}.png")
     return path
 
