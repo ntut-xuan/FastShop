@@ -5,6 +5,7 @@ from typing import Any, cast
 
 from flask import Blueprint, make_response, request
 from pydantic import ValidationError
+from sqlalchemy.engine.row import Row
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql.expression import Delete, Select
 
@@ -20,18 +21,18 @@ item_bp = Blueprint("item", __name__)
 @route_with_doc(item_bp, "/items", methods=["GET"])
 def fetch_all_items():
     items: list[Item] = db.session.execute(db.select(Item)).scalars().all()
-    tag_of_items: list[tuple] = db.session.execute(
+    tag_of_items: list[Row] = db.session.execute(
         db.select(TagOfItem.item_id, TagOfItem.tag_id, Tag.name)
         .select_from(TagOfItem)
         .join(Tag)
-    ).fetchall()
+    ).all()
 
     tags_list_dict_by_item_id: dict[int, list[dict[str, Any]]] = {}
 
     for tag_of_item in tag_of_items:
-        item_id = tag_of_item[0]
-        tag_id = tag_of_item[1]
-        tag_name = tag_of_item[2]
+        item_id = tag_of_item.item_id
+        tag_id = tag_of_item.tag_id
+        tag_name = tag_of_item.name
 
         if item_id not in tags_list_dict_by_item_id:
             tags_list_dict_by_item_id[item_id] = []
