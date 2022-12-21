@@ -163,6 +163,13 @@ def update_specific_item(id):
             "The data has the wrong format and the server can't understand it.",
         )
 
+    # validate tags exist
+    if "tags" in payload and not _is_tags_exist(payload["tags"]):
+        return make_single_message_response(
+            HTTPStatus.UNPROCESSABLE_ENTITY,
+            "The posted data has the correct format, but the data is invalid.",
+        )
+
     # validate payload data type
     try:
         PayloadTypeChecker.Item(**payload)
@@ -179,15 +186,9 @@ def update_specific_item(id):
     for key, value in payload.items():
         setattr(item, key, value)
 
-    # update tag of item.
-    try:
-        if "tags" in payload:
-            _setup_tags_relationship_of_item(item.id, payload["tags"])
-    except IntegrityError:
-        return make_single_message_response(
-            HTTPStatus.UNPROCESSABLE_ENTITY,
-            "The posted data has the correct format, but the data is invalid",
-        )
+    # update tags relationship
+    if "tags" in payload:
+        _setup_tags_relationship_of_item(item.id, payload["tags"])
 
     db.session.commit()
     return make_single_message_response(HTTPStatus.OK)
@@ -256,3 +257,8 @@ def _validate_keys(target_keys: list, known_keys: list, skip_keys: list) -> bool
         if key not in known_keys:
             return False
     return True
+
+
+def _is_tags_exist(tags: list[int]) -> bool:
+    query_tags: list[Tag] = db.session.query(Tag).filter(Tag.id.in_(tags)).all()
+    return len(query_tags) == len(tags)
