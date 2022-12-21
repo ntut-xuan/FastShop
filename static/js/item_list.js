@@ -38,49 +38,6 @@ var MainPlatform = function (_React$Component) {
                             { className: "flex flex-col justify-start mt-8 gap-20 h-[75vh]" },
                             React.createElement(
                                 "div",
-                                { className: "w-[60%] mx-auto", id: "option-group-1" },
-                                React.createElement(
-                                    "p",
-                                    { className: "w-full text-center p-5 text-2xl" },
-                                    " \u6392\u5217\u65B9\u5F0F "
-                                ),
-                                React.createElement(
-                                    "select",
-                                    { className: "w-full text-center p-2 border-2" },
-                                    React.createElement(
-                                        "option",
-                                        null,
-                                        " \u6309\u7167\u5B57\u6BCD\u9806\u5E8F A-Z "
-                                    ),
-                                    React.createElement(
-                                        "option",
-                                        null,
-                                        " \u6309\u7167\u5B57\u6BCD\u9806\u5E8F Z-A "
-                                    ),
-                                    React.createElement(
-                                        "option",
-                                        null,
-                                        " \u50F9\u683C, \u7531\u9AD8\u5230\u4F4E "
-                                    ),
-                                    React.createElement(
-                                        "option",
-                                        null,
-                                        " \u50F9\u683C, \u7531\u4F4E\u5230\u9AD8 "
-                                    ),
-                                    React.createElement(
-                                        "option",
-                                        null,
-                                        " \u65E5\u671F, \u7531\u65B0\u5230\u820A "
-                                    ),
-                                    React.createElement(
-                                        "option",
-                                        null,
-                                        " \u65E5\u671F, \u7531\u820A\u5230\u65B0 "
-                                    )
-                                )
-                            ),
-                            React.createElement(
-                                "div",
                                 { className: "w-[60%] mx-auto", id: "option-group-2" },
                                 React.createElement(
                                     "p",
