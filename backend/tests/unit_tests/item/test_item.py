@@ -223,10 +223,10 @@ class TestPutItemsByIdRoute:
                 db.select(TagOfItem.tag_id).where(TagOfItem.item_id == item_id)
             )
 
-            tag_ids_list_from_query = [tag.tag_id for tag in tags].sort()
-            tag_ids_list_from_excepted_item_payload = [
-                tag_dict["id"] for tag_dict in expected_item_payload["tags"]
-            ].sort()
+            tag_ids_list_from_query: list[int] = sorted([tag.tag_id for tag in tags])
+            tag_ids_list_from_excepted_item_payload: list[int] = sorted(
+                [tag_dict["id"] for tag_dict in expected_item_payload["tags"]]
+            )
 
             check_result: bool = True
             check_result &= item.avatar == expected_item_payload["avatar"]
