@@ -364,8 +364,9 @@ class TestPutItemsRoute:
         logged_in_client: FlaskClient,
         setup_item: None,
     ):
+        absent_tag_id = 48763
         update_item_payload: dict[str, Any] = {
-            "tags": [48763],
+            "tags": [absent_tag_id],
         }
 
         response: TestResponse = logged_in_client.put(
