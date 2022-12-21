@@ -23,7 +23,7 @@ class MainPlatform extends React.Component {
                         <hr />
                         <div className="w-full overflow-y-auto h-[75vh] grid grid-cols-3 p-10 gap-10">
                             <div className="p-5 w-fit h-fit">
-                                <div id="items_image" className="w-72 h-72 bg-slate-400 mx-auto">
+                                <div id="items_image" className="w-60 h-60 bg-slate-400 mx-auto">
                                     <a href="/item_list/1">
                                         <img className="w-full h-full object-scale-down" src="https://jamesclear.com/wp-content/uploads/2017/06/entropy.jpg"></img>
                                     </a>
@@ -33,7 +33,7 @@ class MainPlatform extends React.Component {
                                 <p className="text-center text-sm"> <span className="line-through">5 MC</span> <span className="font-bold">-2.6%</span> </p>
                             </div>
                             <div className="p-5 w-fit h-fit">
-                                <div id="items_image" className="w-72 h-72 bg-slate-400 mx-auto">
+                                <div id="items_image" className="w-60 h-60 bg-slate-400 mx-auto">
                                     <a href="/item_list/1">
                                         <img className="w-full h-full object-scale-down" src="https://jamesclear.com/wp-content/uploads/2017/06/entropy.jpg"></img>
                                     </a>
@@ -43,7 +43,7 @@ class MainPlatform extends React.Component {
                                 <p className="text-center text-sm"> <span className="line-through">5 MC</span> <span className="font-bold">-2.6%</span> </p>
                             </div>
                             <div className="p-5 w-fit h-fit">
-                                <div id="items_image" className="w-72 h-72 bg-slate-400 mx-auto">
+                                <div id="items_image" className="w-60 h-60 bg-slate-400 mx-auto">
                                     <a href="/item_list/1">
                                         <img className="w-full h-full object-scale-down" src="https://jamesclear.com/wp-content/uploads/2017/06/entropy.jpg"></img>
                                     </a>

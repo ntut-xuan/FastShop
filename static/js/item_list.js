@@ -104,7 +104,7 @@ var MainPlatform = function (_React$Component) {
                                 { className: "p-5 w-fit h-fit" },
                                 React.createElement(
                                     "div",
-                                    { id: "items_image", className: "w-72 h-72 bg-slate-400 mx-auto" },
+                                    { id: "items_image", className: "w-60 h-60 bg-slate-400 mx-auto" },
                                     React.createElement(
                                         "a",
                                         { href: "/item_list/1" },
@@ -148,7 +148,7 @@ var MainPlatform = function (_React$Component) {
                                 { className: "p-5 w-fit h-fit" },
                                 React.createElement(
                                     "div",
-                                    { id: "items_image", className: "w-72 h-72 bg-slate-400 mx-auto" },
+                                    { id: "items_image", className: "w-60 h-60 bg-slate-400 mx-auto" },
                                     React.createElement(
                                         "a",
                                         { href: "/item_list/1" },
@@ -192,7 +192,7 @@ var MainPlatform = function (_React$Component) {
                                 { className: "p-5 w-fit h-fit" },
                                 React.createElement(
                                     "div",
-                                    { id: "items_image", className: "w-72 h-72 bg-slate-400 mx-auto" },
+                                    { id: "items_image", className: "w-60 h-60 bg-slate-400 mx-auto" },
                                     React.createElement(
                                         "a",
                                         { href: "/item_list/1" },
