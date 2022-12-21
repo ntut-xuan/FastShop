@@ -283,34 +283,20 @@ class TestPutTagsByIdRoute:
 
 
 class TestGetItemsByIdOfTagRoute:
-    def test_with_absent_tag_id_should_respond_forbidden_with_message(
-        self, client: FlaskClient
-    ) -> None:
-        absent_tag_id = 100
-
-        response: TestResponse = client.get(f"/tags/{absent_tag_id}/items")
-
-        assert response.status_code == HTTPStatus.FORBIDDEN
-        assert response.get_json(silent=True) == {
-            "message": "The specific ID of tag is absent."
-        }
-
-    def test_with_tag_id_of_some_items_should_respond_all_items_of_that_tag(
-        self, app: Flask, client: FlaskClient
-    ) -> None:
-        target_item: dict[str, Any] = {
-            "id": 1,
-            "name": "apple",
-            "count": 10,
-            "original": 30,
-            "discount": 25,
-            "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
-        }
+    @pytest.fixture(autouse=True)
+    def insert_test_data(self, app: Flask) -> None:
         with app.app_context():
             db.session.execute(
                 db.insert(Item),
                 [
-                    target_item,
+                    {
+                        "id": 1,
+                        "name": "apple",
+                        "count": 10,
+                        "original": 30,
+                        "discount": 25,
+                        "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
+                    },
                     {
                         "id": 2,
                         "name": "tilapia",
@@ -340,11 +326,35 @@ class TestGetItemsByIdOfTagRoute:
             )
             db.session.commit()
 
-        response: TestResponse = client.get(f"/tags/{target_item['id']}/items")
+    def test_with_absent_tag_id_should_respond_forbidden_with_message(
+        self, client: FlaskClient
+    ) -> None:
+        absent_tag_id = 100
+
+        response: TestResponse = client.get(f"/tags/{absent_tag_id}/items")
+
+        assert response.status_code == HTTPStatus.FORBIDDEN
+        assert response.get_json(silent=True) == {
+            "message": "The specific ID of tag is absent."
+        }
+
+    def test_with_tag_id_of_some_items_should_respond_all_items_of_that_tag(
+        self, client: FlaskClient
+    ) -> None:
+        existing_item: dict[str, Any] = {
+            "id": 1,
+            "name": "apple",
+            "count": 10,
+            "original": 30,
+            "discount": 25,
+            "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
+        }
+
+        response: TestResponse = client.get(f"/tags/{existing_item['id']}/items")
 
         assert response.json is not None
         data: dict[str, Any] = response.json
         assert data["count"] == 1
         assert len(data["items"]) == 1
         (responded_item,) = data["items"]
-        assert responded_item == target_item
+        assert responded_item == existing_item
