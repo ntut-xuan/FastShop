@@ -176,6 +176,20 @@ class TestPostItemsRoute:
 
         assert response.status_code == HTTPStatus.UNAUTHORIZED
 
+    def test_with_missing_data_field_should_return_http_status_code_unauthorized(
+        self, logged_in_client: FlaskClient, build_tags: None
+    ):
+        payload: dict[str, Any] = {
+            "count": 44,
+            "name": "Entropy",
+            "price": {"discount": 43210, "original": 48763},
+            "tags": [33, 44],
+        }
+
+        response: TestResponse = logged_in_client.post("/items", json=payload)
+
+        assert response.status_code == HTTPStatus.BAD_REQUEST
+
 
 class TestGetItemsRoute:
     def test_with_exists_id_should_respond_item_payload(
