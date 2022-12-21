@@ -105,12 +105,20 @@ var MainPlatform = function (_React$Component) {
                                 React.createElement(
                                     "div",
                                     { id: "items_image", className: "w-72 h-72 bg-slate-400 mx-auto" },
-                                    React.createElement("img", { className: "w-full h-full object-scale-down", src: "https://jamesclear.com/wp-content/uploads/2017/06/entropy.jpg" })
+                                    React.createElement(
+                                        "a",
+                                        { href: "/item_list/1" },
+                                        React.createElement("img", { className: "w-full h-full object-scale-down", src: "https://jamesclear.com/wp-content/uploads/2017/06/entropy.jpg" })
+                                    )
                                 ),
                                 React.createElement(
-                                    "p",
-                                    { className: "text-center p-2" },
-                                    " Entropy "
+                                    "a",
+                                    { href: "/item_list/1" },
+                                    React.createElement(
+                                        "p",
+                                        { className: "text-center p-2" },
+                                        " Entropy "
+                                    )
                                 ),
                                 React.createElement(
                                     "p",
@@ -141,12 +149,20 @@ var MainPlatform = function (_React$Component) {
                                 React.createElement(
                                     "div",
                                     { id: "items_image", className: "w-72 h-72 bg-slate-400 mx-auto" },
-                                    React.createElement("img", { className: "w-full h-full object-scale-down", src: "https://jamesclear.com/wp-content/uploads/2017/06/entropy.jpg" })
+                                    React.createElement(
+                                        "a",
+                                        { href: "/item_list/1" },
+                                        React.createElement("img", { className: "w-full h-full object-scale-down", src: "https://jamesclear.com/wp-content/uploads/2017/06/entropy.jpg" })
+                                    )
                                 ),
                                 React.createElement(
-                                    "p",
-                                    { className: "text-center p-2" },
-                                    " Entropy "
+                                    "a",
+                                    { href: "/item_list/1" },
+                                    React.createElement(
+                                        "p",
+                                        { className: "text-center p-2" },
+                                        " Entropy "
+                                    )
                                 ),
                                 React.createElement(
                                     "p",
@@ -177,12 +193,20 @@ var MainPlatform = function (_React$Component) {
                                 React.createElement(
                                     "div",
                                     { id: "items_image", className: "w-72 h-72 bg-slate-400 mx-auto" },
-                                    React.createElement("img", { className: "w-full h-full object-scale-down", src: "https://jamesclear.com/wp-content/uploads/2017/06/entropy.jpg" })
+                                    React.createElement(
+                                        "a",
+                                        { href: "/item_list/1" },
+                                        React.createElement("img", { className: "w-full h-full object-scale-down", src: "https://jamesclear.com/wp-content/uploads/2017/06/entropy.jpg" })
+                                    )
                                 ),
                                 React.createElement(
-                                    "p",
-                                    { className: "text-center p-2" },
-                                    " Entropy "
+                                    "a",
+                                    { href: "/item_list/1" },
+                                    React.createElement(
+                                        "p",
+                                        { className: "text-center p-2" },
+                                        " Entropy "
+                                    )
                                 ),
                                 React.createElement(
                                     "p",
