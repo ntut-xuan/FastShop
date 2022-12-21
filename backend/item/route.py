@@ -153,14 +153,15 @@ def update_specific_item(id):
         del payload["price"]
 
     # validate payload data field
-    for key in payload.keys():
-        if key == "tags":
-            continue
-        if not hasattr(item, key) or key == "id":
-            return make_single_message_response(
-                HTTPStatus.BAD_REQUEST,
-                "The data has the wrong format and the server can't understand it.",
-            )
+    item_attributes: list = list(item.__dict__.keys())
+    if (
+        not _validate_keys(payload.keys(), item_attributes, ["tags"])
+        or "id" in payload.keys()
+    ):
+        return make_single_message_response(
+            HTTPStatus.BAD_REQUEST,
+            "The data has the wrong format and the server can't understand it.",
+        )
 
     # validate payload data type
     try:
@@ -246,3 +247,12 @@ def _setup_tags_relationship_of_item(item_id: int, tags_id_list: list[int]):
     for tag_id in tags_id_list:
         db.session.add(TagOfItem(item_id=item_id, tag_id=tag_id))
     db.session.commit()
+
+
+def _validate_keys(target_keys: list, known_keys: list, skip_keys: list) -> bool:
+    for key in target_keys:
+        if key in skip_keys:
+            continue
+        if key not in known_keys:
+            return False
+    return True
