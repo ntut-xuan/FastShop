@@ -61,7 +61,14 @@ def fetch_all_items():
 @route_with_doc(item_bp, "/items", methods=["POST"])
 @verify_login_or_return_401
 def add_item():
-    payload: dict[str, Any] = cast(dict, request.json)
+    payload: dict[str, Any] | None = request.get_json(silent=True)
+
+    if payload is None or "name" not in payload:
+        return make_single_message_response(
+            HTTPStatus.BAD_REQUEST,
+            "The data has the wrong format and the server can't understand it.",
+        )
+
     try:
         flat_payload: dict[str, Any] = flatten_item_payload(payload)
         tag_ids: list[int] = payload["tags"]
@@ -122,11 +129,17 @@ def fetch_specific_item(id):
 @verify_login_or_return_401
 def update_specific_item(id):
     item: Item | None = db.session.get(Item, id)
-    payload: dict[str, Any] = cast(dict, request.json)
+    payload: dict[str, Any] | None = request.get_json(silent=True)
 
     if item is None:
         return make_single_message_response(
             HTTPStatus.FORBIDDEN, "The specific item is absent."
+        )
+
+    if payload is None:
+        return make_single_message_response(
+            HTTPStatus.BAD_REQUEST,
+            "The data has the wrong format and the server can't understand it.",
         )
 
     # Since flatten_item_payload require ALL the field have present.

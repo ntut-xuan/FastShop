@@ -124,6 +124,17 @@ class TestPostItemsRoute:
             assert tags_of_item[0].tag_id in payload["tags"]
             assert tags_of_item[1].tag_id in payload["tags"]
 
+    def test_with_wrong_content_type_payload_should_return_http_status_code_bad_request(
+        self,
+        logged_in_client: FlaskClient,
+        setup_item: None,
+    ):
+        response: TestResponse = logged_in_client.post(
+            "/items", data="Hello", headers={"content-type": "text/plain"}
+        )
+
+        assert response.status_code == HTTPStatus.BAD_REQUEST
+
     def test_with_incorrect_data_field_payload_should_return_http_status_code_bad_request(
         self,
         logged_in_client: FlaskClient,
@@ -178,9 +189,10 @@ class TestGetItemsRoute:
             "price": {"discount": 25, "original": 30},
             "tags": [{"id": 1, "name": "fruit"}, {"id": 3, "name": "grocery"}],
         }
-        response: TestResponse = client.get("/items/1")
-        response_payload: dict[str, Any] = cast(dict, response.json)
 
+        response: TestResponse = client.get("/items/1")
+
+        response_payload: dict[str, Any] = cast(dict, response.json)
         assert response_payload == expected_item_payload
 
     def test_with_absent_id_should_return_http_status_code_forbidden(
@@ -335,6 +347,17 @@ class TestPutItemsRoute:
             dict, item_query_response.json
         )
         assert item_query_response_payload == expected_item_payload
+
+    def test_with_wrong_content_type_payload_should_return_http_status_code_bad_request(
+        self,
+        logged_in_client: FlaskClient,
+        setup_item: None,
+    ):
+        response: TestResponse = logged_in_client.put(
+            "/items/1", data="Hello", headers={"content-type": "text/plain"}
+        )
+
+        assert response.status_code == HTTPStatus.BAD_REQUEST
 
     def test_with_absent_tag_id_payload_should_return_http_status_code_unprocessable_entity(
         self,
