@@ -75,7 +75,7 @@ def setup_item(app: Flask) -> None:
 class TestPostItemsRoute:
     def test_with_correct_payload_should_add_to_database(
         self, app: Flask, logged_in_client: FlaskClient, build_tags: None
-    ):
+    ) -> None:
         payload: dict[str, Any] = {
             "avatar": "f692073a-7ac1-11ed-a1eb-0242ac120002",
             "count": 44,
@@ -99,7 +99,7 @@ class TestPostItemsRoute:
 
     def test_with_correct_payload_should_add_tag_of_item_to_database(
         self, app: Flask, logged_in_client: FlaskClient, build_tags: None
-    ):
+    ) -> None:
         payload: dict[str, Any] = {
             "avatar": "f692073a-7ac1-11ed-a1eb-0242ac120002",
             "count": 44,
@@ -125,10 +125,8 @@ class TestPostItemsRoute:
             assert tags_of_item[1].tag_id in payload["tags"]
 
     def test_with_wrong_content_type_payload_should_return_http_status_code_bad_request(
-        self,
-        logged_in_client: FlaskClient,
-        setup_item: None,
-    ):
+        self, logged_in_client: FlaskClient, setup_item: None
+    ) -> None:
         response: TestResponse = logged_in_client.post(
             "/items", data="Hello", headers={"content-type": "text/plain"}
         )
@@ -136,9 +134,8 @@ class TestPostItemsRoute:
         assert response.status_code == HTTPStatus.BAD_REQUEST
 
     def test_with_incorrect_data_field_payload_should_return_http_status_code_bad_request(
-        self,
-        logged_in_client: FlaskClient,
-    ):
+        self, logged_in_client: FlaskClient
+    ) -> None:
         payload: dict[str, Any] = {"invalid_column": "invalid_value"}
 
         response: TestResponse = logged_in_client.post("/items", json=payload)
@@ -146,9 +143,8 @@ class TestPostItemsRoute:
         assert response.status_code == HTTPStatus.BAD_REQUEST
 
     def test_with_incorrect_data_type_payload_should_return_http_status_code_unprocessable_entity(
-        self,
-        logged_in_client: FlaskClient,
-    ):
+        self, logged_in_client: FlaskClient
+    ) -> None:
         payload: dict[str, Any] = {
             "avatar": "f692073a-7ac1-11ed-a1eb-0242ac120002",
             "count": "44",  # count should be integer, not string.
@@ -163,7 +159,7 @@ class TestPostItemsRoute:
 
     def test_with_no_login_should_return_http_status_code_unauthorized(
         self, client: FlaskClient, build_tags: None
-    ):
+    ) -> None:
         payload: dict[str, Any] = {
             "avatar": "f692073a-7ac1-11ed-a1eb-0242ac120002",
             "count": 44,
@@ -178,7 +174,7 @@ class TestPostItemsRoute:
 
     def test_with_missing_data_field_should_return_http_status_code_unauthorized(
         self, logged_in_client: FlaskClient, build_tags: None
-    ):
+    ) -> None:
         payload: dict[str, Any] = {
             "count": 44,
             "name": "Entropy",
@@ -191,10 +187,10 @@ class TestPostItemsRoute:
         assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
-class TestGetItemsRoute:
+class TestGetItemsByIdRoute:
     def test_with_exists_id_should_respond_item_payload(
         self, client: FlaskClient, setup_item: None
-    ):
+    ) -> None:
         expected_item_payload: dict[str, Any] = {
             "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
             "id": 1,
@@ -211,16 +207,16 @@ class TestGetItemsRoute:
 
     def test_with_absent_id_should_return_http_status_code_forbidden(
         self, client: FlaskClient
-    ):
+    ) -> None:
         response: TestResponse = client.get("/items/48763")
 
         assert response.status_code == HTTPStatus.FORBIDDEN
 
 
-class TestPutItemsRoute:
+class TestPutItemsByIdRoute:
     def compare_item_and_excepted_item_payload_is_equal(
         self, app: Flask, item_id: int, expected_item_payload: dict[str, Any]
-    ):
+    ) -> bool:
         with app.app_context():
             item: Item = db.session.get(Item, item_id)  # type: ignore[attr-defined]
             tags: list[TagOfItem] = db.session.execute(
@@ -232,7 +228,7 @@ class TestPutItemsRoute:
                 tag_dict["id"] for tag_dict in expected_item_payload["tags"]
             ].sort()
 
-            check_result = True
+            check_result: bool = True
             check_result &= item.avatar == expected_item_payload["avatar"]
             check_result &= item.count == expected_item_payload["count"]
             check_result &= item.name == expected_item_payload["name"]
@@ -244,11 +240,8 @@ class TestPutItemsRoute:
             return check_result
 
     def test_with_correct_payload_should_update_item_to_database(
-        self,
-        app: Flask,
-        logged_in_client: FlaskClient,
-        setup_item: None,
-    ):
+        self, app: Flask, logged_in_client: FlaskClient, setup_item: None
+    ) -> None:
         expected_item_payload: dict[str, Any] = {
             "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
             "id": 1,
@@ -275,11 +268,8 @@ class TestPutItemsRoute:
         )
 
     def test_with_only_price_payload_should_update_item_to_database(
-        self,
-        app: Flask,
-        logged_in_client: FlaskClient,
-        setup_item: None,
-    ):
+        self, app: Flask, logged_in_client: FlaskClient, setup_item: None
+    ) -> None:
         expected_item_payload: dict[str, Any] = {
             "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
             "id": 1,
@@ -302,11 +292,8 @@ class TestPutItemsRoute:
         )
 
     def test_with_only_original_price_payload_should_update_item_to_database(
-        self,
-        app: Flask,
-        logged_in_client: FlaskClient,
-        setup_item: None,
-    ):
+        self, app: Flask, logged_in_client: FlaskClient, setup_item: None
+    ) -> None:
         expected_item_payload: dict[str, Any] = {
             "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
             "id": 1,
@@ -329,11 +316,8 @@ class TestPutItemsRoute:
         )
 
     def test_with_only_discount_price_payload_should_update_item_to_database(
-        self,
-        app: Flask,
-        logged_in_client: FlaskClient,
-        setup_item: None,
-    ):
+        self, app: Flask, logged_in_client: FlaskClient, setup_item: None
+    ) -> None:
         expected_item_payload: dict[str, Any] = {
             "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
             "id": 1,
@@ -356,11 +340,8 @@ class TestPutItemsRoute:
         )
 
     def test_with_only_tag_payload_should_update_item_to_database(
-        self,
-        app: Flask,
-        logged_in_client: FlaskClient,
-        setup_item: None,
-    ):
+        self, app: Flask, logged_in_client: FlaskClient, setup_item: None
+    ) -> None:
         expected_item_payload: dict[str, Any] = {
             "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
             "id": 1,
@@ -383,10 +364,8 @@ class TestPutItemsRoute:
         )
 
     def test_with_wrong_content_type_payload_should_return_http_status_code_bad_request(
-        self,
-        logged_in_client: FlaskClient,
-        setup_item: None,
-    ):
+        self, logged_in_client: FlaskClient, setup_item: None
+    ) -> None:
         response: TestResponse = logged_in_client.put(
             "/items/1", data="Hello", headers={"content-type": "text/plain"}
         )
@@ -394,10 +373,8 @@ class TestPutItemsRoute:
         assert response.status_code == HTTPStatus.BAD_REQUEST
 
     def test_with_absent_tag_id_payload_should_return_http_status_code_unprocessable_entity(
-        self,
-        logged_in_client: FlaskClient,
-        setup_item: None,
-    ):
+        self, logged_in_client: FlaskClient, setup_item: None
+    ) -> None:
         absent_tag_id = 48763
         update_item_payload: dict[str, Any] = {
             "tags": [absent_tag_id],
@@ -410,10 +387,8 @@ class TestPutItemsRoute:
         assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
     def test_with_incorrect_data_type_payload_should_return_http_status_code_unprocessable_entity(
-        self,
-        logged_in_client: FlaskClient,
-        setup_item: None,
-    ):
+        self, logged_in_client: FlaskClient, setup_item: None
+    ) -> None:
         update_item_payload: dict[str, Any] = {
             "count": "some_count",
         }
@@ -425,10 +400,8 @@ class TestPutItemsRoute:
         assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
     def test_with_incorrect_data_field_payload_should_return_http_status_code_bad_request(
-        self,
-        logged_in_client: FlaskClient,
-        setup_item: None,
-    ):
+        self, logged_in_client: FlaskClient, setup_item: None
+    ) -> None:
         update_item_payload: dict[str, Any] = {
             "invalid_field": "invalid_value",
         }
@@ -440,10 +413,8 @@ class TestPutItemsRoute:
         assert response.status_code == HTTPStatus.BAD_REQUEST
 
     def test_with_payload_contains_id_should_return_http_status_code_bad_request(
-        self,
-        logged_in_client: FlaskClient,
-        setup_item: None,
-    ):
+        self, logged_in_client: FlaskClient, setup_item: None
+    ) -> None:
         update_item_payload: dict[str, Any] = {
             "id": 49,
         }
@@ -455,10 +426,8 @@ class TestPutItemsRoute:
         assert response.status_code == HTTPStatus.BAD_REQUEST
 
     def test_with_absent_id_should_return_http_status_code_forbidden(
-        self,
-        logged_in_client: FlaskClient,
-        setup_item: None,
-    ):
+        self, logged_in_client: FlaskClient, setup_item: None
+    ) -> None:
         expected_item_payload: dict[str, Any] = {
             "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
             "id": 1,
@@ -482,10 +451,8 @@ class TestPutItemsRoute:
         assert response.status_code == HTTPStatus.FORBIDDEN
 
     def test_with_no_login_should_return_http_status_code_unauthorized(
-        self,
-        client: FlaskClient,
-        setup_item: None,
-    ):
+        self, client: FlaskClient, setup_item: None
+    ) -> None:
         expected_item_payload: dict[str, Any] = {
             "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
             "id": 1,
@@ -507,13 +474,10 @@ class TestPutItemsRoute:
         assert response.status_code == HTTPStatus.UNAUTHORIZED
 
 
-class TestDeleteItemsRoute:
+class TestDeleteItemsByIdRoute:
     def test_with_exists_id_should_delete_the_item_in_database(
-        self,
-        app: Flask,
-        logged_in_client: FlaskClient,
-        setup_item: None,
-    ):
+        self, app: Flask, logged_in_client: FlaskClient, setup_item: None
+    ) -> None:
         response: TestResponse = logged_in_client.delete("/items/1")
 
         assert response.status_code == HTTPStatus.OK
@@ -523,25 +487,23 @@ class TestDeleteItemsRoute:
 
     def test_with_absent_id_should_return_http_status_code_forbidden(
         self, logged_in_client: FlaskClient
-    ):
+    ) -> None:
         response: TestResponse = logged_in_client.delete("/items/48763")
 
         assert response.status_code == HTTPStatus.FORBIDDEN
 
     def test_with_no_login_should_return_http_status_code_unauthorized(
-        self,
-        client: FlaskClient,
-        setup_item: None,
-    ):
+        self, client: FlaskClient, setup_item: None
+    ) -> None:
         response: TestResponse = client.delete("/items/1")
 
         assert response.status_code == HTTPStatus.UNAUTHORIZED
 
 
-class TestGetItemsCountRoute:
+class TestGetItemsCountByIdRoute:
     def test_with_exists_id_should_respond_correct_count(
         self, logged_in_client: FlaskClient, setup_item: None
-    ):
+    ) -> None:
         expected_payload: dict[str, Any] = {
             "id": 1,
             "name": "apple",
@@ -559,16 +521,16 @@ class TestGetItemsCountRoute:
 
     def test_with_absent_id_should_return_http_status_code_forbidden(
         self, logged_in_client: FlaskClient, setup_item: None
-    ):
+    ) -> None:
         response: TestResponse = logged_in_client.get("/items/44/count")
 
         assert response.status_code == HTTPStatus.FORBIDDEN
 
 
-class TestGetItems:
+class TestGetItemsRoute:
     def test_with_route_should_respond_correct_payload(
         self, client: FlaskClient, setup_item: None
-    ):
+    ) -> None:
         excepted_payload: list[dict[str, Any]] = [
             {
                 "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
