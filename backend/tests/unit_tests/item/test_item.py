@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from http import HTTPStatus
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
@@ -86,8 +86,9 @@ class TestPostItemsRoute:
 
         response: TestResponse = logged_in_client.post("/items", json=payload)
 
-        response_payload = cast(dict, response.json)
-        item_id = response_payload["id"]
+        response_payload: dict[str, Any] | None = response.json
+        assert response_payload is not None
+        item_id: int = response_payload["id"]
         with app.app_context():
             item: Item | None = db.session.get(Item, item_id)  # type: ignore[attr-defined]
             assert item is not None
@@ -110,8 +111,9 @@ class TestPostItemsRoute:
 
         response: TestResponse = logged_in_client.post("/items", json=payload)
 
-        response_payload = cast(dict, response.json)
-        item_id = response_payload["id"]
+        response_payload: dict[str, Any] | None = response.json
+        assert response_payload is not None
+        item_id: int = response_payload["id"]
         with app.app_context():
             tags_of_item: list[TagOfItem] = (
                 db.session.execute(
@@ -202,7 +204,8 @@ class TestGetItemsByIdRoute:
 
         response: TestResponse = client.get("/items/1")
 
-        response_payload: dict[str, Any] = cast(dict, response.json)
+        response_payload: dict[str, Any] | None = response.json
+        assert response_payload is not None
         assert response_payload == expected_item_payload
 
     def test_with_absent_id_should_return_http_status_code_forbidden(
@@ -488,7 +491,8 @@ class TestDeleteItemsByIdRoute:
     def test_with_absent_id_should_return_http_status_code_forbidden(
         self, logged_in_client: FlaskClient
     ) -> None:
-        response: TestResponse = logged_in_client.delete("/items/48763")
+        absent_id = 48763
+        response: TestResponse = logged_in_client.delete(f"/items/{absent_id}")
 
         assert response.status_code == HTTPStatus.FORBIDDEN
 
@@ -516,13 +520,16 @@ class TestGetItemsCountByIdRoute:
         response: TestResponse = logged_in_client.get("/items/1/count")
 
         assert response.status_code == HTTPStatus.OK
-        response_payload = cast(dict, response.json)
+        response_payload: dict[str, Any] | None = response.json
+        assert response_payload is not None
         assert response_payload["count"] == expected_payload["count"]
 
     def test_with_absent_id_should_return_http_status_code_forbidden(
         self, logged_in_client: FlaskClient, setup_item: None
     ) -> None:
-        response: TestResponse = logged_in_client.get("/items/44/count")
+        absent_id = 44
+
+        response: TestResponse = logged_in_client.get(f"/items/{absent_id}/count")
 
         assert response.status_code == HTTPStatus.FORBIDDEN
 
@@ -555,7 +562,9 @@ class TestGetItemsRoute:
                 "tags": [{"id": 2, "name": "fish"}, {"id": 3, "name": "grocery"}],
             },
         ]
+
         response: TestResponse = client.get("/items")
 
-        response_payload: dict[str, Any] = cast(dict, response.json)
-        assert excepted_payload == response_payload
+        response_payload: dict[str, Any] | None = response.json
+        assert response_payload is not None
+        assert response_payload == excepted_payload
