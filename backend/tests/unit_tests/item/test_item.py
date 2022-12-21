@@ -204,8 +204,34 @@ class TestGetItemsRoute:
 
 
 class TestPutItemsRoute:
+    def compare_item_and_excepted_item_payload_is_equal(
+        self, app: Flask, item_id: int, expected_item_payload: dict[str, Any]
+    ):
+        with app.app_context():
+            item: Item = db.session.get(Item, item_id)
+            tags: list[TagOfItem] = db.session.execute(
+                db.select(TagOfItem.tag_id).where(TagOfItem.item_id == item_id)
+            )
+
+            tag_ids_list_from_query = [tag.tag_id for tag in tags].sort()
+            tag_ids_list_from_excepted_item_payload = [
+                tag_dict["id"] for tag_dict in expected_item_payload["tags"]
+            ].sort()
+
+            check_result = True
+            check_result &= item.avatar == expected_item_payload["avatar"]
+            check_result &= item.count == expected_item_payload["count"]
+            check_result &= item.name == expected_item_payload["name"]
+            check_result &= item.original == expected_item_payload["price"]["original"]
+            check_result &= item.discount == expected_item_payload["price"]["discount"]
+            check_result &= (
+                tag_ids_list_from_query == tag_ids_list_from_excepted_item_payload
+            )
+            return check_result
+
     def test_with_correct_payload_should_update_item_to_database(
         self,
+        app: Flask,
         logged_in_client: FlaskClient,
         setup_item: None,
     ):
@@ -230,14 +256,13 @@ class TestPutItemsRoute:
         )
 
         assert response.status_code == HTTPStatus.OK
-        item_query_response: TestResponse = logged_in_client.get("/items/1")
-        item_query_response_payload: dict[str, Any] = cast(
-            dict, item_query_response.json
+        assert self.compare_item_and_excepted_item_payload_is_equal(
+            app, 1, expected_item_payload
         )
-        assert item_query_response_payload == expected_item_payload
 
     def test_with_only_price_payload_should_update_item_to_database(
         self,
+        app: Flask,
         logged_in_client: FlaskClient,
         setup_item: None,
     ):
@@ -258,14 +283,13 @@ class TestPutItemsRoute:
         )
 
         assert response.status_code == HTTPStatus.OK
-        item_query_response: TestResponse = logged_in_client.get("/items/1")
-        item_query_response_payload: dict[str, Any] = cast(
-            dict, item_query_response.json
+        assert self.compare_item_and_excepted_item_payload_is_equal(
+            app, 1, expected_item_payload
         )
-        assert item_query_response_payload == expected_item_payload
 
     def test_with_only_original_price_payload_should_update_item_to_database(
         self,
+        app: Flask,
         logged_in_client: FlaskClient,
         setup_item: None,
     ):
@@ -286,14 +310,13 @@ class TestPutItemsRoute:
         )
 
         assert response.status_code == HTTPStatus.OK
-        item_query_response: TestResponse = logged_in_client.get("/items/1")
-        item_query_response_payload: dict[str, Any] = cast(
-            dict, item_query_response.json
+        assert self.compare_item_and_excepted_item_payload_is_equal(
+            app, 1, expected_item_payload
         )
-        assert item_query_response_payload == expected_item_payload
 
     def test_with_only_discount_price_payload_should_update_item_to_database(
         self,
+        app: Flask,
         logged_in_client: FlaskClient,
         setup_item: None,
     ):
@@ -314,14 +337,13 @@ class TestPutItemsRoute:
         )
 
         assert response.status_code == HTTPStatus.OK
-        item_query_response: TestResponse = logged_in_client.get("/items/1")
-        item_query_response_payload: dict[str, Any] = cast(
-            dict, item_query_response.json
+        assert self.compare_item_and_excepted_item_payload_is_equal(
+            app, 1, expected_item_payload
         )
-        assert item_query_response_payload == expected_item_payload
 
     def test_with_only_tag_payload_should_update_item_to_database(
         self,
+        app: Flask,
         logged_in_client: FlaskClient,
         setup_item: None,
     ):
@@ -342,11 +364,9 @@ class TestPutItemsRoute:
         )
 
         assert response.status_code == HTTPStatus.OK
-        item_query_response: TestResponse = logged_in_client.get("/items/1")
-        item_query_response_payload: dict[str, Any] = cast(
-            dict, item_query_response.json
+        assert self.compare_item_and_excepted_item_payload_is_equal(
+            app, 1, expected_item_payload
         )
-        assert item_query_response_payload == expected_item_payload
 
     def test_with_wrong_content_type_payload_should_return_http_status_code_bad_request(
         self,
