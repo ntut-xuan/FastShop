@@ -622,8 +622,8 @@ video {
   height: fit-content;
 }
 
-.h-72 {
-  height: 18rem;
+.h-48 {
+  height: 12rem;
 }
 
 .h-0 {
@@ -636,6 +636,10 @@ video {
 
 .h-20 {
   height: 5rem;
+}
+
+.h-60 {
+  height: 15rem;
 }
 
 .max-h-\[74vh\] {
@@ -667,8 +671,8 @@ video {
   width: fit-content;
 }
 
-.w-72 {
-  width: 18rem;
+.w-48 {
+  width: 12rem;
 }
 
 .w-screen {
@@ -689,6 +693,10 @@ video {
 
 .w-\[50\%\] {
   width: 50%;
+}
+
+.w-60 {
+  width: 15rem;
 }
 
 .translate-x-\[-50\%\] {
