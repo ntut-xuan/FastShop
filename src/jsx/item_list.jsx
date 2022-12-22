@@ -4,26 +4,21 @@ class MainPlatform extends React.Component {
             <div className="mt-20 fixed w-full">
                 <div className="w-[80%] h-screen mx-auto flex flex-row gap-5 my-10">
                     <div className="w-[30%]">
-                        <p className="w-full text-center p-5 text-2xl"> 選項 </p>
+                        <p className="w-full text-center p-5 text-2xl"> 類別 </p>
                         <hr />
-                        <div className="flex flex-col justify-start mt-8 gap-20 h-[75vh]">
-                            <div className="w-[60%] mx-auto" id="option-group-2">
-                                <p className="w-full text-center p-5 text-2xl"> 類別 </p>
-                                <div>
-                                    <p className="p-2 text-center"><a href="#"> 資訊安全 </a></p>
-                                    <p className="p-2 text-center"><a href="#"> 樹學 </a></p>
-                                    <p className="p-2 text-center"><a href="#"> 數學 </a></p>
-                                    <p className="p-2 text-center"><a href="#"> 玄學 </a></p>
-                                </div>
-                            </div>
+                        <div className="overflow-y-auto h-[75vh] pt-5">
+                            <p className="p-2 text-center"><a href="#"> 資訊安全 </a></p>
+                            <p className="p-2 text-center"><a href="#"> 樹學 </a></p>
+                            <p className="p-2 text-center"><a href="#"> 數學 </a></p>
+                            <p className="p-2 text-center"><a href="#"> 玄學 </a></p>
                         </div>
                     </div>
                     <div className="w-[70%]">
                         <p className="w-full text-center p-5 text-2xl"> 所有商品 </p>
                         <hr />
-                        <div className="w-full overflow-y-auto h-[75vh] grid grid-cols-3 p-10 gap-10">
+                        <div className="w-full overflow-y-auto h-[75vh] grid grid-cols-3">
                             <div className="p-5 w-fit h-fit">
-                                <div id="items_image" className="w-60 h-60 bg-slate-400 mx-auto">
+                                <div id="items_image" className="w-[30vh] h-[30vh] bg-slate-400 mx-auto">
                                     <a href="/item_list/1">
                                         <img className="w-full h-full object-scale-down" src="https://jamesclear.com/wp-content/uploads/2017/06/entropy.jpg"></img>
                                     </a>
@@ -33,7 +28,7 @@ class MainPlatform extends React.Component {
                                 <p className="text-center text-sm"> <span className="line-through">5 MC</span> <span className="font-bold">-2.6%</span> </p>
                             </div>
                             <div className="p-5 w-fit h-fit">
-                                <div id="items_image" className="w-60 h-60 bg-slate-400 mx-auto">
+                                <div id="items_image" className="w-[30vh] h-[30vh] bg-slate-400 mx-auto">
                                     <a href="/item_list/1">
                                         <img className="w-full h-full object-scale-down" src="https://jamesclear.com/wp-content/uploads/2017/06/entropy.jpg"></img>
                                     </a>
@@ -43,7 +38,7 @@ class MainPlatform extends React.Component {
                                 <p className="text-center text-sm"> <span className="line-through">5 MC</span> <span className="font-bold">-2.6%</span> </p>
                             </div>
                             <div className="p-5 w-fit h-fit">
-                                <div id="items_image" className="w-60 h-60 bg-slate-400 mx-auto">
+                                <div id="items_image" className="w-[30vh] h-[30vh] bg-slate-400 mx-auto">
                                     <a href="/item_list/1">
                                         <img className="w-full h-full object-scale-down" src="https://jamesclear.com/wp-content/uploads/2017/06/entropy.jpg"></img>
                                     </a>
@@ -52,7 +47,6 @@ class MainPlatform extends React.Component {
                                 <p className="text-center"> 4.87 MC </p>
                                 <p className="text-center text-sm"> <span className="line-through">5 MC</span> <span className="font-bold">-2.6%</span> </p>
                             </div>
-
                         </div>
                     </div>
                 </div>

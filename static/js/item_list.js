@@ -30,59 +30,46 @@ var MainPlatform = function (_React$Component) {
                         React.createElement(
                             "p",
                             { className: "w-full text-center p-5 text-2xl" },
-                            " \u9078\u9805 "
+                            " \u985E\u5225 "
                         ),
                         React.createElement("hr", null),
                         React.createElement(
                             "div",
-                            { className: "flex flex-col justify-start mt-8 gap-20 h-[75vh]" },
+                            { className: "overflow-y-auto h-[75vh] pt-5" },
                             React.createElement(
-                                "div",
-                                { className: "w-[60%] mx-auto", id: "option-group-2" },
+                                "p",
+                                { className: "p-2 text-center" },
                                 React.createElement(
-                                    "p",
-                                    { className: "w-full text-center p-5 text-2xl" },
-                                    " \u985E\u5225 "
-                                ),
+                                    "a",
+                                    { href: "#" },
+                                    " \u8CC7\u8A0A\u5B89\u5168 "
+                                )
+                            ),
+                            React.createElement(
+                                "p",
+                                { className: "p-2 text-center" },
                                 React.createElement(
-                                    "div",
-                                    null,
-                                    React.createElement(
-                                        "p",
-                                        { className: "p-2 text-center" },
-                                        React.createElement(
-                                            "a",
-                                            { href: "#" },
-                                            " \u8CC7\u8A0A\u5B89\u5168 "
-                                        )
-                                    ),
-                                    React.createElement(
-                                        "p",
-                                        { className: "p-2 text-center" },
-                                        React.createElement(
-                                            "a",
-                                            { href: "#" },
-                                            " \u6A39\u5B78 "
-                                        )
-                                    ),
-                                    React.createElement(
-                                        "p",
-                                        { className: "p-2 text-center" },
-                                        React.createElement(
-                                            "a",
-                                            { href: "#" },
-                                            " \u6578\u5B78 "
-                                        )
-                                    ),
-                                    React.createElement(
-                                        "p",
-                                        { className: "p-2 text-center" },
-                                        React.createElement(
-                                            "a",
-                                            { href: "#" },
-                                            " \u7384\u5B78 "
-                                        )
-                                    )
+                                    "a",
+                                    { href: "#" },
+                                    " \u6A39\u5B78 "
+                                )
+                            ),
+                            React.createElement(
+                                "p",
+                                { className: "p-2 text-center" },
+                                React.createElement(
+                                    "a",
+                                    { href: "#" },
+                                    " \u6578\u5B78 "
+                                )
+                            ),
+                            React.createElement(
+                                "p",
+                                { className: "p-2 text-center" },
+                                React.createElement(
+                                    "a",
+                                    { href: "#" },
+                                    " \u7384\u5B78 "
                                 )
                             )
                         )
@@ -98,13 +85,13 @@ var MainPlatform = function (_React$Component) {
                         React.createElement("hr", null),
                         React.createElement(
                             "div",
-                            { className: "w-full overflow-y-auto h-[75vh] grid grid-cols-3 p-10 gap-10" },
+                            { className: "w-full overflow-y-auto h-[75vh] grid grid-cols-3" },
                             React.createElement(
                                 "div",
                                 { className: "p-5 w-fit h-fit" },
                                 React.createElement(
                                     "div",
-                                    { id: "items_image", className: "w-60 h-60 bg-slate-400 mx-auto" },
+                                    { id: "items_image", className: "w-[30vh] h-[30vh] bg-slate-400 mx-auto" },
                                     React.createElement(
                                         "a",
                                         { href: "/item_list/1" },
@@ -148,7 +135,7 @@ var MainPlatform = function (_React$Component) {
                                 { className: "p-5 w-fit h-fit" },
                                 React.createElement(
                                     "div",
-                                    { id: "items_image", className: "w-60 h-60 bg-slate-400 mx-auto" },
+                                    { id: "items_image", className: "w-[30vh] h-[30vh] bg-slate-400 mx-auto" },
                                     React.createElement(
                                         "a",
                                         { href: "/item_list/1" },
@@ -192,7 +179,7 @@ var MainPlatform = function (_React$Component) {
                                 { className: "p-5 w-fit h-fit" },
                                 React.createElement(
                                     "div",
-                                    { id: "items_image", className: "w-60 h-60 bg-slate-400 mx-auto" },
+                                    { id: "items_image", className: "w-[30vh] h-[30vh] bg-slate-400 mx-auto" },
                                     React.createElement(
                                         "a",
                                         { href: "/item_list/1" },
