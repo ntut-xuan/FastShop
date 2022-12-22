@@ -25,10 +25,10 @@ var MainPlatform = function (_React$Component) {
 
             return React.createElement(
                 "div",
-                { className: "mt-20 fixed w-full flex flex-col gap-5 top-32" },
+                { className: "mt-20 fixed w-full flex flex-col gap-5 top-[8vh] overflow-y-auto" },
                 React.createElement(
                     "div",
-                    { className: "flex flex-row justify-between w-[70%] h-full mx-auto top-28" },
+                    { className: "flex flex-row justify-between w-[70%] h-full mx-auto" },
                     React.createElement(
                         "div",
                         { className: "w-full h-fit" },

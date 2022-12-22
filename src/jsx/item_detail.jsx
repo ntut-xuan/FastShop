@@ -6,8 +6,8 @@ class MainPlatform extends React.Component {
     render(){
         let {item_name} = this.state
         return(
-            <div className="mt-20 fixed w-full flex flex-col gap-5 top-32">
-                <div className="flex flex-row justify-between w-[70%] h-full mx-auto top-28">
+            <div className="mt-20 fixed w-full flex flex-col gap-5 top-[8vh] overflow-y-auto">
+                <div className="flex flex-row justify-between w-[70%] h-full mx-auto">
                     <div className="w-full h-fit">
                         <div className="w-[30rem] h-[30rem] bg-slate-400">
                             <img className="w-full h-full object-scale-down" src="https://jamesclear.com/wp-content/uploads/2017/06/entropy.jpg"></img>
