@@ -223,6 +223,7 @@ def fetch_count_of_specific_item(id):
 
 @route_with_doc(item_bp, "/items_list/<string:id>", methods=["GET"])
 def item_page(id: str):
+    # id is intentionally ignored. Backend does not have to handle.
     return fetch_page("item_detail")
 
 
