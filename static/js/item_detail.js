@@ -25,37 +25,33 @@ var MainPlatform = function (_React$Component) {
 
             return React.createElement(
                 "div",
-                { className: "mt-20 fixed w-full flex flex-col gap-5 top-[8vh] overflow-y-auto" },
+                { className: "mt-20 w-full flex flex-col gap-5 top-[8vh] h-fit" },
                 React.createElement(
                     "div",
-                    { className: "flex flex-row justify-between w-[70%] h-full mx-auto" },
+                    { className: "flex flex-row justify-even w-[70%] mx-auto p-5" },
                     React.createElement(
                         "div",
-                        { className: "w-full h-fit" },
+                        { className: "w-full h-[50vh]" },
                         React.createElement(
                             "div",
-                            { className: "w-[30rem] h-[30rem] bg-slate-400" },
+                            { className: "w-[50vh] h-[50vh] bg-slate-400 mx-auto" },
                             React.createElement("img", { className: "w-full h-full object-scale-down", src: "https://jamesclear.com/wp-content/uploads/2017/06/entropy.jpg" })
                         )
                     ),
                     React.createElement(
                         "div",
-                        { className: "w-full" },
+                        { className: "w-full h-[50vh] p-5 flex flex-between flex-col gap-5" },
                         React.createElement(
                             "div",
-                            { id: "title" },
+                            { id: "title", className: "h-full" },
                             React.createElement(
                                 "p",
-                                { className: "text-4xl pb-5" },
+                                { className: "md:text-2xl xl:text-4xl pb-5" },
                                 " Entropy "
-                            )
-                        ),
-                        React.createElement(
-                            "div",
-                            { id: "price" },
+                            ),
                             React.createElement(
                                 "p",
-                                { className: "text-2xl pb-5 font-serif" },
+                                { className: "md:text-base xl:text-2xl font-serif" },
                                 React.createElement(
                                     "span",
                                     { className: "pr-5" },
@@ -75,7 +71,7 @@ var MainPlatform = function (_React$Component) {
                         ),
                         React.createElement(
                             "div",
-                            { id: "function", className: "py-16 pb-32" },
+                            { id: "function", className: "h-full" },
                             React.createElement(
                                 "div",
                                 null,
@@ -103,15 +99,15 @@ var MainPlatform = function (_React$Component) {
                         ),
                         React.createElement(
                             "div",
-                            { id: "button-set", className: "flex gap-5" },
+                            { id: "button-set", className: "flex flex-row gap-5 h-full" },
                             React.createElement(
                                 "button",
-                                { className: "py-2 w-full bg-amber-500 rounded-md hover:bg-amber-400 duration-300 text-white font-bold shadow-md" },
+                                { className: "py-2 my-auto w-full h-fit bg-amber-500 rounded-md hover:bg-amber-400 duration-300 text-white font-bold shadow-md" },
                                 " \u76F4\u63A5\u8CFC\u8CB7 "
                             ),
                             React.createElement(
                                 "button",
-                                { className: "py-2 w-full bg-orange-500 rounded-md hover:bg-orange-400 duration-300 text-white font-bold shadow-md" },
+                                { className: "py-2 my-auto w-full h-fit bg-orange-500 rounded-md hover:bg-orange-400 duration-300 text-white font-bold shadow-md" },
                                 " \u52A0\u5165\u8CFC\u7269\u8ECA "
                             )
                         )

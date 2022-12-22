@@ -6,25 +6,23 @@ class MainPlatform extends React.Component {
     render(){
         let {item_name} = this.state
         return(
-            <div className="mt-20 fixed w-full flex flex-col gap-5 top-[8vh] overflow-y-auto">
-                <div className="flex flex-row justify-between w-[70%] h-full mx-auto">
-                    <div className="w-full h-fit">
-                        <div className="w-[30rem] h-[30rem] bg-slate-400">
+            <div className="mt-20 w-full flex flex-col gap-5 top-[8vh] h-fit">
+                <div className="flex flex-row justify-even w-[70%] mx-auto p-5">
+                    <div className="w-full h-[50vh]">
+                        <div className="w-[50vh] h-[50vh] bg-slate-400 mx-auto">
                             <img className="w-full h-full object-scale-down" src="https://jamesclear.com/wp-content/uploads/2017/06/entropy.jpg"></img>
                         </div>
                     </div>
-                    <div className="w-full">
-                        <div id="title">
-                            <p className="text-4xl pb-5"> Entropy </p>
-                        </div>
-                        <div id="price">
-                            <p className="text-2xl pb-5 font-serif">
+                    <div className="w-full h-[50vh] p-5 flex flex-between flex-col gap-5">
+                        <div id="title" className="h-full">
+                            <p className="md:text-2xl xl:text-4xl pb-5"> Entropy </p>
+                            <p className="md:text-base xl:text-2xl font-serif">
                                 <span className="pr-5"> NT$ 43210 </span>
                                 <span className="pr-5 font-bold text-gray-400 line-through"> NT$ 48763 </span>
                                 <span className="pr-5 font-bold"> -11.49% </span>
                             </p>
                         </div>
-                        <div id="function" className="py-16 pb-32">
+                        <div id="function" className="h-full">
                             <div>
                                 <p className="py-2">數量</p>
                                 <div className="flex flex-row">
@@ -34,9 +32,9 @@ class MainPlatform extends React.Component {
                                 </div>
                             </div>
                         </div>
-                        <div id="button-set" className="flex gap-5">
-                            <button className="py-2 w-full bg-amber-500 rounded-md hover:bg-amber-400 duration-300 text-white font-bold shadow-md"> 直接購買 </button>
-                            <button className="py-2 w-full bg-orange-500 rounded-md hover:bg-orange-400 duration-300 text-white font-bold shadow-md"> 加入購物車 </button>
+                        <div id="button-set" className="flex flex-row gap-5 h-full">
+                            <button className="py-2 my-auto w-full h-fit bg-amber-500 rounded-md hover:bg-amber-400 duration-300 text-white font-bold shadow-md"> 直接購買 </button>
+                            <button className="py-2 my-auto w-full h-fit bg-orange-500 rounded-md hover:bg-orange-400 duration-300 text-white font-bold shadow-md"> 加入購物車 </button>
                         </div>
                     </div>
                 </div>
