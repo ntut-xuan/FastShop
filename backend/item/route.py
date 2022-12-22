@@ -13,7 +13,7 @@ from auth.util import verify_login_or_return_401
 from database import db
 from item.util import PayloadTypeChecker, flatten_item_payload
 from models import Item, Tag, TagOfItem
-from util import make_single_message_response, route_with_doc
+from util import fetch_page, make_single_message_response, route_with_doc
 
 item_bp = Blueprint("item", __name__)
 
@@ -220,6 +220,16 @@ def fetch_count_of_specific_item(id):
         )
 
     return make_response({"count": item.count})
+
+
+@route_with_doc(item_bp, "/items_list/<string:id>", methods=["GET"])
+def item_page(id: str):
+    return fetch_page("item_list")
+
+
+@route_with_doc(item_bp, "/items_list", methods=["GET"])
+def item_list_page():
+    return fetch_page("item_list")
 
 
 def _fetch_item_tags_list_from_item_id(id: int) -> list[dict[str, Any]]:
