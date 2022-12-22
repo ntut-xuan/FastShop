@@ -28,6 +28,23 @@ def logged_in_client(client: FlaskClient) -> FlaskClient:
     return client
 
 
+def test_get_items_list_should_respond_content_of_item_list_html(
+    client: FlaskClient,
+) -> None:
+    response: TestResponse = client.get("/items_list")
+
+    assert b"item_list.html (a marker for API test)" in response.data
+
+
+@pytest.mark.parametrize(argnames=("item_id",), argvalues=(("1",), ("10",), ("99",)))
+def test_get_items_list_by_id_with_any_id_should_respond_content_of_item_detail_html(
+    client: FlaskClient, item_id: str
+) -> None:
+    response: TestResponse = client.get(f"/items_list/{item_id}")
+
+    assert b"item_detail.html (a marker for API test)" in response.data
+
+
 @pytest.fixture
 def setup_item(app: Flask) -> None:
     with app.app_context():
