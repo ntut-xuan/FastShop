@@ -224,7 +224,7 @@ def fetch_count_of_specific_item(id):
 
 @route_with_doc(item_bp, "/items_list/<string:id>", methods=["GET"])
 def item_page(id: str):
-    return fetch_page("item_list")
+    return fetch_page("item_detail")
 
 
 @route_with_doc(item_bp, "/items_list", methods=["GET"])
