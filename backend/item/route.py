@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 from http import HTTPStatus
-from typing import Any, cast
+from typing import Any
 
 from flask import Blueprint, make_response, request
 from pydantic import ValidationError
 from sqlalchemy.engine.row import Row
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql.expression import Delete, Select
 
 from auth.util import verify_login_or_return_401
