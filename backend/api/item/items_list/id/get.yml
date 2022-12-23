@@ -1,0 +1,8 @@
+The route to get the item-detail page from backend server.
+---
+tags:
+  - item
+description: Get the item-detail page from the backend server.
+responses:
+  200:
+    description: OK
