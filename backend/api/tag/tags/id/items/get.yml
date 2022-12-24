@@ -39,37 +39,4 @@ definitions:
         type: array
         description: The array contains all the items.
         items:
-          $ref: '#/definitions/item_response'
-  item_response:
-    type: object
-    properties:
-      id:
-        type: string
-        example: 41092554
-      count:
-        type: integer
-        example: 44
-      name:
-        type: string
-        example: Entropy
-      price:
-        type: object
-        properties:
-          discount:
-            type: integer
-            example: 43210
-          original:
-            type: integer
-            example: 48763
-      avatar:
-        type: string
-        description: The UUID of the avatar.
-        example: f692073a-7ac1-11ed-a1eb-0242ac120002
-      tags:
-        type: array
-        items:
-          type: string
-        description: The tags of the item. It's a list of tag objects.
-        example:
-        - id: 33
-          name: dian
+          $ref: '#/definitions/items_response'
