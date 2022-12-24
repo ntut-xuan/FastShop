@@ -8,7 +8,7 @@ requestBody:
   content:
     application/json:
       schema:
-          $ref: '#/definitions/items_payload'
+          $ref: '#/definitions/item_payload'
   required: true
 
 responses:
@@ -47,7 +47,7 @@ responses:
           message: The posted data has the correct format, but the data is invalid.
 
 definitions:
-  items_payload:
+  item_payload:
     type: object
     properties:
       count:

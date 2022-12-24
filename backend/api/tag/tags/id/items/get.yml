@@ -39,4 +39,4 @@ definitions:
         type: array
         description: The array contains all the items.
         items:
-          $ref: '#/definitions/items_response'
+          $ref: '#/definitions/item_response'

@@ -10,10 +10,10 @@ responses:
     content:
       application/json:
         schema:
-          $ref: '#/definitions/items_array'
+          $ref: '#/definitions/item_array'
 
 definitions:
-  items_response:
+  item_response:
     type: object
     properties:
       id:
@@ -45,7 +45,7 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/tag_response'
-  items_array:
+  item_array:
     type: object
     properties:
       count:
@@ -55,4 +55,4 @@ definitions:
         type: array
         description: The array contains all the items.
         items:
-          $ref: '#/definitions/items_response'
+          $ref: '#/definitions/item_response'

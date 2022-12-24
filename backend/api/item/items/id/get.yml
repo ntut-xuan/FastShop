@@ -19,7 +19,7 @@ responses:
     content:
       application/json:
         schema:
-          $ref: '#/definitions/items_response'
+          $ref: '#/definitions/item_response'
   403:
     description: The item query by the ID is absent.
     content:
