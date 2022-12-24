@@ -1,0 +1,34 @@
+Get all the tags.
+---
+tags:
+  - tag
+description: Get all the tags.
+responses:
+  200:
+    description: OK
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/tags'
+
+definitions:
+  tags:
+    type: object
+    properties:
+      count:
+        type: integer
+        example: 4
+      tags:
+        type: array
+        description: The array contains all the tags.
+        items:
+          $ref: '#/definitions/tag_response'
+  tag_response:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 3325
+      name:
+        type: string
+        example: dian

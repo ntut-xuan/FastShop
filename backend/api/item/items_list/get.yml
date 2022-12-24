@@ -1,0 +1,8 @@
+Get the item-list page from the backend server.
+---
+tags:
+  - item
+description: Get the item-list page from the backend server.
+responses:
+  200:
+    description: OK

@@ -1,4 +1,4 @@
-The register route.
+Get the register page from the backend server.
 ---
 tags:
   - auth

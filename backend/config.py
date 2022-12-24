@@ -7,11 +7,12 @@ SQLALCHEMY_DATABASE_URI: str = (
         password=quote("@fsa2022")
     )
 )
+STATIC_RESOURCE_PATH = "/var/fastshop/image"
 SWAGGER = {
     "title": "FastShop API",
     "uiversion": "3",
     "openapi": "3.0.3",
     "termsOfService": "",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "This is a FastShop API based on the OpenAPI 3.0 specification.",
 }
