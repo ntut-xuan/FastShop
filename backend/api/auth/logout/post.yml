@@ -1,0 +1,14 @@
+Log out of the account.
+---
+tags:
+  - auth
+description: Log out of the account and delete the jwt token.
+responses:
+  200:
+    description: OK
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: "OK"

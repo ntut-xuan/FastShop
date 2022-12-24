@@ -1,0 +1,28 @@
+Get all the items which have a specific tag.
+---
+tags:
+  - tag
+
+description: "Get all the items which have a specific tag. \n\n Return `403` if the specific ID of the tag is absent."
+
+parameters:
+  - in: path
+    name: id
+    type: integer
+    example: 3325
+
+responses:
+  200:
+    description: OK
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/item_array'
+  403:
+    description: The specific ID of the tag is absent.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: The specific ID of the tag is absent.

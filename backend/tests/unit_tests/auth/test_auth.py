@@ -289,7 +289,7 @@ class TestVerifyJWT:
         resp: TestResponse = client.post("/verify_jwt")
 
         assert resp.is_json
-        assert resp.json["data"] == payload  # type: ignore
+        assert resp.json["data"] == payload  # type: ignore[index]
 
     def test_post_with_absent_jwt_cookie_should_have_code_http_unauthorized(
         self,
@@ -307,7 +307,7 @@ class TestVerifyJWT:
 
         assert resp.is_json
         assert (
-            resp.json["message"]  # type: ignore
+            resp.json["message"]  # type: ignore[index]
             == "The specific cookie does not exist in the request header."
         )
 
@@ -331,7 +331,7 @@ class TestVerifyJWT:
 
         assert resp.is_json
         assert (
-            resp.json["message"]  # type: ignore
+            resp.json["message"]  # type: ignore[index]
             == "The specific cookie in the request header is invalid."
         )
 

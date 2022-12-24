@@ -1,0 +1,43 @@
+Update the base64 of the item.
+---
+tags:
+  - static
+
+description: "Update the base64 of the image. \n\n `4XX` if the operation fails. (See Response section below)"
+
+requestBody:
+  content:
+    text/plain:
+      schema:
+          type: string
+          example: data:image/png;base64,...
+  required: true
+
+responses:
+  200:
+    description: OK
+    content:
+      application/json:
+        schema:
+          message:
+            type: string
+          uuid:
+            type: string
+        example:
+          uuid: 59cb70a7-51e0-4e33-b942-e6ea1bba20fa
+  400:
+    description: The data has the wrong format and the server can't understand it.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: The data has the wrong format and the server can't understand it.
+  401:
+    description: Unauthorized.
+    content:
+      application/json:
+        schema:
+          $ref: "#/definitions/message"
+        example:
+          message: Unauthorized.

@@ -23,6 +23,7 @@ def app() -> Generator[Flask, None, None]:
             "SQLALCHEMY_DATABASE_URI": "mysql+pymysql://fsta:{password}@mariadb-test:3306/fastshop-test".format(
                 password=quote("@fsta2022")
             ),
+            "STATIC_RESOURCE_PATH": "/var/fastshop/image",
         }
     )
 
@@ -39,6 +40,12 @@ def app() -> Generator[Flask, None, None]:
 @pytest.fixture
 def client(app: Flask) -> FlaskClient:
     return app.test_client()
+
+
+@pytest.fixture
+def logged_in_client(client: FlaskClient) -> FlaskClient:
+    client.post("/login", json={"e-mail": "test@email.com", "password": "test"})
+    return client
 
 
 def insert_test_data() -> None:

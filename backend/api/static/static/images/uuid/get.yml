@@ -1,0 +1,34 @@
+Fetch the image with a specific UUID.
+---
+tags:
+  - static
+description: Fetch the image with a specific UUID.
+
+parameters:
+  - in: path
+    name: id
+    description: The UUID of the image which you want to fetch.
+    schema:
+      type: string
+    required: true
+    example: 0ba7c0ab-408f-4cc4-be22-8dc928888dc8
+
+responses:
+  200:
+    description: OK
+    content:
+      image/png:
+        schema:
+          type: string
+          format: binary
+        example: The binary of the image.
+  404:
+    description:
+      "The specific UUID is absent or invalid. Their corresponding message is: \n\n
+      - Absent: `The image with a specific UUID is absent.` \n\n
+      - Invalid: `The specific UUID in the path parameter is invalid.`"
+    content:
+      plain/text:
+        schema:
+          type: string
+          example: The image with a specific UUID is absent.

@@ -1,0 +1,40 @@
+Delete the specific item by ID.
+---
+tags:
+  - item
+
+description: "Delete the specific item by ID. \n\n `4XX` if the operation fails. (See Response section below)"
+
+parameters:
+  - in: path
+    name: id
+    description: The ID of the item which you want to query.
+    schema:
+      type: string
+    required: true
+
+responses:
+  200:
+    description: OK
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: OK
+  401:
+    description: Unauthorized.
+    content:
+      application/json:
+        schema:
+          $ref: "#/definitions/message"
+        example:
+          message: Unauthorized.
+  403:
+    description: The item query by the ID is absent.
+    content:
+      application/json:
+        schema:
+          $ref: "#/definitions/message"
+        example:
+          message: The specific item is absent.
