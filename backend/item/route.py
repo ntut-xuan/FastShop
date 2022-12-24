@@ -44,6 +44,7 @@ def fetch_all_items():
             {
                 "avatar": item.avatar,
                 "count": item.count,
+                "description": item.description,
                 "id": item.id,
                 "name": item.name,
                 "price": {
@@ -112,6 +113,7 @@ def fetch_specific_item(id):
     item_with_tags_data: dict[str, Any] = {
         "avatar": item.avatar,
         "count": item.count,
+        "description": item.description,
         "id": item.id,
         "name": item.name,
         "price": {

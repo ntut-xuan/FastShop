@@ -55,6 +55,7 @@ def setup_item(app: Flask) -> None:
                     "id": 1,
                     "name": "apple",
                     "count": 10,
+                    "description": "This is an apple.",
                     "original": 30,
                     "discount": 25,
                     "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
@@ -63,6 +64,7 @@ def setup_item(app: Flask) -> None:
                     "id": 2,
                     "name": "tilapia",
                     "count": 3,
+                    "description": "This is a tilapia.",
                     "original": 50,
                     "discount": 45,
                     "avatar": "xx-S0m3-aVA7aR-0f-ti1a9iA-xx",
@@ -96,6 +98,7 @@ class TestPostItemsRoute:
         payload: dict[str, Any] = {
             "avatar": "f692073a-7ac1-11ed-a1eb-0242ac120002",
             "count": 44,
+            "description": "Entropy is so dian.",
             "name": "Entropy",
             "price": {"discount": 43210, "original": 48763},
             "tags": [33, 44],
@@ -111,6 +114,7 @@ class TestPostItemsRoute:
             assert item is not None
             assert item.avatar == payload["avatar"]
             assert item.count == payload["count"]
+            assert item.description == payload["description"]
             assert item.discount == payload["price"]["discount"]
             assert item.original == payload["price"]["original"]
             assert item.name == payload["name"]
@@ -121,6 +125,7 @@ class TestPostItemsRoute:
         payload: dict[str, Any] = {
             "avatar": "f692073a-7ac1-11ed-a1eb-0242ac120002",
             "count": 44,
+            "description": "Entropy is so dian.",
             "name": "Entropy",
             "price": {"discount": 43210, "original": 48763},
             "tags": [33, 44],
@@ -167,6 +172,7 @@ class TestPostItemsRoute:
         payload: dict[str, Any] = {
             "avatar": "f692073a-7ac1-11ed-a1eb-0242ac120002",
             "count": "44",  # count should be integer, not string.
+            "description": "Entropy is so dian.",
             "name": "Entropy",
             "price": {"discount": 43210, "original": 48763},
             "tags": [33, 44],
@@ -182,6 +188,7 @@ class TestPostItemsRoute:
         payload: dict[str, Any] = {
             "avatar": "f692073a-7ac1-11ed-a1eb-0242ac120002",
             "count": 44,
+            "description": "Entropy is so dian.",
             "name": "Entropy",
             "price": {"discount": 43210, "original": 48763},
             "tags": [33, 44],
@@ -215,6 +222,7 @@ class TestGetItemsByIdRoute:
             "id": 1,
             "name": "apple",
             "count": 10,
+            "description": "This is an apple.",
             "price": {"discount": 25, "original": 30},
             "tags": [{"id": 1, "name": "fruit"}, {"id": 3, "name": "grocery"}],
         }
@@ -267,6 +275,7 @@ class TestPutItemsByIdRoute:
             "id": 1,
             "name": "entropy",
             "count": 3,
+            "description": "Entropy is so dian.",
             "price": {"discount": 60, "original": 40},
             "tags": [{"id": 3, "name": "grocery"}],
         }
@@ -274,6 +283,7 @@ class TestPutItemsByIdRoute:
             "avatar": expected_item_payload["avatar"],
             "name": expected_item_payload["name"],
             "count": expected_item_payload["count"],
+            "description": expected_item_payload["description"],
             "price": expected_item_payload["price"],
             "tags": [tag_dict["id"] for tag_dict in expected_item_payload["tags"]],
         }
@@ -295,6 +305,7 @@ class TestPutItemsByIdRoute:
             "id": 1,
             "name": "apple",
             "count": 10,
+            "description": "Entropy is so dian.",
             "price": {"discount": 50, "original": 40},
             "tags": [{"id": 1, "name": "fruit"}, {"id": 3, "name": "grocery"}],
         }
@@ -319,6 +330,7 @@ class TestPutItemsByIdRoute:
             "id": 1,
             "name": "apple",
             "count": 10,
+            "description": "Entropy is so dian.",
             "price": {"discount": 25, "original": 40},
             "tags": [{"id": 1, "name": "fruit"}, {"id": 3, "name": "grocery"}],
         }
@@ -343,6 +355,7 @@ class TestPutItemsByIdRoute:
             "id": 1,
             "name": "apple",
             "count": 10,
+            "description": "This is an apple.",
             "price": {"discount": 29, "original": 30},
             "tags": [{"id": 1, "name": "fruit"}, {"id": 3, "name": "grocery"}],
         }
@@ -367,6 +380,7 @@ class TestPutItemsByIdRoute:
             "id": 1,
             "name": "apple",
             "count": 10,
+            "description": "This is an apple.",
             "price": {"discount": 25, "original": 30},
             "tags": [{"id": 3, "name": "grocery"}],
         }
@@ -453,6 +467,7 @@ class TestPutItemsByIdRoute:
             "id": 1,
             "name": "entropy",
             "count": 3,
+            "description": "Entropy is so dian.",
             "price": {"discount": 60, "original": 40},
             "tags": [{"id": 3, "name": "grocery"}],
         }
@@ -460,6 +475,7 @@ class TestPutItemsByIdRoute:
             "avatar": expected_item_payload["avatar"],
             "name": expected_item_payload["name"],
             "count": expected_item_payload["count"],
+            "description": expected_item_payload["description"],
             "price": expected_item_payload["price"],
             "tags": [tag_dict["id"] for tag_dict in expected_item_payload["tags"]],
         }
@@ -478,6 +494,7 @@ class TestPutItemsByIdRoute:
             "id": 1,
             "name": "entropy",
             "count": 3,
+            "description": "Entropy is so dian.",
             "price": {"discount": 60, "original": 40},
             "tags": [{"id": 3, "name": "grocery"}],
         }
@@ -485,6 +502,7 @@ class TestPutItemsByIdRoute:
             "avatar": expected_item_payload["avatar"],
             "name": expected_item_payload["name"],
             "count": expected_item_payload["count"],
+            "description": expected_item_payload["description"],
             "price": expected_item_payload["price"],
             "tags": [tag_dict["id"] for tag_dict in expected_item_payload["tags"]],
         }
@@ -529,6 +547,7 @@ class TestGetItemsCountByIdRoute:
             "id": 1,
             "name": "apple",
             "count": 10,
+            "description": "This is an apple",
             "original": 30,
             "discount": 25,
             "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
@@ -559,6 +578,7 @@ class TestGetItemsRoute:
             {
                 "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
                 "count": 10,
+                "description": "This is an apple.",
                 "id": 1,
                 "name": "apple",
                 "price": {
@@ -570,6 +590,7 @@ class TestGetItemsRoute:
             {
                 "avatar": "xx-S0m3-aVA7aR-0f-ti1a9iA-xx",
                 "count": 3,
+                "description": "This is a tilapia.",
                 "id": 2,
                 "name": "tilapia",
                 "price": {
