@@ -1,9 +1,9 @@
-The route to get all the items which have a specific tag.
+Get all the items which have a specific tag.
 ---
 tags:
   - tag
 
-description: "The route to get all the items which have a specific tag. \n\n Return `403` if the specific ID of the tag is absent."
+description: "Get all the items which have a specific tag. \n\n Return `403` if the specific ID of the tag is absent."
 
 parameters:
   - in: path

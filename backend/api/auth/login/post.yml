@@ -1,4 +1,4 @@
-The login route.
+Post the login payload to the backend server.
 ---
 tags:
   - auth

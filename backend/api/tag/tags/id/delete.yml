@@ -1,9 +1,9 @@
-The route to delete the tag of a specific ID.
+Delete the tag of a specific ID.
 ---
 tags:
   - tag
 
-description: "The route to delete the tag of a specific ID. \n\n Return `4XX` if the operation fails. (See Responses section below)"
+description: "Delete the tag of a specific ID. \n\n Return `4XX` if the operation fails. (See Responses section below)"
 
 parameters:
   - in: path

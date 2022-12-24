@@ -1,4 +1,4 @@
-The register route.
+Post the register payload to the backend server.
 ---
 tags:
   - auth
