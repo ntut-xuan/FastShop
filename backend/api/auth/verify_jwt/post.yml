@@ -2,7 +2,7 @@ The route to verify the jwt token.
 ---
 tags:
   - auth
-description: Verify the jwt cookie in the header. Return 4XX if it does not exist or is invalid.
+description: Verify the jwt cookie in the header. Return `4XX` if it does not exist or is invalid.
 responses:
   200:
     description: OK
