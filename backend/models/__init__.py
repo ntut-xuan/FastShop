@@ -32,6 +32,7 @@ class Item(db.Model):  # type: ignore[name-defined]
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(100), nullable=False)
     count = db.Column(db.Integer, default=0, nullable=False)
+    description = db.Column(db.Text)
     original = db.Column(db.Integer, nullable=False)
     discount = db.Column(
         db.Integer, default=same_as("original"), nullable=False
