@@ -60,8 +60,3 @@ definitions:
       name:
         type: string
         example: dian
-  message:
-    type: object
-    properties:
-      message:
-        type: string

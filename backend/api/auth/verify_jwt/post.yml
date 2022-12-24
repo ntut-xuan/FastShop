@@ -9,7 +9,7 @@ responses:
     content:
       application/json:
         schema:
-          $ref: '#/definitions/ResponseBody'
+          $ref: '#/definitions/message'
         example:
           message: "OK"
   401:
@@ -17,7 +17,7 @@ responses:
     content:
       application/json:
         schema:
-          $ref: '#/definitions/ResponseBody'
+          $ref: '#/definitions/message'
         example:
           message: "The specific cookie does not exist in the request header."
   422:
@@ -25,13 +25,6 @@ responses:
     content:
       application/json:
         schema:
-          $ref: '#/definitions/ResponseBody'
+          $ref: '#/definitions/message'
         example:
           message: "The specific cookie in the request header is invalid."
-definitions:
-  ResponseBody:
-  type: object
-  properties:
-    message:
-      type: string
-      description: The response message from the server.

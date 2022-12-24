@@ -9,13 +9,6 @@ responses:
     content:
       application/json:
         schema:
-          $ref: '#/definitions/ResponseBody'
+          $ref: '#/definitions/message'
         example:
           message: "OK"
-definitions:
-  ResponseBody:
-  type: object
-  properties:
-    message:
-      type: string
-      description: The response message from the server.

@@ -17,7 +17,7 @@ requestBody:
   content:
     application/json:
       schema:
-          $ref: '#/definitions/item_payload'
+          $ref: '#/definitions/items_payload'
   required: true
 
 responses:
