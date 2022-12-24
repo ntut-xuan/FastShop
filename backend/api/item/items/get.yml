@@ -3,47 +3,28 @@ Fetch all the items.
 tags:
   - item
 description: Fetch all the items.
+
 responses:
   200:
     description: OK
     content:
       application/json:
         schema:
-          $ref: '#/definitions/items'
-        example:
-          count: 35
-          items:
-          - id: 41092554
-            name: "Entropy"
-            count: 44
-            price:
-              discount: 43210
-              original: 48763
-            avatar: f692073a-7ac1-11ed-a1eb-0242ac120002
-            tags:
-              - id: 33
-                name: dian
+          $ref: '#/definitions/item_array'
+
 definitions:
-  items:
-    type: object
-    properties:
-      count:
-        description: The count of the items.
-        type: integer
-      items:
-        type: array
-        description: The array contains all the items.
-        items:
-          $ref: '#/definitions/item_response'
   item_response:
     type: object
     properties:
       id:
         type: string
-        example: 41092554
+        example: 48763
       count:
         type: integer
-        example: 44
+        example: 441
+      description:
+        type: string
+        example: "Entropy is so dian."
       name:
         type: string
         example: Entropy
@@ -63,8 +44,15 @@ definitions:
       tags:
         type: array
         items:
-          type: string
-        description: The tags of the item. It's a list of tag objects.
-        example:
-        - id: 33
-          name: dian
+          $ref: '#/definitions/tag_response'
+  item_array:
+    type: object
+    properties:
+      count:
+        description: The count of the items.
+        type: integer
+      items:
+        type: array
+        description: The array contains all the items.
+        items:
+          $ref: '#/definitions/item_response'

@@ -1,8 +1,8 @@
-The route to get all the tags.
+Get all the tags.
 ---
 tags:
   - tag
-description: The route to get all the tags.
+description: Get all the tags.
 responses:
   200:
     description: OK

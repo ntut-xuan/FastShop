@@ -1,8 +1,8 @@
-The route to add a tag.
+Add a tag.
 ---
 tags:
   - tag
-description: "The route to add a tag. \n\n Return `4XX` if the data is invalid, the tag exists, or is unauthorized."
+description: "Add a tag. \n\n Return `4XX` if the data is invalid, the tag exists, or is unauthorized."
 
 requestBody:
   content:
@@ -60,8 +60,3 @@ definitions:
       name:
         type: string
         example: dian
-  message:
-    type: object
-    properties:
-      message:
-        type: string

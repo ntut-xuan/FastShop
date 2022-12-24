@@ -47,12 +47,6 @@ responses:
           message: The posted data has the correct format, but the data is invalid.
 
 definitions:
-  message:
-    type: object
-    properties:
-      message:
-        type: string
-        description: The response message from the server.
   item_payload:
     type: object
     properties:
@@ -75,6 +69,9 @@ definitions:
         type: string
         description: The UUID of the avatar.
         example: f692073a-7ac1-11ed-a1eb-0242ac120002
+      description:
+        type: string
+        example: Entropy is so dian.
       tags:
         description: The tags of the item. It's a list of integer.
         type: array
