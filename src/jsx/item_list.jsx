@@ -48,7 +48,7 @@ class PriceSection extends React.Component {
     render(){
         let {original_price, discount_price} = this.state
         let price = [<p className="text-center"> {discount_price} MC </p>]
-        let discount_percentage = "-" + parseFloat(original_price/discount_price).toFixed(2) + "%"
+        let discount_percentage = "-" + parseFloat((original_price-discount_price)*100/original_price).toFixed(2) + "%"
         if(original_price != discount_price){
             price.push(
                 <p className="text-center text-sm">

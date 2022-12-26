@@ -48,7 +48,7 @@ var PriceComponent = function (_React$Component) {
                         "span",
                         { className: "pr-5 font-bold" },
                         " - ",
-                        parseFloat(original_price / discount_price).toFixed(2),
+                        parseFloat((original_price - discount_price) * 100 / original_price).toFixed(2),
                         " % "
                     )
                 );

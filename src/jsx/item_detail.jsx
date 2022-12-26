@@ -14,7 +14,7 @@ class PriceComponent extends React.Component {
                 <p className="md:text-base xl:text-2xl font-serif">
                     <span className="pr-5"> NT$ {discount_price} </span>
                     <span className="pr-5 font-bold text-gray-400 line-through"> NT$ {original_price} </span>
-                    <span className="pr-5 font-bold"> - {parseFloat(original_price/discount_price).toFixed(2)} % </span>
+                    <span className="pr-5 font-bold"> - {parseFloat((original_price-discount_price)*100/original_price).toFixed(2)} % </span>
                 </p>
             )
         }else{

@@ -111,7 +111,7 @@ var PriceSection = function (_React$Component2) {
                 discount_price,
                 " MC "
             )];
-            var discount_percentage = "-" + parseFloat(original_price / discount_price).toFixed(2) + "%";
+            var discount_percentage = "-" + parseFloat((original_price - discount_price) * 100 / original_price).toFixed(2) + "%";
             if (original_price != discount_price) {
                 price.push(React.createElement(
                     "p",
