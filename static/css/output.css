@@ -627,16 +627,16 @@ video {
   height: 50px;
 }
 
-.h-screen {
-  height: 100vh;
-}
-
 .h-\[75vh\] {
   height: 75vh;
 }
 
 .h-\[30vh\] {
   height: 30vh;
+}
+
+.h-screen {
+  height: 100vh;
 }
 
 .h-0 {
@@ -649,6 +649,30 @@ video {
 
 .h-20 {
   height: 5rem;
+}
+
+.h-\[30px\] {
+  height: 30px;
+}
+
+.h-\[40px\] {
+  height: 40px;
+}
+
+.h-\[30\%\] {
+  height: 30%;
+}
+
+.h-\[35\%\] {
+  height: 35%;
+}
+
+.h-\[50\%\] {
+  height: 50%;
+}
+
+.h-\[40\%\] {
+  height: 40%;
 }
 
 .max-h-\[74vh\] {
@@ -675,14 +699,6 @@ video {
   width: 100px;
 }
 
-.w-\[80\%\] {
-  width: 80%;
-}
-
-.w-\[30\%\] {
-  width: 30%;
-}
-
 .w-fit {
   width: -moz-fit-content;
   width: fit-content;
@@ -690,6 +706,14 @@ video {
 
 .w-\[30vh\] {
   width: 30vh;
+}
+
+.w-\[80\%\] {
+  width: 80%;
+}
+
+.w-\[30\%\] {
+  width: 30%;
 }
 
 .w-screen {
@@ -761,6 +785,10 @@ video {
 
 .gap-3 {
   gap: 0.75rem;
+}
+
+.gap-2 {
+  gap: 0.5rem;
 }
 
 .overflow-y-auto {
@@ -912,14 +940,24 @@ video {
   padding-bottom: 0.5rem;
 }
 
-.px-5 {
-  padding-left: 1.25rem;
-  padding-right: 1.25rem;
+.py-4 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
 .py-5 {
   padding-top: 1.25rem;
   padding-bottom: 1.25rem;
+}
+
+.px-5 {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+.py-1 {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
 }
 
 .pb-5 {
@@ -940,6 +978,14 @@ video {
 
 .pt-10 {
   padding-top: 2.5rem;
+}
+
+.pb-3 {
+  padding-bottom: 0.75rem;
+}
+
+.pb-2 {
+  padding-bottom: 0.5rem;
 }
 
 .text-center {
@@ -996,6 +1042,21 @@ video {
 .text-gray-400 {
   --tw-text-opacity: 1;
   color: rgb(156 163 175 / var(--tw-text-opacity));
+}
+
+.text-gray-300 {
+  --tw-text-opacity: 1;
+  color: rgb(209 213 219 / var(--tw-text-opacity));
+}
+
+.text-gray-500 {
+  --tw-text-opacity: 1;
+  color: rgb(107 114 128 / var(--tw-text-opacity));
+}
+
+.text-black {
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity));
 }
 
 .underline {
@@ -1078,7 +1139,21 @@ video {
   color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
+.disabled\:bg-slate-400:disabled {
+  --tw-bg-opacity: 1;
+  background-color: rgb(148 163 184 / var(--tw-bg-opacity));
+}
+
+.disabled\:text-slate-100:disabled {
+  --tw-text-opacity: 1;
+  color: rgb(241 245 249 / var(--tw-text-opacity));
+}
+
 @media (min-width: 768px) {
+  .md\:h-\[50\%\] {
+    height: 50%;
+  }
+
   .md\:text-2xl {
     font-size: 1.5rem;
     line-height: 2rem;
@@ -1088,9 +1163,23 @@ video {
     font-size: 1rem;
     line-height: 1.5rem;
   }
+
+  .md\:text-xl {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+
+  .md\:text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
 }
 
 @media (min-width: 1280px) {
+  .xl\:h-\[30\%\] {
+    height: 30%;
+  }
+
   .xl\:text-4xl {
     font-size: 2.25rem;
     line-height: 2.5rem;
@@ -1099,5 +1188,20 @@ video {
   .xl\:text-2xl {
     font-size: 1.5rem;
     line-height: 2rem;
+  }
+
+  .xl\:text-xl {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+
+  .xl\:text-lg {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+
+  .xl\:text-base {
+    font-size: 1rem;
+    line-height: 1.5rem;
   }
 }

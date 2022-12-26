@@ -110,21 +110,29 @@ var NevigationBar = function (_React$Component2) {
                         { className: "w-full h-full gap-5 flex-row flex justify-start text-sm text-center" },
                         React.createElement("img", { className: "h-full w-auto py-5", src: "/static/image/fastshop.svg" }),
                         React.createElement(
-                            "div",
-                            { className: clickable_text },
+                            "a",
+                            { href: "/" },
                             React.createElement(
-                                "p",
-                                { className: "relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]" },
-                                "\u9996\u9801"
+                                "div",
+                                { className: clickable_text },
+                                React.createElement(
+                                    "p",
+                                    { className: "relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]" },
+                                    "\u9996\u9801"
+                                )
                             )
                         ),
                         React.createElement(
-                            "div",
-                            { className: clickable_text, onMouseOver: this.nav_extend_on, onMouseOut: this.nav_extend_off },
+                            "a",
+                            { href: "/items_list" },
                             React.createElement(
-                                "p",
-                                { className: "relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]" },
-                                "\u6240\u6709\u5546\u54C1"
+                                "div",
+                                { className: clickable_text, onMouseOver: this.nav_extend_on, onMouseOut: this.nav_extend_off },
+                                React.createElement(
+                                    "p",
+                                    { className: "relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]" },
+                                    "\u6240\u6709\u5546\u54C1"
+                                )
                             )
                         ),
                         React.createElement(
@@ -167,62 +175,6 @@ var NevigationBar = function (_React$Component2) {
                                 { className: "relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]" },
                                 "\u8CFC\u7269\u8ECA"
                             )
-                        )
-                    )
-                )
-            ), React.createElement(
-                "div",
-                { id: "nav_extend", className: "w-full fixed top-0 left-0 z-10 bg-white bg-opacity-90 flex flex-col" },
-                React.createElement("div", { id: "nav_extend_offset", className: "w-[90%] mx-auto h-20 flex flex-row relative left-0 top-0 transition-all duration-500" }),
-                React.createElement(
-                    "div",
-                    { id: "nav_extend_main", className: "w-[60%] mx-auto h-0 flex flex-row justify-start gap-5 relative left-0 top-0 transition-all duration-500 overflow-y-hidden", onMouseOver: this.nav_extend_on, onMouseOut: this.nav_extend_off },
-                    React.createElement(
-                        "div",
-                        { className: "p-5 text-center" },
-                        React.createElement(
-                            "p",
-                            { className: "text-2xl p-5" },
-                            " - \u9B54\u6CD5 - "
-                        ),
-                        React.createElement(
-                            "p",
-                            { className: "text-lg border-opacity-0 border-black border-b-2 hover:border-opacity-100 cursor-pointer my-3 py-2 duration-500" },
-                            " \u6642\u9593\u56DE\u6714 "
-                        ),
-                        React.createElement(
-                            "p",
-                            { className: "text-lg border-opacity-0 border-black border-b-2 hover:border-opacity-100 cursor-pointer my-3 py-2 duration-500" },
-                            " \u8CC7\u8A0A\u5B89\u5168 "
-                        ),
-                        React.createElement(
-                            "p",
-                            { className: "text-lg border-opacity-0 border-black border-b-2 hover:border-opacity-100 cursor-pointer my-3 py-2 duration-500" },
-                            " \u5730\u9707 "
-                        )
-                    ),
-                    React.createElement(
-                        "div",
-                        { className: "p-5 text-center" },
-                        React.createElement(
-                            "p",
-                            { className: "text-2xl p-5" },
-                            " - \u98DF\u7269 - "
-                        ),
-                        React.createElement(
-                            "p",
-                            { className: "text-lg border-opacity-0 border-black border-b-2 hover:border-opacity-100 cursor-pointer my-3 py-2 duration-500" },
-                            " \u5496\u5561 "
-                        ),
-                        React.createElement(
-                            "p",
-                            { className: "text-lg border-opacity-0 border-black border-b-2 hover:border-opacity-100 cursor-pointer my-3 py-2 duration-500" },
-                            " \u5361\u5E03\u5947\u8AFE "
-                        ),
-                        React.createElement(
-                            "p",
-                            { className: "text-lg border-opacity-0 border-black border-b-2 hover:border-opacity-100 cursor-pointer my-3 py-2 duration-500" },
-                            " \u62FF\u9435 "
                         )
                     )
                 )
