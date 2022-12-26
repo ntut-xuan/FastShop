@@ -51,7 +51,7 @@ def fetch_all_items():
                     "discount": item.discount,
                     "original": item.original,
                 },
-                "tags": tags_list_dict_by_item_id[item.id],
+                "tags": tags_list_dict_by_item_id.get(item.id, []),
             }
         )
 
