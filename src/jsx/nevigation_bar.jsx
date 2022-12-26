@@ -87,25 +87,6 @@ class NevigationBar extends React.Component {
                         </div>
                     </div>
                 </div>
-            </div>,
-            <div id="nav_extend" className="w-full fixed top-0 left-0 z-10 bg-white bg-opacity-90 flex flex-col">
-                <div id="nav_extend_offset" className="w-[90%] mx-auto h-20 flex flex-row relative left-0 top-0 transition-all duration-500">
-
-                </div>
-                <div id="nav_extend_main" className="w-[60%] mx-auto h-0 flex flex-row justify-start gap-5 relative left-0 top-0 transition-all duration-500 overflow-y-hidden" onMouseOver={this.nav_extend_on} onMouseOut={this.nav_extend_off}>
-                    <div className="p-5 text-center">
-                        <p className="text-2xl p-5"> - 魔法 - </p>
-                        <p className="text-lg border-opacity-0 border-black border-b-2 hover:border-opacity-100 cursor-pointer my-3 py-2 duration-500"> 時間回朔 </p>
-                        <p className="text-lg border-opacity-0 border-black border-b-2 hover:border-opacity-100 cursor-pointer my-3 py-2 duration-500"> 資訊安全 </p>
-                        <p className="text-lg border-opacity-0 border-black border-b-2 hover:border-opacity-100 cursor-pointer my-3 py-2 duration-500"> 地震 </p>
-                    </div>
-                    <div className="p-5 text-center">
-                        <p className="text-2xl p-5"> - 食物 - </p>
-                        <p className="text-lg border-opacity-0 border-black border-b-2 hover:border-opacity-100 cursor-pointer my-3 py-2 duration-500"> 咖啡 </p>
-                        <p className="text-lg border-opacity-0 border-black border-b-2 hover:border-opacity-100 cursor-pointer my-3 py-2 duration-500"> 卡布奇諾 </p>
-                        <p className="text-lg border-opacity-0 border-black border-b-2 hover:border-opacity-100 cursor-pointer my-3 py-2 duration-500"> 拿鐵 </p>
-                    </div>
-                </div>
             </div>
         ]
     }
