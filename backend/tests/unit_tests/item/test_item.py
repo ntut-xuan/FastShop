@@ -571,6 +571,43 @@ class TestGetItemsCountByIdRoute:
 
 
 class TestGetItemsRoute:
+    def test_with_empty_tag_item_in_database_should_respond_correct_payload(
+        self, app: Flask, client: FlaskClient
+    ) -> None:
+        item_data: dict[str, Any] = {
+            "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
+            "count": 10,
+            "description": "This is an apple.",
+            "id": 1,
+            "name": "apple",
+            "original": 30,
+            "discount": 25,
+        }
+        excepted_payload: list[dict[str, Any]] = [
+            {
+                "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
+                "count": 10,
+                "description": "This is an apple.",
+                "id": 1,
+                "name": "apple",
+                "price": {
+                    "original": 30,
+                    "discount": 25,
+                },
+                "tags": [],
+            }
+        ]
+        with app.app_context():
+            item = Item(**item_data)
+            db.session.add(item)
+            db.session.commit()
+
+        response: TestResponse = client.get("/items")
+
+        response_payload: dict[str, Any] | None = response.json
+        assert response_payload is not None
+        assert response_payload == excepted_payload
+
     def test_with_route_should_respond_correct_payload(
         self, client: FlaskClient, setup_item: None
     ) -> None:
