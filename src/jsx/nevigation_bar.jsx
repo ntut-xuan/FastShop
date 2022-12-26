@@ -60,12 +60,16 @@ class NevigationBar extends React.Component {
                 <div className="w-[90%] mx-auto h-20 flex flex-row relative left-0 top-0">
                     <div className="w-full h-full gap-5 flex-row flex justify-start text-sm text-center">
                         <img className="h-full w-auto py-5" src="/static/image/fastshop.svg"></img>
-                        <div className={clickable_text}>
-                            <p className="relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">首頁</p>
-                        </div>
-                        <div className={clickable_text} onMouseOver={this.nav_extend_on} onMouseOut={this.nav_extend_off}>
-                            <p className="relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">所有商品</p>
-                        </div>
+                        <a href="/">
+                            <div className={clickable_text}>
+                                <p className="relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">首頁</p>
+                            </div>
+                        </a>
+                        <a href="/items_list">
+                            <div className={clickable_text} onMouseOver={this.nav_extend_on} onMouseOut={this.nav_extend_off}>
+                                <p className="relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">所有商品</p>
+                            </div>
+                        </a>
                         <div className={clickable_text}>
                             <p className="relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">最新消息</p>
                         </div>
