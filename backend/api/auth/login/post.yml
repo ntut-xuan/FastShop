@@ -1,4 +1,4 @@
-The login route.
+Post the login payload to the backend server.
 ---
 tags:
   - auth
@@ -7,7 +7,7 @@ requestBody:
   content:
     application/json:
       schema:
-          $ref: '#/definitions/RequestBody'
+          $ref: "#/definitions/login_payload"
   required: true
 responses:
   200:
@@ -15,7 +15,7 @@ responses:
     content:
       application/json:
         schema:
-          $ref: '#/definitions/ResponseBody'
+          $ref: "#/definitions/message"
         example:
           message: "OK"
   400:
@@ -23,7 +23,7 @@ responses:
     content:
       application/json:
         schema:
-          $ref: '#/definitions/ResponseBody'
+          $ref: "#/definitions/message"
         example:
           message: "The data has the wrong format and the server can't understand it."
   403:
@@ -31,7 +31,7 @@ responses:
     content:
       application/json:
         schema:
-          $ref: '#/definitions/ResponseBody'
+          $ref: "#/definitions/message"
         example:
           message: "The email or password that the user posted does not match any account."
   422:
@@ -39,11 +39,11 @@ responses:
     content:
       application/json:
         schema:
-          $ref: '#/definitions/ResponseBody'
+          $ref: "#/definitions/message"
         example:
           message: "The posted data has the correct format, but the data is invalid."
 definitions:
-  RequestBody:
+  login_payload:
     type: object
     required:
       - e-mail
@@ -55,9 +55,8 @@ definitions:
       password:
         type: string
         example: password
-  ResponseBody:
+  message:
     type: object
     properties:
       message:
         type: string
-        description: The response message from the server.
