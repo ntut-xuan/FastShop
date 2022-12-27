@@ -3,8 +3,8 @@ Get the profile of the current user.
 tags:
   - user
 description:
-  "Get the profile of the current user. \n\n
-   The current user is the one recorded in the `jwt` cookie. \n\n
+  "Get the profile of the current user.\n\n
+   The current user is the one recorded in the `jwt` cookie.\n\n
    Return `401` if unauthorized."
 
 responses:
