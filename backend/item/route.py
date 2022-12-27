@@ -143,9 +143,8 @@ def update_specific_item(id):
             "The data has the wrong format and the server can't understand it.",
         )
 
-    # Since flatten_item_payload require ALL the field have present.
-    # So we need to flat the specific field to complete the flattern action.
-    # Flat the price dict, since only price need to flat.
+    # Since `flatten_item_payload` requires all the fields to be present as a one level dict,
+    # we have to flatten some fields first.
     if "price" in payload:
         if "original" in payload["price"]:
             payload["original"] = payload["price"]["original"]
