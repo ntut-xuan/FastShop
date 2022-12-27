@@ -63,7 +63,7 @@ def _map_item_id_to_tags(tags_of_item: list[Row]) -> dict[int, list[dict[str, An
 
 @route_with_doc(item_bp, "/items", methods=["POST"])
 @verify_login_or_return_401
-def add_item():
+def add_item() -> Response:
     payload: dict[str, Any] | None = request.get_json(silent=True)
 
     if payload is None or "name" not in payload:
@@ -94,7 +94,7 @@ def add_item():
     db.session.add(item)
     db.session.flush()
 
-    item_id = item.id
+    item_id: int = item.id
     for tag_id in tag_ids:
         db.session.add(TagOfItem(item_id=item_id, tag_id=tag_id))
 
@@ -103,7 +103,7 @@ def add_item():
 
 
 @route_with_doc(item_bp, "/items/<string:id>", methods=["GET"])
-def fetch_specific_item(id):
+def fetch_specific_item(id) -> Response:
     item: Item | None = db.session.get(Item, id)
 
     if item is None:
@@ -125,13 +125,12 @@ def fetch_specific_item(id):
         },
         "tags": tags,
     }
-
     return make_response(item_with_tags_data)
 
 
 @route_with_doc(item_bp, "/items/<string:id>", methods=["PUT"])
 @verify_login_or_return_401
-def update_specific_item(id):
+def update_specific_item(id) -> Response:
     item: Item | None = db.session.get(Item, id)
     payload: dict[str, Any] | None = request.get_json(silent=True)
 
@@ -199,7 +198,7 @@ def update_specific_item(id):
 
 @route_with_doc(item_bp, "/items/<string:id>", methods=["DELETE"])
 @verify_login_or_return_401
-def delete_specific_item(id):
+def delete_specific_item(id) -> Response:
     item: Item | None = db.session.get(Item, id)
 
     if item is None:
@@ -214,7 +213,7 @@ def delete_specific_item(id):
 
 
 @route_with_doc(item_bp, "/items/<string:id>/count", methods=["GET"])
-def fetch_count_of_specific_item(id):
+def fetch_count_of_specific_item(id) -> Response:
     item: Item | None = db.session.get(Item, id)
 
     if item is None:
@@ -226,13 +225,13 @@ def fetch_count_of_specific_item(id):
 
 
 @route_with_doc(item_bp, "/items_list/<string:id>", methods=["GET"])
-def item_page(id: str):
+def item_page(id: str) -> str:
     # id is intentionally ignored. Backend does not have to handle.
     return fetch_page("item_detail")
 
 
 @route_with_doc(item_bp, "/items_list", methods=["GET"])
-def item_list_page():
+def item_list_page() -> str:
     return fetch_page("item_list")
 
 
@@ -252,7 +251,7 @@ def _fetch_item_tags_list_from_item_id(id: int) -> list[dict[str, Any]]:
     return tags_dict_list
 
 
-def _setup_tags_relationship_of_item(item_id: int, tags_id_list: list[int]):
+def _setup_tags_relationship_of_item(item_id: int, tags_id_list: list[int]) -> None:
     # Step 1. Drop all tags of item if exists.
     delete_tags_stmts: Delete = db.delete(TagOfItem).where(TagOfItem.item_id == item_id)
     db.session.execute(delete_tags_stmts)
