@@ -13,9 +13,7 @@ responses:
     content:
       application/json:
         schema:
-          $ref: '#/definitions/message'
-        example:
-          message: OK
+          $ref: '#/definitions/profile_response'
   401:
     description: Unauthorized.
     content:
@@ -24,3 +22,24 @@ responses:
           $ref: "#/definitions/message"
         example:
           message: Unauthorized.
+
+definitions:
+  profile_response:
+    type: object
+    properties:
+      e-mail:
+        type: string
+        example: test@test.com
+      firstname:
+        type: string
+        example: Firstname
+      lastname:
+        type: string
+        example: Lastname
+      gender:
+        type: int
+        description: "If the gender is female, the value should be 1. \n\n If the gender is male, the value should be 0."
+        example: 0
+      birthday:
+        type: string
+        example: "2002-06-25"
