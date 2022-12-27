@@ -5,8 +5,6 @@ from typing import TYPE_CHECKING, Any, Iterable
 
 from flask import Blueprint, make_response, request
 from pydantic import ValidationError
-from sqlalchemy.engine.row import Row
-from sqlalchemy.sql.expression import Delete, Select
 
 from auth.util import verify_login_or_return_401
 from database import db
@@ -16,6 +14,8 @@ from util import fetch_page, make_single_message_response, route_with_doc
 
 if TYPE_CHECKING:
     from flask import Response
+    from sqlalchemy.engine.row import Row
+    from sqlalchemy.sql.expression import Delete, Select
 
 item_bp = Blueprint("item", __name__)
 
