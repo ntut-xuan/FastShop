@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from http import HTTPStatus
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from flask import Blueprint, make_response, request
 from pydantic import ValidationError
@@ -14,48 +14,51 @@ from item.util import PayloadTypeChecker, flatten_item_payload
 from models import Item, Tag, TagOfItem
 from util import fetch_page, make_single_message_response, route_with_doc
 
+if TYPE_CHECKING:
+    from flask import Response
+
 item_bp = Blueprint("item", __name__)
 
 
 @route_with_doc(item_bp, "/items", methods=["GET"])
-def fetch_all_items():
-    items: list[Item] = db.session.execute(db.select(Item)).scalars().all()
-    tag_of_items: list[Row] = db.session.execute(
+def fetch_all_items() -> Response:
+    tags_of_item: list[Row] = db.session.execute(
         db.select(TagOfItem.item_id, TagOfItem.tag_id, Tag.name)
         .select_from(TagOfItem)
         .join(Tag)
     ).all()
+    item_id_to_tags: dict[int, list[dict[str, Any]]] = _map_item_id_to_tags(
+        tags_of_item
+    )
 
-    tags_list_dict_by_item_id: dict[int, list[dict[str, Any]]] = {}
+    items: list[Item] = db.session.execute(db.select(Item)).scalars().all()
+    payload: list[dict[str, Any]] = [
+        {
+            "avatar": item.avatar,
+            "count": item.count,
+            "description": item.description,
+            "id": item.id,
+            "name": item.name,
+            "price": {
+                "discount": item.discount,
+                "original": item.original,
+            },
+            "tags": item_id_to_tags.get(item.id, []),
+        }
+        for item in items
+    ]
+    return make_response(payload)
 
-    for tag_of_item in tag_of_items:
-        item_id = tag_of_item.item_id
-        tag_id = tag_of_item.tag_id
-        tag_name = tag_of_item.name
 
-        if item_id not in tags_list_dict_by_item_id:
-            tags_list_dict_by_item_id[item_id] = []
-        tags_list_dict_by_item_id[item_id].append({"id": tag_id, "name": tag_name})
+def _map_item_id_to_tags(tags_of_item: list[Row]) -> dict[int, list[dict[str, Any]]]:
+    """Maps the list which has duplicate item ids into a dict which item ids are the keys."""
+    item_id_to_tags: dict[int, list[dict[str, Any]]] = {}
 
-    item_represent_list: list[dict[str, Any]] = []
-
-    for item in items:
-        item_represent_list.append(
-            {
-                "avatar": item.avatar,
-                "count": item.count,
-                "description": item.description,
-                "id": item.id,
-                "name": item.name,
-                "price": {
-                    "discount": item.discount,
-                    "original": item.original,
-                },
-                "tags": tags_list_dict_by_item_id.get(item.id, []),
-            }
+    for tag_of_item in tags_of_item:
+        item_id_to_tags.setdefault(tag_of_item.item_id, []).append(
+            {"id": tag_of_item.tag_id, "name": tag_of_item.name}
         )
-
-    return make_response(item_represent_list)
+    return item_id_to_tags
 
 
 @route_with_doc(item_bp, "/items", methods=["POST"])
