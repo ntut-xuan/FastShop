@@ -104,7 +104,7 @@ def add_item() -> Response:
 
 @route_with_doc(item_bp, "/items/<string:id>", methods=["GET"])
 def fetch_specific_item(id) -> Response:
-    item: Item | None = db.session.get(Item, id)
+    item: Item | None = db.session.get(Item, id)  # type: ignore[attr-defined]
 
     if item is None:
         return make_single_message_response(
@@ -131,7 +131,7 @@ def fetch_specific_item(id) -> Response:
 @route_with_doc(item_bp, "/items/<string:id>", methods=["PUT"])
 @verify_login_or_return_401
 def update_specific_item(id) -> Response:
-    item: Item | None = db.session.get(Item, id)
+    item: Item | None = db.session.get(Item, id)  # type: ignore[attr-defined]
     payload: dict[str, Any] | None = request.get_json(silent=True)
 
     if item is None:
@@ -199,7 +199,7 @@ def update_specific_item(id) -> Response:
 @route_with_doc(item_bp, "/items/<string:id>", methods=["DELETE"])
 @verify_login_or_return_401
 def delete_specific_item(id) -> Response:
-    item: Item | None = db.session.get(Item, id)
+    item: Item | None = db.session.get(Item, id)  # type: ignore[attr-defined]
 
     if item is None:
         return make_single_message_response(
@@ -214,7 +214,7 @@ def delete_specific_item(id) -> Response:
 
 @route_with_doc(item_bp, "/items/<string:id>/count", methods=["GET"])
 def fetch_count_of_specific_item(id) -> Response:
-    item: Item | None = db.session.get(Item, id)
+    item: Item | None = db.session.get(Item, id)  # type: ignore[attr-defined]
 
     if item is None:
         return make_single_message_response(
