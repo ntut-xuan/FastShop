@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from http import HTTPStatus
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Iterable
 
 from flask import Blueprint, make_response, request
 from pydantic import ValidationError
@@ -155,10 +155,11 @@ def update_specific_item(id) -> Response:
         del payload["price"]
 
     # validate payload data field
-    item_attributes: list = list(item.__dict__.keys())
     if (
-        not _validate_keys(payload.keys(), item_attributes, ["tags"])
-        or "id" in payload.keys()
+        not _has_only_allowed_keys(
+            payload.keys(), list(item.__dict__.keys()) + ["tags"]
+        )
+        or "id" in payload.keys()  # you can't update the id
     ):
         return make_single_message_response(
             HTTPStatus.BAD_REQUEST,
@@ -263,11 +264,9 @@ def _setup_tags_relationship_of_item(item_id: int, tags_id_list: list[int]) -> N
     db.session.commit()
 
 
-def _validate_keys(target_keys: list, known_keys: list, skip_keys: list) -> bool:
+def _has_only_allowed_keys(target_keys: Iterable, allowed_keys: Iterable) -> bool:
     for key in target_keys:
-        if key in skip_keys:
-            continue
-        if key not in known_keys:
+        if key not in allowed_keys:
             return False
     return True
 
