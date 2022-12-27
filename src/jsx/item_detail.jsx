@@ -54,6 +54,9 @@ class MainPlatform extends React.Component {
                     discount_price: data["price"]["discount"],
                     description: data["description"]
                 })
+            }.bind(this),
+            error: function(data){
+                window.location.href = "/items_list"
             }.bind(this)
         })
     }
