@@ -50,17 +50,6 @@ def fetch_all_items() -> Response:
     return make_response(payload)
 
 
-def _map_item_id_to_tags(tags_of_item: list[Row]) -> dict[int, list[dict[str, Any]]]:
-    """Maps the list which has duplicate item ids into a dict which item ids are the keys."""
-    item_id_to_tags: dict[int, list[dict[str, Any]]] = {}
-
-    for tag_of_item in tags_of_item:
-        item_id_to_tags.setdefault(tag_of_item.item_id, []).append(
-            {"id": tag_of_item.tag_id, "name": tag_of_item.name}
-        )
-    return item_id_to_tags
-
-
 @route_with_doc(item_bp, "/items", methods=["POST"])
 @verify_login_or_return_401
 def add_item() -> Response:
@@ -252,21 +241,32 @@ def _fetch_item_tags_list_from_item_id(id: int) -> list[dict[str, Any]]:
     return tags_dict_list
 
 
-def _setup_tags_relationship_of_item(item_id: int, tags_id_list: list[int]) -> None:
+def _setup_tags_relationship_of_item(item_id: int, tags_ids: list[int]) -> None:
     # Step 1. Drop all tags of item if exists.
     delete_tags_stmts: Delete = db.delete(TagOfItem).where(TagOfItem.item_id == item_id)
     db.session.execute(delete_tags_stmts)
     db.session.commit()
 
     # Step 2. Insert all tags relationship
-    for tag_id in tags_id_list:
+    for tag_id in tags_ids:
         db.session.add(TagOfItem(item_id=item_id, tag_id=tag_id))
     db.session.commit()
 
 
-def _has_only_allowed_keys(target_keys: Iterable, allowed_keys: Iterable) -> bool:
-    for key in target_keys:
-        if key not in allowed_keys:
+def _map_item_id_to_tags(tags_of_item: list[Row]) -> dict[int, list[dict[str, Any]]]:
+    """Maps the list which has duplicate item ids into a dict which item ids are the keys."""
+    item_id_to_tags: dict[int, list[dict[str, Any]]] = {}
+
+    for tag_of_item in tags_of_item:
+        item_id_to_tags.setdefault(tag_of_item.item_id, []).append(
+            {"id": tag_of_item.tag_id, "name": tag_of_item.name}
+        )
+    return item_id_to_tags
+
+
+def _has_only_allowed_keys(target: Iterable, allowed: Iterable) -> bool:
+    for key in target:
+        if key not in allowed:
             return False
     return True
 
