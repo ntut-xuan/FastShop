@@ -28,6 +28,10 @@ def app() -> Generator[Flask, None, None]:
     )
 
     with app.app_context():
+        # Since we testing the testcase should raise exception will let it fail first, and implement the code to handle the raise exception.
+        # When the testcase raise exception without assert, it will not teardown the testcase, so that the table won't drop.
+        # So we drop all the table before testcase start, to make sure tables is empty.
+        db.drop_all()
         create_db()
         insert_test_data()
 
