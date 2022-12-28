@@ -8,7 +8,7 @@ from http import HTTPStatus
 from typing import TYPE_CHECKING, Any, Final
 
 import jwt
-from flask import current_app, make_response, request
+from flask import current_app, make_response, redirect, request
 from sqlalchemy import select
 
 from auth.exception import EmailAlreadyRegisteredError, UserNotFoundError
@@ -169,6 +169,20 @@ def verify_login_or_return_401(func):
         if cookie is None or not codec.is_valid_jwt(cookie):
             status = SingleMessageStatus(HTTPStatus.UNAUTHORIZED, "Unauthorized.")
             return make_response(status.message, status.code)
+
+        return func(*args, **kwargs)
+
+    return wrapper
+
+
+def verify_login_or_redirect_login_page(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        codec = HS256JWTCodec(current_app.config["jwt_key"])
+        cookie: str | None = request.cookies.get("jwt")
+
+        if cookie is None or not codec.is_valid_jwt(cookie):
+            return redirect("/login")
 
         return func(*args, **kwargs)
 
