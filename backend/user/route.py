@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 user_bp = Blueprint("user", __name__)
 
 
-@user_bp.route("/user", methods=["GET"])
+@route_with_doc(user_bp, "/user", methods=["GET"])
 @verify_login_or_return_401
 def fetch_profile_of_current_user() -> Response:
     # `verify_login_or_return_401` has validated the jwt cookie
