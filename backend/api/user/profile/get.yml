@@ -3,8 +3,8 @@ Fetch the page of user profile.
 tags:
   - user
 description:
-  "Fetch the page of user profile \n
-   Redirect to login page if jwt cookie is invalid or unauthorized."
+  "Fetch the page of user profile \n\n
+   Redirect to login page if the jwt cookie is invalid or unauthorized."
 
 responses:
   200:
