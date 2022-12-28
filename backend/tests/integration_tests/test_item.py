@@ -7,7 +7,6 @@ from tests.unit_tests.item.test_item import (
     TestPutItemsByIdRoute,
     # test fixtures
     build_tags,
-    logged_in_client,
     setup_item,
 )
 

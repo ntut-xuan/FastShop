@@ -1,0 +1,45 @@
+Get the profile of the current user.
+---
+tags:
+  - user
+description:
+  "Get the profile of the current user.\n\n
+   The current user is the one recorded in the `jwt` cookie.\n\n
+   Return `401` if unauthorized."
+
+responses:
+  200:
+    description: OK
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/profile_response'
+  401:
+    description: Unauthorized.
+    content:
+      application/json:
+        schema:
+          $ref: "#/definitions/message"
+        example:
+          message: Unauthorized.
+
+definitions:
+  profile_response:
+    type: object
+    properties:
+      e-mail:
+        type: string
+        example: test@test.com
+      firstname:
+        type: string
+        example: Firstname
+      lastname:
+        type: string
+        example: Lastname
+      gender:
+        type: int
+        description: "If the gender is female, the value should be 1. \n\n If the gender is male, the value should be 0."
+        example: 0
+      birthday:
+        type: string
+        example: "2002-06-25"

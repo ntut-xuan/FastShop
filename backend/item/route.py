@@ -1,12 +1,10 @@
 from __future__ import annotations
 
 from http import HTTPStatus
-from typing import Any
+from typing import TYPE_CHECKING, Any, Iterable
 
 from flask import Blueprint, make_response, request
 from pydantic import ValidationError
-from sqlalchemy.engine.row import Row
-from sqlalchemy.sql.expression import Delete, Select
 
 from auth.util import verify_login_or_return_401
 from database import db
@@ -14,53 +12,47 @@ from item.util import PayloadTypeChecker, flatten_item_payload
 from models import Item, Tag, TagOfItem
 from util import fetch_page, make_single_message_response, route_with_doc
 
+if TYPE_CHECKING:
+    from flask import Response
+    from sqlalchemy.engine.row import Row
+    from sqlalchemy.sql.expression import Delete, Select
+
 item_bp = Blueprint("item", __name__)
 
 
 @route_with_doc(item_bp, "/items", methods=["GET"])
-def fetch_all_items():
-    items: list[Item] = db.session.execute(db.select(Item)).scalars().all()
-    tag_of_items: list[Row] = db.session.execute(
+def fetch_all_items() -> Response:
+    tags_of_item: list[Row] = db.session.execute(
         db.select(TagOfItem.item_id, TagOfItem.tag_id, Tag.name)
         .select_from(TagOfItem)
         .join(Tag)
     ).all()
+    item_id_to_tags: dict[int, list[dict[str, Any]]] = _map_item_id_to_tags(
+        tags_of_item
+    )
 
-    tags_list_dict_by_item_id: dict[int, list[dict[str, Any]]] = {}
-
-    for tag_of_item in tag_of_items:
-        item_id = tag_of_item.item_id
-        tag_id = tag_of_item.tag_id
-        tag_name = tag_of_item.name
-
-        if item_id not in tags_list_dict_by_item_id:
-            tags_list_dict_by_item_id[item_id] = []
-        tags_list_dict_by_item_id[item_id].append({"id": tag_id, "name": tag_name})
-
-    item_represent_list: list[dict[str, Any]] = []
-
-    for item in items:
-        item_represent_list.append(
-            {
-                "avatar": item.avatar,
-                "count": item.count,
-                "description": item.description,
-                "id": item.id,
-                "name": item.name,
-                "price": {
-                    "discount": item.discount,
-                    "original": item.original,
-                },
-                "tags": tags_list_dict_by_item_id.get(item.id, []),
-            }
-        )
-
-    return make_response(item_represent_list)
+    items: list[Item] = db.session.execute(db.select(Item)).scalars().all()
+    payload: list[dict[str, Any]] = [
+        {
+            "avatar": item.avatar,
+            "count": item.count,
+            "description": item.description,
+            "id": item.id,
+            "name": item.name,
+            "price": {
+                "discount": item.discount,
+                "original": item.original,
+            },
+            "tags": item_id_to_tags.get(item.id, []),
+        }
+        for item in items
+    ]
+    return make_response(payload)
 
 
 @route_with_doc(item_bp, "/items", methods=["POST"])
 @verify_login_or_return_401
-def add_item():
+def add_item() -> Response:
     payload: dict[str, Any] | None = request.get_json(silent=True)
 
     if payload is None or "name" not in payload:
@@ -91,7 +83,7 @@ def add_item():
     db.session.add(item)
     db.session.flush()
 
-    item_id = item.id
+    item_id: int = item.id
     for tag_id in tag_ids:
         db.session.add(TagOfItem(item_id=item_id, tag_id=tag_id))
 
@@ -100,8 +92,8 @@ def add_item():
 
 
 @route_with_doc(item_bp, "/items/<string:id>", methods=["GET"])
-def fetch_specific_item(id):
-    item: Item | None = db.session.get(Item, id)
+def fetch_specific_item(id) -> Response:
+    item: Item | None = db.session.get(Item, id)  # type: ignore[attr-defined]
 
     if item is None:
         return make_single_message_response(
@@ -122,14 +114,13 @@ def fetch_specific_item(id):
         },
         "tags": tags,
     }
-
     return make_response(item_with_tags_data)
 
 
 @route_with_doc(item_bp, "/items/<string:id>", methods=["PUT"])
 @verify_login_or_return_401
-def update_specific_item(id):
-    item: Item | None = db.session.get(Item, id)
+def update_specific_item(id) -> Response:
+    item: Item | None = db.session.get(Item, id)  # type: ignore[attr-defined]
     payload: dict[str, Any] | None = request.get_json(silent=True)
 
     if item is None:
@@ -143,9 +134,8 @@ def update_specific_item(id):
             "The data has the wrong format and the server can't understand it.",
         )
 
-    # Since flatten_item_payload require ALL the field have present.
-    # So we need to flat the specific field to complete the flattern action.
-    # Flat the price dict, since only price need to flat.
+    # Since `flatten_item_payload` requires all the fields to be present as a one level dict,
+    # we have to flatten some fields first.
     if "price" in payload:
         if "original" in payload["price"]:
             payload["original"] = payload["price"]["original"]
@@ -154,10 +144,11 @@ def update_specific_item(id):
         del payload["price"]
 
     # validate payload data field
-    item_attributes: list = list(item.__dict__.keys())
     if (
-        not _validate_keys(payload.keys(), item_attributes, ["tags"])
-        or "id" in payload.keys()
+        not _has_only_allowed_keys(
+            payload.keys(), list(item.__dict__.keys()) + ["tags"]
+        )
+        or "id" in payload.keys()  # you can't update the id
     ):
         return make_single_message_response(
             HTTPStatus.BAD_REQUEST,
@@ -197,8 +188,8 @@ def update_specific_item(id):
 
 @route_with_doc(item_bp, "/items/<string:id>", methods=["DELETE"])
 @verify_login_or_return_401
-def delete_specific_item(id):
-    item: Item | None = db.session.get(Item, id)
+def delete_specific_item(id) -> Response:
+    item: Item | None = db.session.get(Item, id)  # type: ignore[attr-defined]
 
     if item is None:
         return make_single_message_response(
@@ -212,8 +203,8 @@ def delete_specific_item(id):
 
 
 @route_with_doc(item_bp, "/items/<string:id>/count", methods=["GET"])
-def fetch_count_of_specific_item(id):
-    item: Item | None = db.session.get(Item, id)
+def fetch_count_of_specific_item(id) -> Response:
+    item: Item | None = db.session.get(Item, id)  # type: ignore[attr-defined]
 
     if item is None:
         return make_single_message_response(
@@ -224,13 +215,13 @@ def fetch_count_of_specific_item(id):
 
 
 @route_with_doc(item_bp, "/items_list/<string:id>", methods=["GET"])
-def item_page(id: str):
+def item_page(id: str) -> str:
     # id is intentionally ignored. Backend does not have to handle.
     return fetch_page("item_detail")
 
 
 @route_with_doc(item_bp, "/items_list", methods=["GET"])
-def item_list_page():
+def item_list_page() -> str:
     return fetch_page("item_list")
 
 
@@ -250,23 +241,32 @@ def _fetch_item_tags_list_from_item_id(id: int) -> list[dict[str, Any]]:
     return tags_dict_list
 
 
-def _setup_tags_relationship_of_item(item_id: int, tags_id_list: list[int]):
+def _setup_tags_relationship_of_item(item_id: int, tags_ids: list[int]) -> None:
     # Step 1. Drop all tags of item if exists.
     delete_tags_stmts: Delete = db.delete(TagOfItem).where(TagOfItem.item_id == item_id)
     db.session.execute(delete_tags_stmts)
     db.session.commit()
 
     # Step 2. Insert all tags relationship
-    for tag_id in tags_id_list:
+    for tag_id in tags_ids:
         db.session.add(TagOfItem(item_id=item_id, tag_id=tag_id))
     db.session.commit()
 
 
-def _validate_keys(target_keys: list, known_keys: list, skip_keys: list) -> bool:
-    for key in target_keys:
-        if key in skip_keys:
-            continue
-        if key not in known_keys:
+def _map_item_id_to_tags(tags_of_item: list[Row]) -> dict[int, list[dict[str, Any]]]:
+    """Maps the list which has duplicate item ids into a dict which item ids are the keys."""
+    item_id_to_tags: dict[int, list[dict[str, Any]]] = {}
+
+    for tag_of_item in tags_of_item:
+        item_id_to_tags.setdefault(tag_of_item.item_id, []).append(
+            {"id": tag_of_item.tag_id, "name": tag_of_item.name}
+        )
+    return item_id_to_tags
+
+
+def _has_only_allowed_keys(target: Iterable, allowed: Iterable) -> bool:
+    for key in target:
+        if key not in allowed:
             return False
     return True
 
