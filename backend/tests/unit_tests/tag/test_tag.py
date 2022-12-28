@@ -16,12 +16,6 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture
-def logged_in_client(client: FlaskClient) -> FlaskClient:
-    client.post("/login", json={"e-mail": "test@email.com", "password": "test"})
-    return client
-
-
-@pytest.fixture
 def test_tags(app: Flask) -> list[dict[str, Any]]:
     """Inserts some tags into the database.
 
