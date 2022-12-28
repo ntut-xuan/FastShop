@@ -1,7 +1,13 @@
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from pydantic import StrictInt, StrictStr, Field
-from pydantic.dataclasses import dataclass
+
+if TYPE_CHECKING:
+    from dataclasses import dataclass
+else:
+    # Fixes "Unexpected keyword argument" for custom dataclasses.
+    # See https://github.com/python/mypy/issues/6239.
+    from pydantic.dataclasses import dataclass
 
 
 class PayloadTypeChecker:

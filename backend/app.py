@@ -10,6 +10,7 @@ from database import create_db_command, db
 from item.route import item_bp
 from static.route import static_bp
 from tag.route import tag_bp
+from user.route import user_bp
 from util import fetch_page
 
 
@@ -32,6 +33,7 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     app.register_blueprint(item_bp)
     app.register_blueprint(static_bp)
     app.register_blueprint(tag_bp)
+    app.register_blueprint(user_bp)
 
     @app.route("/", methods=["GET"])
     def index() -> str:
