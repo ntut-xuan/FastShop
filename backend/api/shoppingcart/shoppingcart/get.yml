@@ -1,0 +1,41 @@
+Get the shopping cart.
+---
+tags:
+  - shoppingcart
+
+responses:
+  200:
+    description: OK
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/shoppingcart_response'
+
+definitions:
+  shoppingcart_response:
+    type: object
+    properties:
+      price:
+        description: The total price of the shopping cart.
+        type: integer
+        example: 200
+      count:
+        description: The count of items in the shopping cart.
+        type: integer
+        example: 2
+      items:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+            count:
+              type: integer
+        example:
+        - id: 3
+          price: 4
+          count: 5
+        - id: 5
+          price: 4
+          count: 7
