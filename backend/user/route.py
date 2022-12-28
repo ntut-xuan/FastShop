@@ -11,7 +11,7 @@ from auth.util import (
     verify_login_or_return_401,
     verify_login_or_redirect_login_page,
 )
-from util import fetch_page
+from util import fetch_page, route_with_doc
 
 if TYPE_CHECKING:
     from flask import Response
@@ -34,7 +34,7 @@ def fetch_profile_of_current_user() -> Response:
     return make_response(user_profile)
 
 
-@user_bp.route("/profile", methods=["GET"])
+@route_with_doc(user_bp, "/profile", methods=["GET"])
 @verify_login_or_redirect_login_page
 def fetch_profile_page():
     return fetch_page("user_profile")
