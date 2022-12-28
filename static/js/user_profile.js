@@ -44,13 +44,13 @@ var MainPlatform = function (_React$Component) {
                                     { className: "pt-5" },
                                     React.createElement(
                                         "p",
-                                        { className: "text-xl py-2 text-gray-500 font-mono" },
+                                        { className: "md:text-base xl:text-xl py-2 text-gray-500 font-mono whitespace-nowrap" },
                                         React.createElement("i", { "class": "fa-solid fa-envelope fa-fw" }),
                                         " sigtunatw@gmail.com "
                                     ),
                                     React.createElement(
                                         "p",
-                                        { className: "text-xl py-2 text-gray-500 font-mono" },
+                                        { className: "md:text-base xl:text-xl py-2 text-gray-500 font-mono whitespace-nowrap" },
                                         React.createElement("i", { "class": "fa-solid fa-cake-candles fa-fw" }),
                                         " 2002-06-25 "
                                     )
