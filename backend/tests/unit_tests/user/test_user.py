@@ -44,7 +44,7 @@ class TestGetUserRoute:
         assert response.get_json(silent=True) == {"message": "Unauthorized."}
 
 
-def test_get_with_authorized_account_should_response_content_of_profile_html(
+def test_get_with_authorized_account_should_respond_content_of_profile_html(
     logged_in_client: FlaskClient,
 ) -> None:
     resp: TestResponse = logged_in_client.get("/profile")
@@ -52,7 +52,7 @@ def test_get_with_authorized_account_should_response_content_of_profile_html(
     assert b"<!-- user_profile.html (a marker for API test) -->" in resp.data
 
 
-def test_get_with_unauthorized_account_should_response_content_of_login_html(
+def test_get_with_unauthorized_account_should_respond_content_of_login_html(
     client: FlaskClient,
 ) -> None:
     resp: TestResponse = client.get("/profile", follow_redirects=True)
