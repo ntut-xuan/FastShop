@@ -31,6 +31,7 @@ def app() -> Generator[Flask, None, None]:
         # When the test case raises an exception without being handled (asserted),
         # it will not teardown the test case, which leaves the table not dropped.
         # So we drop all the tables before test cases start to ensure tables are empty.
+        # See https://docs.pytest.org/en/6.2.x/fixture.html#handling-errors-for-yield-fixture.
         db.drop_all()
         create_db()
         insert_test_data()
