@@ -8,7 +8,10 @@ class MainPlatform extends React.Component {
                             <img className="w-[60%] h-auto mx-auto rounded-full border-2" src="/static/image/boy.png"></img>
                             <div>
                                 <p className="text-2xl font-bold"> 黃 漢軒 </p>
-                                <p className="text-xl text-gray-400"> sigtunatw@gmail.com </p>
+                                <div className="pt-5">
+                                    <p className="text-xl py-2 text-gray-500 font-mono"><i class="fa-solid fa-envelope fa-fw"></i> sigtunatw@gmail.com </p>
+                                    <p className="text-xl py-2 text-gray-500 font-mono"><i class="fa-solid fa-cake-candles fa-fw"></i> 2002-06-25 </p>
+                                </div>
                             </div>
                         </div>
                     </div>

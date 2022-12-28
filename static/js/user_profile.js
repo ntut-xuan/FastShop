@@ -40,9 +40,20 @@ var MainPlatform = function (_React$Component) {
                                     " \u9EC3 \u6F22\u8ED2 "
                                 ),
                                 React.createElement(
-                                    "p",
-                                    { className: "text-xl text-gray-400" },
-                                    " sigtunatw@gmail.com "
+                                    "div",
+                                    { className: "pt-5" },
+                                    React.createElement(
+                                        "p",
+                                        { className: "text-xl py-2 text-gray-500 font-mono" },
+                                        React.createElement("i", { "class": "fa-solid fa-envelope fa-fw" }),
+                                        " sigtunatw@gmail.com "
+                                    ),
+                                    React.createElement(
+                                        "p",
+                                        { className: "text-xl py-2 text-gray-500 font-mono" },
+                                        React.createElement("i", { "class": "fa-solid fa-cake-candles fa-fw" }),
+                                        " 2002-06-25 "
+                                    )
                                 )
                             )
                         )
