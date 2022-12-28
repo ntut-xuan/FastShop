@@ -28,12 +28,6 @@ class SomeImage:
 
 
 @pytest.fixture
-def logged_in_client(client: FlaskClient) -> FlaskClient:
-    client.post("/login", json={"e-mail": "test@email.com", "password": "test"})
-    return client
-
-
-@pytest.fixture
 def add_image(logged_in_client: FlaskClient) -> SomeImage:
     """Adds an image with base64 data `ZG9lc19ub3RfbWF0dGVy` into the static folder.
 

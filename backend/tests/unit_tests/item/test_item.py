@@ -22,12 +22,6 @@ def build_tags(app: Flask) -> None:
         db.session.commit()
 
 
-@pytest.fixture
-def logged_in_client(client: FlaskClient) -> FlaskClient:
-    client.post("/login", json={"e-mail": "test@email.com", "password": "test"})
-    return client
-
-
 def test_get_items_list_should_respond_content_of_item_list_html(
     client: FlaskClient,
 ) -> None:
