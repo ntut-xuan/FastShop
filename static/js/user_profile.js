@@ -18,6 +18,7 @@ var MainPlatform = function (_React$Component) {
             firstname: "",
             lastname: "",
             birthday: "",
+            gender: 0,
             email: ""
         };
         return _this;
@@ -34,18 +35,41 @@ var MainPlatform = function (_React$Component) {
                         firstname: data["firstname"],
                         lastname: data["lastname"],
                         birthday: data["birthday"],
+                        gender: data["gender"],
                         email: data["e-mail"]
                     });
                 }.bind(this)
             });
         }
     }, {
+        key: "logout",
+        value: function logout() {
+            $.ajax({
+                url: "/logout",
+                method: "POST",
+                success: function success(data) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "登出成功",
+                        showConfirmButton: false,
+                        timer: 1500,
+                        didClose: function didClose() {
+                            window.location.href = "/";
+                        }
+                    });
+                }
+            });
+        }
+    }, {
         key: "render",
         value: function render() {
+            var _this2 = this;
+
             var _state = this.state,
                 firstname = _state.firstname,
                 lastname = _state.lastname,
                 birthday = _state.birthday,
+                gender = _state.gender,
                 email = _state.email;
 
             return React.createElement(
@@ -56,17 +80,17 @@ var MainPlatform = function (_React$Component) {
                     { className: "w-[30%] h-full p-5" },
                     React.createElement(
                         "div",
-                        { className: "h-full w-full border-2 bg-white rounded-md" },
+                        { className: "h-full w-full border-2 bg-white rounded-md flex flex-col xl:p-10 md:p-3" },
                         React.createElement(
                             "div",
-                            { className: "relative mx-auto top-[8vh] w-[80%] flex gap-10 flex-col" },
-                            React.createElement("img", { className: "w-[60%] h-auto mx-auto rounded-full border-2", src: "/static/image/boy.png" }),
+                            { className: "mx-auto w-fit h-full p-5 flex flex-col" },
+                            React.createElement("img", { className: "w-[60%] h-auto mx-auto rounded-full border-2", src: gender == 0 ? "/static/image/boy.png" : "/static/image/girl.png" }),
                             React.createElement(
                                 "div",
-                                null,
+                                { className: "pt-5" },
                                 React.createElement(
                                     "p",
-                                    { className: "text-2xl font-bold" },
+                                    { className: "md:text-xl xl:text-2xl font-bold" },
                                     " ",
                                     firstname,
                                     " ",
@@ -78,7 +102,7 @@ var MainPlatform = function (_React$Component) {
                                     { className: "pt-5" },
                                     React.createElement(
                                         "p",
-                                        { className: "text-xl py-2 text-gray-500 font-mono" },
+                                        { className: "md:text-base xl:text-xl py-2 text-gray-500 font-mono whitespace-nowrap" },
                                         React.createElement("i", { "class": "fa-solid fa-envelope fa-fw" }),
                                         " ",
                                         email,
@@ -86,13 +110,24 @@ var MainPlatform = function (_React$Component) {
                                     ),
                                     React.createElement(
                                         "p",
-                                        { className: "text-xl py-2 text-gray-500 font-mono" },
+                                        { className: "md:text-base xl:text-xl py-2 text-gray-500 font-mono" },
                                         React.createElement("i", { "class": "fa-solid fa-cake-candles fa-fw" }),
                                         " ",
                                         birthday,
                                         " "
                                     )
                                 )
+                            )
+                        ),
+                        React.createElement(
+                            "div",
+                            { className: "h-fit" },
+                            React.createElement(
+                                "button",
+                                { className: "relative p-3 text-center w-full rounded-md bg-orange-200", onClick: function onClick() {
+                                        return _this2.logout();
+                                    } },
+                                " \u767B\u51FA "
                             )
                         )
                     )

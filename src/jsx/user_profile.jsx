@@ -5,6 +5,7 @@ class MainPlatform extends React.Component {
             firstname: "",
             lastname: "",
             birthday: "",
+            gender: 0,
             email: ""
         }
     }
@@ -17,26 +18,47 @@ class MainPlatform extends React.Component {
                     firstname: data["firstname"],
                     lastname: data["lastname"],
                     birthday: data["birthday"],
+                    gender: data["gender"],
                     email: data["e-mail"]
                 })
             }.bind(this)
         })
     }
+    logout(){
+        $.ajax({
+            url: "/logout",
+            method: "POST",
+            success: function(data){
+                Swal.fire({
+                    icon: "success",
+                    title: "登出成功",
+                    showConfirmButton: false,
+                    timer: 1500,
+                    didClose: () => {
+                        window.location.href = "/"
+                    }
+                })
+            }
+        })
+    }
     render(){
-        let {firstname, lastname, birthday, email} = this.state
+        let {firstname, lastname, birthday, gender, email} = this.state
         return (
             <div className="md:w-[90%] xl:w-[80%] md:h-[80vh] xl:h-[90vh] mx-auto flex flex-row border-2 my-20 rounded-md bg-gray-100">
                 <div className="w-[30%] h-full p-5">
-                    <div className="h-full w-full border-2 bg-white rounded-md">
-                        <div className="relative mx-auto top-[8vh] w-[80%] flex gap-10 flex-col">
-                            <img className="w-[60%] h-auto mx-auto rounded-full border-2" src="/static/image/boy.png"></img>
-                            <div>
-                                <p className="text-2xl font-bold"> {firstname} {lastname} </p>
+                    <div className="h-full w-full border-2 bg-white rounded-md flex flex-col xl:p-10 md:p-3">
+                        <div className="mx-auto w-fit h-full p-5 flex flex-col">
+                            <img className="w-[60%] h-auto mx-auto rounded-full border-2" src={gender == 0 ? "/static/image/boy.png" : "/static/image/girl.png"}></img>
+                            <div className="pt-5">
+                                <p className="md:text-xl xl:text-2xl font-bold"> {firstname} {lastname} </p>
                                 <div className="pt-5">
-                                    <p className="text-xl py-2 text-gray-500 font-mono"><i class="fa-solid fa-envelope fa-fw"></i> {email} </p>
-                                    <p className="text-xl py-2 text-gray-500 font-mono"><i class="fa-solid fa-cake-candles fa-fw"></i> {birthday} </p>
+                                    <p className="md:text-base xl:text-xl py-2 text-gray-500 font-mono whitespace-nowrap"><i class="fa-solid fa-envelope fa-fw"></i> {email} </p>
+                                    <p className="md:text-base xl:text-xl py-2 text-gray-500 font-mono"><i class="fa-solid fa-cake-candles fa-fw"></i> {birthday} </p>
                                 </div>
                             </div>
+                        </div>
+                        <div className="h-fit">
+                            <button className="relative p-3 text-center w-full rounded-md bg-orange-200" onClick={() => this.logout()}> 登出 </button>
                         </div>
                     </div>
                 </div>
