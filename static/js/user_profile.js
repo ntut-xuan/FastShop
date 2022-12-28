@@ -9,15 +9,45 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var MainPlatform = function (_React$Component) {
     _inherits(MainPlatform, _React$Component);
 
-    function MainPlatform() {
+    function MainPlatform(props) {
         _classCallCheck(this, MainPlatform);
 
-        return _possibleConstructorReturn(this, (MainPlatform.__proto__ || Object.getPrototypeOf(MainPlatform)).apply(this, arguments));
+        var _this = _possibleConstructorReturn(this, (MainPlatform.__proto__ || Object.getPrototypeOf(MainPlatform)).call(this, props));
+
+        _this.state = {
+            firstname: "",
+            lastname: "",
+            birthday: "",
+            email: ""
+        };
+        return _this;
     }
 
     _createClass(MainPlatform, [{
+        key: "componentDidMount",
+        value: function componentDidMount() {
+            $.ajax({
+                url: "/user",
+                method: "GET",
+                success: function (data) {
+                    this.setState({
+                        firstname: data["firstname"],
+                        lastname: data["lastname"],
+                        birthday: data["birthday"],
+                        email: data["e-mail"]
+                    });
+                }.bind(this)
+            });
+        }
+    }, {
         key: "render",
         value: function render() {
+            var _state = this.state,
+                firstname = _state.firstname,
+                lastname = _state.lastname,
+                birthday = _state.birthday,
+                email = _state.email;
+
             return React.createElement(
                 "div",
                 { className: "md:w-[90%] xl:w-[80%] md:h-[80vh] xl:h-[90vh] mx-auto flex flex-row border-2 my-20 rounded-md bg-gray-100" },
@@ -37,12 +67,31 @@ var MainPlatform = function (_React$Component) {
                                 React.createElement(
                                     "p",
                                     { className: "text-2xl font-bold" },
-                                    " \u9EC3 \u6F22\u8ED2 "
+                                    " ",
+                                    firstname,
+                                    " ",
+                                    lastname,
+                                    " "
                                 ),
                                 React.createElement(
-                                    "p",
-                                    { className: "text-xl text-gray-400" },
-                                    " sigtunatw@gmail.com "
+                                    "div",
+                                    { className: "pt-5" },
+                                    React.createElement(
+                                        "p",
+                                        { className: "text-xl py-2 text-gray-500 font-mono" },
+                                        React.createElement("i", { "class": "fa-solid fa-envelope fa-fw" }),
+                                        " ",
+                                        email,
+                                        " "
+                                    ),
+                                    React.createElement(
+                                        "p",
+                                        { className: "text-xl py-2 text-gray-500 font-mono" },
+                                        React.createElement("i", { "class": "fa-solid fa-cake-candles fa-fw" }),
+                                        " ",
+                                        birthday,
+                                        " "
+                                    )
                                 )
                             )
                         )

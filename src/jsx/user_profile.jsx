@@ -1,5 +1,29 @@
 class MainPlatform extends React.Component {
+    constructor(props){
+        super(props)
+        this.state = {
+            firstname: "",
+            lastname: "",
+            birthday: "",
+            email: ""
+        }
+    }
+    componentDidMount(){
+        $.ajax({
+            url: "/user",
+            method: "GET",
+            success: function(data){
+                this.setState({
+                    firstname: data["firstname"],
+                    lastname: data["lastname"],
+                    birthday: data["birthday"],
+                    email: data["e-mail"]
+                })
+            }.bind(this)
+        })
+    }
     render(){
+        let {firstname, lastname, birthday, email} = this.state
         return (
             <div className="md:w-[90%] xl:w-[80%] md:h-[80vh] xl:h-[90vh] mx-auto flex flex-row border-2 my-20 rounded-md bg-gray-100">
                 <div className="w-[30%] h-full p-5">
@@ -7,8 +31,11 @@ class MainPlatform extends React.Component {
                         <div className="relative mx-auto top-[8vh] w-[80%] flex gap-10 flex-col">
                             <img className="w-[60%] h-auto mx-auto rounded-full border-2" src="/static/image/boy.png"></img>
                             <div>
-                                <p className="text-2xl font-bold"> 黃 漢軒 </p>
-                                <p className="text-xl text-gray-400"> sigtunatw@gmail.com </p>
+                                <p className="text-2xl font-bold"> {firstname} {lastname} </p>
+                                <div className="pt-5">
+                                    <p className="text-xl py-2 text-gray-500 font-mono"><i class="fa-solid fa-envelope fa-fw"></i> {email} </p>
+                                    <p className="text-xl py-2 text-gray-500 font-mono"><i class="fa-solid fa-cake-candles fa-fw"></i> {birthday} </p>
+                                </div>
                             </div>
                         </div>
                     </div>
