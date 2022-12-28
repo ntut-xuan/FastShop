@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any
 from flask import Blueprint, current_app, make_response, request
 
 from auth.util import BIRTHDAY_FORMAT, HS256JWTCodec, verify_login_or_return_401
+from util import route_with_doc
 
 if TYPE_CHECKING:
     from flask import Response
@@ -13,7 +14,7 @@ if TYPE_CHECKING:
 user_bp = Blueprint("user", __name__)
 
 
-@user_bp.route("/user", methods=["GET"])
+@route_with_doc(user_bp, "/user", methods=["GET"])
 @verify_login_or_return_401
 def fetch_profile_of_current_user() -> Response:
     # `verify_login_or_return_401` has validated the jwt cookie
