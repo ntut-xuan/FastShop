@@ -1,0 +1,64 @@
+Update one item in the shopping cart.
+---
+tags:
+  - shopping_cart
+
+description:
+  "Update one item in the shopping cart.\n\n
+   When the item count is `0`, it will remove the item from the shopping cart.\n\n
+   Return `4XX` if the update failed. See the responses section below."
+
+requestBody:
+  content:
+    application/json:
+      schema:
+          $ref: '#/definitions/shopping_cart_item_payload'
+  required: true
+
+responses:
+  200:
+    description: OK
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: OK
+  400:
+    description: The data has the wrong format and the server can't understand it.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: The data has the wrong format and the server can't understand it.
+  401:
+    description: Unauthorized.
+    content:
+      application/json:
+        schema:
+          $ref: "#/definitions/message"
+        example:
+          message: Unauthorized.
+  403:
+    description: The specific ID of item is absent in shopping cart.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: The specific ID of item is absent in shopping cart.
+  422:
+    description:
+      "The possible situations that cause `422`:\n\n
+        - The ID of the payload is absent in items.\n\n
+        - The data type of ID is invalid.\n\n
+        - The count of the payload is negative.\n\n
+       The route will respond the failed message with respect to the situation.
+      "
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: The posted data has the correct format, but the data is invalid.
