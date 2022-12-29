@@ -18,7 +18,7 @@ var MainPlatform = function (_React$Component) {
             firstname: "",
             lastname: "",
             birthday: "",
-            gender: 0,
+            gender: -1,
             email: ""
         };
         return _this;
@@ -84,7 +84,7 @@ var MainPlatform = function (_React$Component) {
                         React.createElement(
                             "div",
                             { className: "mx-auto w-fit h-full p-5 flex flex-col" },
-                            React.createElement("img", { className: "w-[60%] h-auto mx-auto rounded-full border-2", src: gender == 0 ? "/static/image/boy.png" : "/static/image/girl.png" }),
+                            React.createElement("img", { className: "w-[60%] h-auto mx-auto rounded-full border-2", src: gender == 0 ? "/static/image/boy.png" : gender == 1 ? "/static/image/girl.png" : "" }),
                             React.createElement(
                                 "div",
                                 { className: "pt-5" },

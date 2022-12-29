@@ -5,7 +5,7 @@ class MainPlatform extends React.Component {
             firstname: "",
             lastname: "",
             birthday: "",
-            gender: 0,
+            gender: -1,
             email: ""
         }
     }
@@ -48,7 +48,7 @@ class MainPlatform extends React.Component {
                 <div className="w-[30%] h-full p-5">
                     <div className="h-full w-full border-2 bg-white rounded-md flex flex-col xl:p-10 md:p-3">
                         <div className="mx-auto w-fit h-full p-5 flex flex-col">
-                            <img className="w-[60%] h-auto mx-auto rounded-full border-2" src={gender == 0 ? "/static/image/boy.png" : "/static/image/girl.png"}></img>
+                            <img className="w-[60%] h-auto mx-auto rounded-full border-2" src={gender == 0 ? "/static/image/boy.png" : gender == 1 ? "/static/image/girl.png" : ""}></img>
                             <div className="pt-5">
                                 <p className="md:text-xl xl:text-2xl font-bold"> {firstname} {lastname} </p>
                                 <div className="pt-5">
