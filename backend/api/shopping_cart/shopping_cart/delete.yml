@@ -1,0 +1,26 @@
+Delete the shopping cart.
+---
+tags:
+  - shopping_cart
+
+description:
+  "Delete the shopping cart.\n\n
+   Return `401` if unauthorized."
+
+responses:
+  200:
+    description: OK
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: OK
+  401:
+    description: Unauthorized.
+    content:
+      application/json:
+        schema:
+          $ref: "#/definitions/message"
+        example:
+          message: Unauthorized.
