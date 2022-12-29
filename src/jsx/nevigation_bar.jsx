@@ -13,7 +13,7 @@ class AuthenticationComponent extends React.Component {
             block_url = "/login"
         }else{
             block_text = this.props.username
-            block_url = "#"
+            block_url = "/profile"
         }
         return (
             <a href={block_url}>
