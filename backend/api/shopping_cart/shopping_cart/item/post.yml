@@ -4,8 +4,8 @@ tags:
   - shopping_cart
 
 description:
-  "Add one item to the shopping cart. \n\n
-   Return `4XX` if unauthorized."
+  "Add one item to the shopping cart.\n\n
+   Return `4XX` if the data is invalid or the user is unauthorized."
 
 requestBody:
   content:

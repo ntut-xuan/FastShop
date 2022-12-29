@@ -4,9 +4,9 @@ tags:
   - shopping_cart
 
 description:
-  "Update one item in the shopping cart. \n\n
-   When the item count is `0`, it will remove the item in the shopping cart. \n\n
-   Return `4XX` if update failed, see the responses section below."
+  "Update one item in the shopping cart.\n\n
+   When the item count is `0`, it will remove the item from the shopping cart.\n\n
+   Return `4XX` if the update failed. See the responses section below."
 
 requestBody:
   content:
@@ -50,11 +50,11 @@ responses:
           message: The specific ID of item is absent in shopping cart.
   422:
     description:
-      "The possible of situations will cause `422`: \n\n
-        - The ID of payload is absent in items. \n\n
-        - The data type of ID is invalid. \n\n
-        - The count of payload is negative. \n\n
-       The route will respond the failed message by the situation.
+      "The possible situations that cause `422`:\n\n
+        - The ID of the payload is absent in items.\n\n
+        - The data type of ID is invalid.\n\n
+        - The count of the payload is negative.\n\n
+       The route will respond the failed message with respect to the situation.
       "
     content:
       application/json:

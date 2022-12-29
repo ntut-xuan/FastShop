@@ -4,7 +4,7 @@ tags:
   - shopping_cart
 
 description:
-  "Delete the shopping cart. \n\n
+  "Delete the shopping cart.\n\n
    Return `401` if unauthorized."
 
 responses:
