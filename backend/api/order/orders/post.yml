@@ -1,0 +1,71 @@
+Create the order from the current shopping cart.
+---
+tags:
+  - order
+
+description: 
+  "Create the order from the current shopping cart. \n\n
+  Return the ID of the order if the order is created successfully. \n\n
+  Return `4XX` HTTP status code if the order is created faulty."
+
+requestBody:
+  content:
+    application/json:
+      schema:
+        $ref: '#/definitions/order_payload'
+  required: true
+
+responses:
+  200:
+    description: OK
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: OK
+  401:
+    description: Unauthorized.
+    content:
+      application/json:
+        schema:
+          $ref: "#/definitions/message"
+        example:
+          message: Unauthorized.
+  403:
+    description: Exists unavailable item in the order.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: Exists unavailable item in the order.
+
+definitions:
+  order_payload:
+    type: object
+    properties:
+      order_note:
+        type: string
+      delivery_info:
+        type: object
+        properties:
+          firstname: 
+            type: string
+          lastname: 
+            type: string
+          email: 
+            type: string
+          phone_number:
+            type: string
+          address:
+            type: string
+    example:
+      order_note: "No Iansui"
+      delivery_info:
+        firstname: Han-Xuan
+        lastname: Huang
+        email: test@test.com
+        phone_number: 0921474836
+        address: No. 1, Sec. 3, Zhongxiao E. Rd., Da'an Dist., Taipei City 106344 , Taiwan (R.O.C.)
+

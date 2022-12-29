@@ -1,0 +1,40 @@
+Get the order with the specific ID in history.
+---
+tags:
+  - order
+
+description: 
+  "Get the order with the specific ID in history. \n\n
+   Return `401` if unauthorized, `403` if the specific ID of order is absent."
+
+parameters:
+  - in: path
+    name: id
+    description: The ID of the order which you want to query.
+    schema:
+      type: string
+    required: true
+
+responses:
+  200:
+    description: OK
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/order_response'
+  401:
+    description: Unauthorized.
+    content:
+      application/json:
+        schema:
+          $ref: "#/definitions/message"
+        example:
+          message: Unauthorized.
+  403:
+    description: The specific ID of order is absent.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: The specific ID of order is absent.

@@ -1,0 +1,42 @@
+Delete the order with specific ID before the order status is deliverying.
+---
+tags:
+  - order
+
+description: 
+  "Delete the order with specific ID before the delivery status in order is deliverying. \n\n
+   Return `401` if unauthorized, `403` if the specific ID of order is absent."
+
+parameters:
+  - in: path
+    name: id
+    description: The ID of the order which you want to delete.
+    schema:
+      type: string
+    required: true
+
+responses:
+  200:
+    description: OK
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: OK
+  401:
+    description: Unauthorized.
+    content:
+      application/json:
+        schema:
+          $ref: "#/definitions/message"
+        example:
+          message: Unauthorized.
+  403:
+    description: The order is deliverying or has been deliveried, the order is not possible to delete.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: The order is deliverying or has been deliveried, the order is not possible to delete.
