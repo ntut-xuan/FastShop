@@ -21,5 +21,5 @@ def delete_order():
 
 
 @route_with_doc(order_bp, "/orders/<int:id>", methods=["GET"])
-def fetch_the_order_with_specicfic_id():
+def fetch_the_order_with_specific_id():
     pass  # pragma: no cover
