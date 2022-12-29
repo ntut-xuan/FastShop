@@ -1,11 +1,11 @@
-Get the order with the specific ID in history.
+Get the order with the specific ID from history.
 ---
 tags:
   - order
 
 description:
-  "Get the order with the specific ID in history. \n\n
-   Return `401` if unauthorized, `403` if the specific ID of order is absent."
+  "Get the order with the specific ID from history.\n\n
+   Return `401` if unauthorized, `403` if the specific ID of the order is absent."
 
 parameters:
   - in: path
@@ -31,10 +31,10 @@ responses:
         example:
           message: Unauthorized.
   403:
-    description: The specific ID of order is absent.
+    description: The specific ID of the order is absent.
     content:
       application/json:
         schema:
           $ref: '#/definitions/message'
         example:
-          message: The specific ID of order is absent.
+          message: The specific ID of the order is absent.

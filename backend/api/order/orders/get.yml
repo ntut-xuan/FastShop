@@ -1,9 +1,9 @@
-Get all the order in history.
+Get all the orders from the history.
 ---
 tags:
   - order
 
-description: Get all the order in history.
+description: Get all the orders from the history.
 
 responses:
   200:
@@ -39,12 +39,12 @@ definitions:
       order_status:
         type: string
         enum: [CHECKING, OK, CANCEL]
-        description: The order status.
+        description: The status of the order.
         example: CHECKING
       delivery_status:
         type: string
-        enum: [SKIP, PENDING, DELIVERYING, DELIVERIED]
-        description: The delivery status.
+        enum: [SKIP, PENDING, DELIVERING, DELIVERED]
+        description: The status of the delivery.
         example: PENDING
       order_detail:
         $ref: '#/definitions/order_payload'
