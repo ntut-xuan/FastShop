@@ -1,7 +1,7 @@
 Get the shopping cart.
 ---
 tags:
-  - shoppingcart
+  - shopping_cart
 
 responses:
   200:

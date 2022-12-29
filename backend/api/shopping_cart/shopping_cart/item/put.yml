@@ -1,7 +1,7 @@
 Update one item in the shopping cart.
 ---
 tags:
-  - shoppingcart
+  - shopping_cart
 
 description:
   "Update one item in the shopping cart. \n\n
