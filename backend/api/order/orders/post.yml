@@ -72,10 +72,8 @@ definitions:
     example:
       items:
         - id: 3
-          price: 4
           count: 5
         - id: 5
-          price: 4
           count: 7
       order_note: "No Iansui"
       delivery_info:
