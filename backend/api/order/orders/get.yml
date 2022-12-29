@@ -36,6 +36,9 @@ definitions:
   order_response:
     type: object
     properties:
+      id:
+        type: string
+        example: 48763
       order_status:
         type: string
         enum: [CHECKING, OK, CANCEL]

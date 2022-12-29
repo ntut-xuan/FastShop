@@ -21,9 +21,10 @@ responses:
     content:
       application/json:
         schema:
-          $ref: '#/definitions/message'
+          id:
+            type: int
         example:
-          message: OK
+          id: 5
   401:
     description: Unauthorized.
     content:
