@@ -30,7 +30,7 @@ def test_get_items_list_should_respond_content_of_item_list_html(
     assert b"item_list.html (a marker for API test)" in response.data
 
 
-@pytest.mark.parametrize(argnames=("item_id",), argvalues=(("1",), ("10",), ("99",)))
+@pytest.mark.parametrize(argnames="item_id", argvalues=("1", "10", "99"))
 def test_get_items_list_by_id_with_any_id_should_respond_content_of_item_detail_html(
     client: FlaskClient, item_id: str
 ) -> None:
