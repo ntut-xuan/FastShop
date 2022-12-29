@@ -59,3 +59,17 @@ class TagOfItem(db.Model):  # type: ignore[name-defined]
         ),
         primary_key=True,
     )
+
+
+class ShoppingCart(db.Model):  # type: ignore[name-defined]
+    user_id = db.Column(
+        db.ForeignKey(User.uid, ondelete="CASCADE", onupdate="CASCADE"),
+        primary_key=True,
+    )
+    item_id = db.Column(
+        db.ForeignKey(Item.id, ondelete="CASCADE", onupdate="CASCADE"),
+        primary_key=True,
+    )
+    count = db.Column(db.Integer, nullable=False)
+
+    __table_args__ = (db.CheckConstraint(count > 0),)
