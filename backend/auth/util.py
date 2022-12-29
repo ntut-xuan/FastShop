@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import hashlib
 import re
 from dataclasses import dataclass
@@ -5,7 +7,7 @@ from datetime import datetime, timedelta, timezone
 from enum import IntEnum
 from functools import wraps
 from http import HTTPStatus
-from typing import TYPE_CHECKING, Any, Final
+from typing import TYPE_CHECKING, Any, Callable, Final, TypeVar
 
 import jwt
 from flask import current_app, make_response, redirect, request
@@ -20,6 +22,7 @@ if TYPE_CHECKING:
     from sqlalchemy.engine.row import Row
     from sqlalchemy.sql.dml import Insert
     from sqlalchemy.sql.selectable import Select
+    from werkzeug.wrappers import Response
 
 EMAIL_REGEX: Final[str] = r"^[A-Za-z0-9_]+([.-]?[A-Za-z0-9_]+)*@[A-Za-z0-9_]+([.-]?[A-Za-z0-9_]+)*(\.[A-Za-z0-9_]{2,3})+$"  # fmt: skip
 BIRTHDAY_FORMAT: Final[str] = "%Y-%m-%d"
@@ -160,9 +163,14 @@ def fetch_user_profile(email: str) -> dict[str, Any]:
     return dict(user_profile)
 
 
-def verify_login_or_return_401(func):
+T = TypeVar("T")
+
+
+def verify_login_or_return_401(
+    func: Callable[..., Response | T]
+) -> Callable[..., Response | T]:
     @wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs) -> Response | T:
         codec = HS256JWTCodec(current_app.config["jwt_key"])
         cookie: str | None = request.cookies.get("jwt")
 
@@ -175,9 +183,11 @@ def verify_login_or_return_401(func):
     return wrapper
 
 
-def verify_login_or_redirect_login_page(func):
+def verify_login_or_redirect_login_page(
+    func: Callable[..., Response | T]
+) -> Callable[..., Response | T]:
     @wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs) -> Response | T:
         codec = HS256JWTCodec(current_app.config["jwt_key"])
         cookie: str | None = request.cookies.get("jwt")
 
