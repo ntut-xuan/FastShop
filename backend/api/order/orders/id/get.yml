@@ -3,7 +3,7 @@ Get the order with the specific ID in history.
 tags:
   - order
 
-description: 
+description:
   "Get the order with the specific ID in history. \n\n
    Return `401` if unauthorized, `403` if the specific ID of order is absent."
 

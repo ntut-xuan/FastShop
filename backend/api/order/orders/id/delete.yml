@@ -3,7 +3,7 @@ Delete the order with specific ID before the order status is deliverying.
 tags:
   - order
 
-description: 
+description:
   "Delete the order with specific ID before the delivery status in order is deliverying. \n\n
    Return `401` if unauthorized, `403` if the specific ID of order is absent."
 

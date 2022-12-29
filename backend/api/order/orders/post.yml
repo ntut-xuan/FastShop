@@ -3,7 +3,7 @@ Create the order from the current shopping cart.
 tags:
   - order
 
-description: 
+description:
   "Create the order from the current shopping cart. \n\n
   Return the ID of the order if the order is created successfully. \n\n
   Return `4XX` HTTP status code if the order is created faulty."
@@ -50,11 +50,11 @@ definitions:
       delivery_info:
         type: object
         properties:
-          firstname: 
+          firstname:
             type: string
-          lastname: 
+          lastname:
             type: string
-          email: 
+          email:
             type: string
           phone_number:
             type: string

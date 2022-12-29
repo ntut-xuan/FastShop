@@ -37,7 +37,7 @@ definitions:
     type: object
     properties:
       order_status:
-        type: string 
+        type: string
         enum: [CHECKING, OK, CANCEL]
         description: The order status.
         example: CHECKING
@@ -53,7 +53,7 @@ definitions:
         items:
           type: object
           properties:
-            id: 
+            id:
               type: integer
               example: 5
             count:
