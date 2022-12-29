@@ -11,11 +11,11 @@ requestBody:
   content:
     application/json:
       schema:
-          $ref: '#/definitions/shoppingcart_item_payload'
+          $ref: '#/definitions/shopping_cart_item_payload'
   required: true
 
 definitions:
-  shoppingcart_item_payload:
+  shopping_cart_item_payload:
     type: object
     properties:
       id:

@@ -9,10 +9,10 @@ responses:
     content:
       application/json:
         schema:
-          $ref: '#/definitions/shoppingcart_response'
+          $ref: '#/definitions/shopping_cart_response'
 
 definitions:
-  shoppingcart_response:
+  shopping_cart_response:
     type: object
     properties:
       price:
