@@ -1,11 +1,11 @@
-Create the order from the current shopping cart.
+Create an order that contains several items and information for delivery.
 ---
 tags:
   - order
 
 description:
-  "Create the order from the current shopping cart. \n\n
-  Return the ID of the order if the order is created successfully. \n\n
+  "Create an order that contains several items and information for delivery.\n\n
+  Return the ID of the order if the order is created successfully.\n\n
   Return `4XX` HTTP status code if the order is created faulty."
 
 requestBody:
@@ -45,6 +45,15 @@ definitions:
   order_payload:
     type: object
     properties:
+      items:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+            count:
+              type: integer
       order_note:
         type: string
       delivery_info:
@@ -61,6 +70,13 @@ definitions:
           address:
             type: string
     example:
+      items:
+        - id: 3
+          price: 4
+          count: 5
+        - id: 5
+          price: 4
+          count: 7
       order_note: "No Iansui"
       delivery_info:
         firstname: Han-Xuan
