@@ -48,14 +48,3 @@ definitions:
         example: PENDING
       order_detail:
         $ref: '#/definitions/order_payload'
-      items:
-        type: array
-        items:
-          type: object
-          properties:
-            id:
-              type: integer
-              example: 5
-            count:
-              type: integer
-              example: 9
