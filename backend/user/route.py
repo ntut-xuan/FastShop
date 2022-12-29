@@ -36,5 +36,5 @@ def fetch_profile_of_current_user() -> Response:
 
 @route_with_doc(user_bp, "/profile", methods=["GET"])
 @verify_login_or_redirect_login_page
-def fetch_profile_page():
+def fetch_profile_page() -> str:
     return fetch_page("user_profile")

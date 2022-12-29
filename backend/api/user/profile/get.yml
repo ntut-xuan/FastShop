@@ -1,0 +1,13 @@
+Fetch the page of the user profile.
+---
+tags:
+  - user
+description:
+  "Fetch the page of user profile.\n\n
+   Redirect to the login page if the jwt cookie is invalid or unauthorized."
+
+responses:
+  200:
+    description: OK
+  302:
+    description: Redirect to the login page if the jwt cookie is invalid or unauthorized.
