@@ -16,10 +16,10 @@ def fetch_all_the_order():
 
 
 @route_with_doc(order_bp, "/orders/<int:id>", methods=["DELETE"])
-def delete_order():
+def delete_order(id: int):
     pass  # pragma: no cover
 
 
 @route_with_doc(order_bp, "/orders/<int:id>", methods=["GET"])
-def fetch_the_order_with_specific_id():
+def fetch_the_order_with_specific_id(id: int):
     pass  # pragma: no cover
