@@ -8,6 +8,7 @@ from flask import Flask
 from auth.route import auth_bp
 from database import create_db_command, db
 from item.route import item_bp
+from order.route import order_bp
 from shopping_cart.route import shopping_cart_bp
 from static.route import static_bp
 from tag.route import tag_bp
@@ -32,10 +33,11 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     app.cli.add_command(create_db_command)
     app.register_blueprint(auth_bp)
     app.register_blueprint(item_bp)
+    app.register_blueprint(order_bp)
+    app.register_blueprint(shopping_cart_bp)
     app.register_blueprint(static_bp)
     app.register_blueprint(tag_bp)
     app.register_blueprint(user_bp)
-    app.register_blueprint(shopping_cart_bp)
 
     @app.route("/", methods=["GET"])
     def index() -> str:

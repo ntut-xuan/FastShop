@@ -1,0 +1,53 @@
+Get all the orders from the history.
+---
+tags:
+  - order
+
+description: Get all the orders from the history.
+
+responses:
+  200:
+    description: OK
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/orders_array'
+  401:
+    description: Unauthorized.
+    content:
+      application/json:
+        schema:
+          $ref: "#/definitions/message"
+        example:
+          message: Unauthorized.
+
+definitions:
+  orders_array:
+    type: object
+    properties:
+      count:
+        type: integer
+        example: 1
+      result:
+        type: array
+        items:
+          $ref: '#/definitions/order_response'
+
+  order_response:
+    type: object
+    properties:
+      id:
+        type: string
+        example: 48763
+      status:
+        type: string
+        enum: [CHECKING, OK, CANCEL]
+        description: The status of the order.
+        example: CHECKING
+      delivery_status:
+        type: string
+        enum: [SKIP, PENDING, DELIVERING, DELIVERED]
+        description: The status of the delivery.
+        example: PENDING
+      detail:
+        $ref: '#/definitions/order_payload'
