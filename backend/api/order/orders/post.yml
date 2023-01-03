@@ -55,6 +55,8 @@ definitions:
               type: integer
             count:
               type: integer
+      date:
+        type: integer
       note:
         type: string
       delivery_info:
@@ -77,6 +79,7 @@ definitions:
         - id: 5
           count: 7
       note: "No Iansui"
+      date: 1672737308
       delivery_info:
         firstname: Han-Xuan
         lastname: Huang
