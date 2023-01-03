@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Final
 
 import pytest
-from sqlalchemy.exc import IntegrityError, DatabaseError
+from sqlalchemy.exc import DatabaseError
 from sqlalchemy.sql.expression import Select
 
 from database import db
@@ -169,21 +169,22 @@ def test_item_discount_should_be_as_same_as_original_if_not_given(app: Flask) ->
         assert discount == original
 
 
-@pytest.mark.parametrize(argnames="non_positive_item_count", argvalues=(0, -1))
-def test_shopping_cart_with_non_positive_item_count_should_throw_exception(
-    app: Flask, non_positive_item_count: int
-) -> None:
-    # [Arrange]
-    with app.app_context():
-        db.session.add(Item(id=1, name="apple", count=10, description="This is an apple.", original=30, discount=25, avatar="xx-S0m3-aVA7aR-0f-a991e-xx"))  # fmt: skip
-        db.session.commit()
+class TestShoppingCart:
+    @pytest.fixture(autouse=True)
+    def insert_test_data(self, app: Flask) -> None:
+        with app.app_context():
+            db.session.add(Item(id=1, name="apple", count=10, description="This is an apple.", original=30, discount=25, avatar="xx-S0m3-aVA7aR-0f-a991e-xx"))  # fmt: skip
+            db.session.commit()
 
-    # [Act] and [Assert]
-    with app.app_context(), pytest.raises(IntegrityError):
-        db.session.add(
-            ShoppingCart(count=non_positive_item_count, user_id=1, item_id=1)
-        )
-        db.session.commit()
+    @pytest.mark.parametrize(argnames="non_positive_item_count", argvalues=(0, -1))
+    def test_with_non_positive_item_count_should_throw_exception(
+        self, app: Flask, non_positive_item_count: int
+    ) -> None:
+        with app.app_context(), pytest.raises(DatabaseError):
+            db.session.add(
+                ShoppingCart(count=non_positive_item_count, user_id=1, item_id=1)
+            )
+            db.session.commit()
 
 
 class TestOrder:
@@ -231,6 +232,6 @@ class TestItemOfOrder:
         # we catch their base type.
         with app.app_context(), pytest.raises(DatabaseError):
             db.session.add(
-                ItemOfOrder(item_id=1, order_id=1, count=non_positive_item_count)
+                ItemOfOrder(count=non_positive_item_count, item_id=1, order_id=1)
             )
             db.session.commit()
