@@ -108,15 +108,13 @@ def test_verify_image_with_invalid_data_should_return_false() -> None:
 
 
 @pytest.mark.parametrize(
-    argnames=("bad_uuid",),
+    argnames="bad_uuid",
     argvalues=(
-        ("AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE-",),  # Redundant dash in back of string
-        ("-AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE",),  # Redundant dash in front of uuid
-        ("A-B-C-D-E",),  # Not enough length in every segment
-        ("A-B-C",),  # Not enough segment
-        (
-            "________-____-____-____-____________",
-        ),  # Correct length of segment but invalid character.
+        "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE-",  # Redundant dash in back of string
+        "-AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE",  # Redundant dash in front of uuid
+        "A-B-C-D-E",  # Not enough length in every segment
+        "A-B-C",  # Not enough segment
+        "________-____-____-____-____________",  # Correct length of segment but invalid character.
     ),
 )
 def test_verify_uuid_with_invalid_data_should_return_false(bad_uuid: str) -> None:

@@ -32,31 +32,31 @@ if TYPE_CHECKING:
 class TestIsValidEmail:
     _some_invalid_emails: ClassVar[list[str]] = ["plainaddress", "#@%^%#$@#$@#.com", "@example.com", "Joe Smith <email@example.com>", "email.example.com", "email@example@example.com", ".email@example.com", "email..email@example.com", "email@example.com (Joe Smith)", "email@example", "email@-example.com", "email@111.222.333.44444", "email@example..com", "Abc..123@example.com"]  # fmt: skip
     @pytest.mark.parametrize(
-        argnames=("malformed_email",),
+        argnames="malformed_email",
         argvalues=(
-            ("noletterafterdash-@email.com",),
-            ("badsymbolindomain@ema#il.com",),
-            ("multipleat@email@org.tw",),
-            ("badsymbol#123@email.com",),
-            (".startwithdot@email.com",),
-            ("double..dot@email.com",),
-            ("domainwithnodot@email",),
-            ("missingat.email.com",),
-            ("あいうえお@example.com",),
-            *((invalid_email,) for invalid_email in _some_invalid_emails),
+            "noletterafterdash-@email.com",
+            "badsymbolindomain@ema#il.com",
+            "multipleat@email@org.tw",
+            "badsymbol#123@email.com",
+            ".startwithdot@email.com",
+            "double..dot@email.com",
+            "domainwithnodot@email",
+            "missingat.email.com",
+            "あいうえお@example.com",
+            *(invalid_email for invalid_email in _some_invalid_emails),
         ),
     )
     def test_on_malformed_email_should_return_false(self, malformed_email: str) -> None:
         assert not is_valid_email(malformed_email)
 
     @pytest.mark.parametrize(
-        argnames=("email",),
+        argnames="email",
         argvalues=(
-            ("letterafterdash-123@email.com",),
-            ("dot.in.middle@email.com",),
-            ("under_score@email.com",),
-            ("CAPTIAL@email.com",),
-            ("123@email.com",),
+            "letterafterdash-123@email.com",
+            "dot.in.middle@email.com",
+            "under_score@email.com",
+            "CAPTIAL@email.com",
+            "123@email.com",
         ),
     )
     def test_on_valid_email_should_return_true(self, email: str) -> None:
@@ -65,18 +65,11 @@ class TestIsValidEmail:
 
 class TestIsValidBirthday:
     @pytest.mark.parametrize(
-        argnames=("birthday_in_incorrect_format",),
-        argvalues=(
-            ("2000/01/01",),
-            ("2000_01_01",),
-            ("01-01-2000",),
-            ("2000.01.01",),
-            ("20000101",),
-        ),
+        argnames="birthday_in_incorrect_format",
+        argvalues=("2000/01/01", "2000_01_01", "01-01-2000", "2000.01.01", "20000101"),
     )
     def test_on_incorrect_format_should_return_false(
-        self,
-        birthday_in_incorrect_format: str,
+        self, birthday_in_incorrect_format: str
     ) -> None:
         assert not is_valid_birthday(birthday_in_incorrect_format)
 
@@ -86,17 +79,14 @@ class TestIsValidBirthday:
         assert is_valid_birthday(birthday)
 
     @pytest.mark.parametrize(
-        argnames=("bad_birthday",),
+        argnames="bad_birthday",
         argvalues=(
-            ("2000/13/01",),  # bad month
-            ("-1/01/01",),  # bad year
-            ("2000/01/32",),  # bad day
+            "2000/13/01",  # bad month
+            "-1/01/01",  # bad year
+            "2000/01/32",  # bad day
         ),
     )
-    def test_on_bad_birthday_value_should_return_false(
-        self,
-        bad_birthday: str,
-    ) -> None:
+    def test_on_bad_birthday_value_should_return_false(self, bad_birthday: str) -> None:
         assert not is_valid_birthday(bad_birthday)
 
 
@@ -203,8 +193,7 @@ class TestHS256JWTCodec:
 
     class TestIsValidJWT:
         def test_on_token_with_not_enough_segment_should_return_false(
-            self,
-            codec: HS256JWTCodec,
+            self, codec: HS256JWTCodec
         ) -> None:
             token: str = "should_have_three_dot_separated_segments"
 

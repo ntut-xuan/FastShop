@@ -30,7 +30,7 @@ def test_get_items_list_should_respond_content_of_item_list_html(
     assert b"item_list.html (a marker for API test)" in response.data
 
 
-@pytest.mark.parametrize(argnames=("item_id",), argvalues=(("1",), ("10",), ("99",)))
+@pytest.mark.parametrize(argnames="item_id", argvalues=("1", "10", "99"))
 def test_get_items_list_by_id_with_any_id_should_respond_content_of_item_detail_html(
     client: FlaskClient, item_id: str
 ) -> None:
@@ -236,30 +236,36 @@ class TestGetItemsByIdRoute:
 
 
 class TestPutItemsByIdRoute:
-    def compare_item_and_excepted_item_payload_is_equal(
-        self, app: Flask, item_id: int, expected_item_payload: dict[str, Any]
+    def has_equal_item_and_excepted_item_payload(
+        self, item_id: int, expected_item_payload: dict[str, Any]
     ) -> bool:
-        with app.app_context():
-            item: Item = db.session.get(Item, item_id)  # type: ignore[attr-defined]
-            tags: list[TagOfItem] = db.session.execute(
+        """
+        Has to be called with the app context.
+
+        Args:
+            item_id: the id of the item to be compared.
+            expected_item_payload: the payload which indicates the expected field values.
+        """
+        item: Item = db.session.get(Item, item_id)  # type: ignore[attr-defined]
+        tag_ids: list[int] = (
+            db.session.execute(
                 db.select(TagOfItem.tag_id).where(TagOfItem.item_id == item_id)
             )
+            .scalars()
+            .all()
+        )
+        tag_ids_from_excepted_item_payload: list[int] = [
+            tag["id"] for tag in expected_item_payload["tags"]
+        ]
 
-            tag_ids_list_from_query: list[int] = sorted([tag.tag_id for tag in tags])
-            tag_ids_list_from_excepted_item_payload: list[int] = sorted(
-                [tag_dict["id"] for tag_dict in expected_item_payload["tags"]]
-            )
-
-            check_result: bool = True
-            check_result &= item.avatar == expected_item_payload["avatar"]
-            check_result &= item.count == expected_item_payload["count"]
-            check_result &= item.name == expected_item_payload["name"]
-            check_result &= item.original == expected_item_payload["price"]["original"]
-            check_result &= item.discount == expected_item_payload["price"]["discount"]
-            check_result &= (
-                tag_ids_list_from_query == tag_ids_list_from_excepted_item_payload
-            )
-            return check_result
+        return (
+            item.avatar == expected_item_payload["avatar"]
+            and item.count == expected_item_payload["count"]
+            and item.name == expected_item_payload["name"]
+            and item.original == expected_item_payload["price"]["original"]
+            and item.discount == expected_item_payload["price"]["discount"]
+            and sorted(tag_ids) == sorted(tag_ids_from_excepted_item_payload)
+        )
 
     def test_with_correct_payload_should_update_item_to_database(
         self, app: Flask, logged_in_client: FlaskClient, setup_item: None
@@ -287,9 +293,10 @@ class TestPutItemsByIdRoute:
         )
 
         assert response.status_code == HTTPStatus.OK
-        assert self.compare_item_and_excepted_item_payload_is_equal(
-            app, 1, expected_item_payload
-        )
+        with app.app_context():
+            assert self.has_equal_item_and_excepted_item_payload(
+                1, expected_item_payload
+            )
 
     def test_with_only_price_payload_should_update_item_to_database(
         self, app: Flask, logged_in_client: FlaskClient, setup_item: None
@@ -312,9 +319,10 @@ class TestPutItemsByIdRoute:
         )
 
         assert response.status_code == HTTPStatus.OK
-        assert self.compare_item_and_excepted_item_payload_is_equal(
-            app, 1, expected_item_payload
-        )
+        with app.app_context():
+            assert self.has_equal_item_and_excepted_item_payload(
+                1, expected_item_payload
+            )
 
     def test_with_only_original_price_payload_should_update_item_to_database(
         self, app: Flask, logged_in_client: FlaskClient, setup_item: None
@@ -337,9 +345,10 @@ class TestPutItemsByIdRoute:
         )
 
         assert response.status_code == HTTPStatus.OK
-        assert self.compare_item_and_excepted_item_payload_is_equal(
-            app, 1, expected_item_payload
-        )
+        with app.app_context():
+            assert self.has_equal_item_and_excepted_item_payload(
+                1, expected_item_payload
+            )
 
     def test_with_only_discount_price_payload_should_update_item_to_database(
         self, app: Flask, logged_in_client: FlaskClient, setup_item: None
@@ -362,9 +371,10 @@ class TestPutItemsByIdRoute:
         )
 
         assert response.status_code == HTTPStatus.OK
-        assert self.compare_item_and_excepted_item_payload_is_equal(
-            app, 1, expected_item_payload
-        )
+        with app.app_context():
+            assert self.has_equal_item_and_excepted_item_payload(
+                1, expected_item_payload
+            )
 
     def test_with_only_tag_payload_should_update_item_to_database(
         self, app: Flask, logged_in_client: FlaskClient, setup_item: None
@@ -387,9 +397,10 @@ class TestPutItemsByIdRoute:
         )
 
         assert response.status_code == HTTPStatus.OK
-        assert self.compare_item_and_excepted_item_payload_is_equal(
-            app, 1, expected_item_payload
-        )
+        with app.app_context():
+            assert self.has_equal_item_and_excepted_item_payload(
+                1, expected_item_payload
+            )
 
     def test_with_wrong_content_type_payload_should_return_http_status_code_bad_request(
         self, logged_in_client: FlaskClient, setup_item: None

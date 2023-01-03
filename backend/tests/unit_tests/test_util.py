@@ -33,9 +33,7 @@ class TestSingleMessageStatus:
 
         assert status.message == {"message": "page returned"}
 
-    @pytest.mark.parametrize(
-        argnames=("status_code",), argvalues=((102,), (226,), (308,))
-    )
+    @pytest.mark.parametrize(argnames="status_code", argvalues=(102, 226, 308))
     def test_default_message_on_not_error_status_code_should_be_ok(
         self, status_code: int
     ) -> None:
