@@ -55,7 +55,7 @@ definitions:
               type: integer
             count:
               type: integer
-      order_note:
+      note:
         type: string
       delivery_info:
         type: object
@@ -76,7 +76,7 @@ definitions:
           count: 5
         - id: 5
           count: 7
-      order_note: "No Iansui"
+      note: "No Iansui"
       delivery_info:
         firstname: Han-Xuan
         lastname: Huang
