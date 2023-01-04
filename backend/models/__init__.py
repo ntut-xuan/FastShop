@@ -94,7 +94,9 @@ class DeliveryStatus(enum.Enum):
 
 class Order(db.Model):  # type: ignore[name-defined]
     order_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(db.ForeignKey(User.uid, ondelete="CASCADE", onupdate="CASCADE"))
+    user_id = db.Column(
+        db.ForeignKey(User.uid, ondelete="CASCADE", onupdate="CASCADE"), nullable=False
+    )
     date = db.Column(db.Integer, nullable=False)
     order_status = db.Column(db.Enum(OrderStatus), nullable=False)
     delivery_status = db.Column(db.Enum(DeliveryStatus), nullable=False)
