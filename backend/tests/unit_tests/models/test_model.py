@@ -212,8 +212,8 @@ class TestOrder:
         with app.app_context():
             order: Order | None = db.session.get(Order, 1)  # type: ignore[attr-defined]
             assert order is not None
-            assert order.order_status == order_status
-            assert order.delivery_status == delivery_status
+            assert order.order_status is order_status
+            assert order.delivery_status is delivery_status
 
 
 class TestItemOfOrder:
