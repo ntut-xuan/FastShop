@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Final
 
 import pytest
-from sqlalchemy.exc import DatabaseError
+from sqlalchemy.exc import DatabaseError, StatementError
 from sqlalchemy.sql.expression import Select
 
 from database import db
@@ -17,6 +17,7 @@ from models import (
     Tag,
     TagOfItem,
 )
+from tests.util import assert_not_raise
 
 if TYPE_CHECKING:
     from flask import Flask
@@ -214,6 +215,46 @@ class TestOrder:
             assert order is not None
             assert order.order_status is order_status
             assert order.delivery_status is delivery_status
+
+    def test_when_passing_enum_str_to_enum_field_should_not_throw_exception(
+        self, app: Flask
+    ) -> None:
+        order_status: Final[str] = OrderStatus.OK.name
+
+        with app.app_context(), assert_not_raise(StatementError):
+            db.session.add(
+                Order(
+                    order_status=order_status,
+                    delivery_status=DeliveryStatus.DELIVERING,
+                    order_id=1,
+                    user_id=1,
+                    date=1000000,
+                    delivery_address="No. 1, Sec. 3, Zhongxiao E. Rd., Da'an Dist., Taipei City 106344 , Taiwan (R.O.C.)",
+                    note="xxx",
+                    phone="0123456789",
+                )
+            )
+            db.session.commit()
+
+    def test_when_passing_undefined_str_to_enum_field_should_throw_exception(
+        self, app: Flask
+    ) -> None:
+        non_enum_order_status: Final[str] = "NO_SUCH_ENUM"
+
+        with app.app_context(), pytest.raises(StatementError):
+            db.session.add(
+                Order(
+                    order_status=non_enum_order_status,
+                    delivery_status=DeliveryStatus.DELIVERING,
+                    order_id=1,
+                    user_id=1,
+                    date=1000000,
+                    delivery_address="No. 1, Sec. 3, Zhongxiao E. Rd., Da'an Dist., Taipei City 106344 , Taiwan (R.O.C.)",
+                    note="xxx",
+                    phone="0123456789",
+                )
+            )
+            db.session.commit()
 
 
 class TestItemOfOrder:

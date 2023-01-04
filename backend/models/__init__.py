@@ -98,8 +98,12 @@ class Order(db.Model):  # type: ignore[name-defined]
         db.ForeignKey(User.uid, ondelete="CASCADE", onupdate="CASCADE"), nullable=False
     )
     date = db.Column(db.Integer, nullable=False)
-    order_status = db.Column(db.Enum(OrderStatus), nullable=False)
-    delivery_status = db.Column(db.Enum(DeliveryStatus), nullable=False)
+    order_status = db.Column(
+        db.Enum(OrderStatus, validate_strings=True), nullable=False
+    )
+    delivery_status = db.Column(
+        db.Enum(DeliveryStatus, validate_strings=True), nullable=False
+    )
     delivery_address = db.Column(db.Text, nullable=False)
     note = db.Column(db.Text)
     phone = db.Column(db.String(10), nullable=False)
