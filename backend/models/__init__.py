@@ -44,18 +44,8 @@ class Item(db.Model):  # type: ignore[name-defined]
 
 class TagOfItem(db.Model):  # type: ignore[name-defined]
     item_id = db.Column(
-        db.ForeignKey(
-            Item.id,
-            ondelete="CASCADE",
-            onupdate="CASCADE",
-        ),
-        primary_key=True,
+        db.ForeignKey(Item.id, ondelete="CASCADE", onupdate="CASCADE"), primary_key=True
     )
     tag_id = db.Column(
-        db.ForeignKey(
-            Tag.id,
-            ondelete="CASCADE",
-            onupdate="CASCADE",
-        ),
-        primary_key=True,
+        db.ForeignKey(Tag.id, ondelete="CASCADE", onupdate="CASCADE"), primary_key=True
     )
