@@ -180,6 +180,9 @@ class TestShoppingCart:
     def test_with_non_positive_item_count_should_throw_exception(
         self, app: Flask, non_positive_item_count: int
     ) -> None:
+        # Since different databases may raise different type of errors,
+        # e.g., SQLite raises IntegrityError while MariaDB raises OperationalError,
+        # we catch their base type.
         with app.app_context(), pytest.raises(DatabaseError):
             db.session.add(
                 ShoppingCart(count=non_positive_item_count, user_id=1, item_id=1)
@@ -216,6 +219,7 @@ class TestOrder:
 class TestItemOfOrder:
     def insert_test_data(self, app: Flask) -> None:
         with app.app_context():
+            # The only thing we have to know is their ids, so prevent formatting which spans multiple lines.
             # fmt: off
             db.session.add(Item(id=1, name="apple", count=10, description="This is an apple.", original=30, discount=25, avatar="xx-S0m3-aVA7aR-0f-a991e-xx"))
             db.session.add(Order(order_id=1, user_id=1, order_status=OrderStatus.OK, delivery_status=DeliveryStatus.DELIVERED, date=1000000,
@@ -227,9 +231,6 @@ class TestItemOfOrder:
     def test_with_non_positive_item_count_should_throw_exception(
         self, app: Flask, non_positive_item_count: int
     ) -> None:
-        # Since different databases may raise different type of errors,
-        # e.g., SQLite raises IntegrityError while MariaDB raises OperationalError),
-        # we catch their base type.
         with app.app_context(), pytest.raises(DatabaseError):
             db.session.add(
                 ItemOfOrder(count=non_positive_item_count, item_id=1, order_id=1)
