@@ -7,7 +7,7 @@ import pytest
 
 from database import db
 from models import DeliveryStatus, Item, ItemOfOrder, Order, OrderStatus
-from response_message import WRONG_DATA_FORMAT
+from response_message import INVALID_DATA, WRONG_DATA_FORMAT
 
 if TYPE_CHECKING:
     from flask import Flask
@@ -144,3 +144,13 @@ class TestPostOrdersRoute:
 
         assert response.status_code == HTTPStatus.BAD_REQUEST
         assert response.get_json(silent=True) == {"message": WRONG_DATA_FORMAT}
+
+    def test_when_payload_has_incorrect_data_type_should_respond_unprocessable_entity_with_message(
+        self, logged_in_client: FlaskClient, order_payload: dict[str, Any]
+    ) -> None:
+        order_payload["date"] = str(order_payload["date"])
+
+        response: TestResponse = logged_in_client.post("/orders", json=order_payload)
+
+        assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+        assert response.get_json(silent=True) == {"message": INVALID_DATA}

@@ -4,11 +4,12 @@ from http import HTTPStatus
 from typing import TYPE_CHECKING, Any
 
 from flask import Blueprint, current_app, make_response, request
-from sqlalchemy.exc import IntegrityError
+from pydantic import ValidationError
 
 from auth.util import HS256JWTCodec, verify_login_or_return_401
 from database import db
 from order.util import (
+    PayloadTypeChecker,
     add_items_of_order,
     add_order_of_user,
     has_non_existent_item,
@@ -16,7 +17,7 @@ from order.util import (
     flatten_order_payload,
 )
 from models import DeliveryStatus, OrderStatus, User
-from response_message import WRONG_DATA_FORMAT
+from response_message import INVALID_DATA, WRONG_DATA_FORMAT
 from util import make_single_message_response, route_with_doc
 
 if TYPE_CHECKING:
@@ -29,9 +30,8 @@ order_bp = Blueprint("order", __name__)
 @verify_login_or_return_401
 def create_order_from_user_shopping_cart() -> Response:
     id_of_current_user: int | None = get_uid_from_jwt(request.cookies["jwt"])
-    assert (
-        id_of_current_user is not None
-    )  # `verify_login_or_return_401` already checked
+    # `verify_login_or_return_401` has already checked
+    assert id_of_current_user is not None
 
     payload: dict[str, Any] | None = request.get_json(silent=True)
     if payload is None:
@@ -53,6 +53,12 @@ def create_order_from_user_shopping_cart() -> Response:
         fields_and_values |= flatten_order_payload(payload)
     except KeyError:
         return make_single_message_response(HTTPStatus.BAD_REQUEST, WRONG_DATA_FORMAT)
+    try:
+        PayloadTypeChecker.Order(**fields_and_values)
+    except ValidationError:
+        return make_single_message_response(
+            HTTPStatus.UNPROCESSABLE_ENTITY, INVALID_DATA
+        )
 
     order_id: int = add_order_of_user(id_of_current_user, fields_and_values)
     add_items_of_order(order_id, item_ids_and_counts)

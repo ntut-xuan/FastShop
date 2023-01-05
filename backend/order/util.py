@@ -1,7 +1,29 @@
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+from pydantic import Field, StrictInt, StrictStr
 
 from database import db
-from models import Item, ItemOfOrder, Order
+from models import DeliveryStatus, Item, ItemOfOrder, Order, OrderStatus
+
+if TYPE_CHECKING:
+    from dataclasses import dataclass
+else:
+    # Fixes "Unexpected keyword argument" for custom dataclasses.
+    # See https://github.com/python/mypy/issues/6239.
+    from pydantic.dataclasses import dataclass
+
+
+class PayloadTypeChecker:
+    @dataclass
+    class Order:
+        date: StrictInt = Field(default=0)
+        delivery_address: StrictStr = Field(default="")
+        note: StrictStr = Field(default="")
+        phone: StrictStr = Field(default="")
+        order_status: OrderStatus = Field(default=OrderStatus.CHECKING)
+        delivery_status: DeliveryStatus = Field(default=DeliveryStatus.PENDING)
+        order_id: StrictInt = Field(default=0)
+        user_id: StrictInt = Field(default=0)
 
 
 def flatten_order_payload(payload: dict[str, Any]) -> dict[str, Any]:
