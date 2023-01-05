@@ -34,11 +34,11 @@ def add_order_of_user(user_id: int, fields_and_values: dict[str, Any]) -> int:
     return order_id
 
 
-def has_count_larger_than_available(item_ids_and_counts: list[dict[str, int]]) -> bool:
+def has_unavailable_count_of_item(item_ids_and_counts: list[dict[str, int]]) -> bool:
     """Returns whether there exist any count of item that is larger than the count in the "item" table."""
     id_to_count: dict[int, int] = {}
     for item_id_and_count in item_ids_and_counts:
-        id_to_count[item_id_and_count["item_id"]] = item_id_and_count["count"]
+        id_to_count[item_id_and_count["id"]] = item_id_and_count["count"]
     specified_items: list[Item] = (
         db.session.execute(db.select(Item).where(Item.id.in_(id_to_count.keys())))
         .scalars()

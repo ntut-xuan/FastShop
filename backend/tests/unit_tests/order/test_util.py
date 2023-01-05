@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 from database import db
-from order.util import has_count_larger_than_available
+from order.util import has_unavailable_count_of_item
 from models import Item
 
 if TYPE_CHECKING:
@@ -41,26 +41,26 @@ def insert_test_data(app: Flask) -> None:
         db.session.commit()
 
 
-def test_has_count_larger_than_available_with_counts_smaller_than_available_should_return_false(
+def test_has_unavailable_count_of_item_with_counts_smaller_than_available_should_return_false(
     app: Flask,
 ) -> None:
     item_ids_and_counts: list[dict[str, int]] = [
-        {"item_id": 1, "count": 3},
-        {"item_id": 2, "count": 1},
+        {"id": 1, "count": 3},
+        {"id": 2, "count": 1},
     ]
 
     with app.app_context():
-        assert not has_count_larger_than_available(item_ids_and_counts)
+        assert not has_unavailable_count_of_item(item_ids_and_counts)
 
 
-def test_has_count_larger_than_available_with_count_larger_than_available_should_return_true(
+def test_has_unavailable_count_of_item_with_count_larger_than_available_should_return_true(
     app: Flask,
 ) -> None:
     count_larger_than_available: int = 100
     item_ids_and_counts: list[dict[str, int]] = [
-        {"item_id": 1, "count": 3},
-        {"item_id": 2, "count": count_larger_than_available},
+        {"id": 1, "count": 3},
+        {"id": 2, "count": count_larger_than_available},
     ]
 
     with app.app_context():
-        assert has_count_larger_than_available(item_ids_and_counts)
+        assert has_unavailable_count_of_item(item_ids_and_counts)
