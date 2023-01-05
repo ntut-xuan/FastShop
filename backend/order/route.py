@@ -6,7 +6,7 @@ from flask import Blueprint, current_app, make_response, request
 
 from auth.util import HS256JWTCodec
 from database import db
-from models import DeliveryStatus, OrderStatus, Order, User
+from models import DeliveryStatus, ItemOfOrder, Order, OrderStatus, User
 from util import route_with_doc
 
 if TYPE_CHECKING:
@@ -31,9 +31,25 @@ def create_order_from_user_shopping_cart() -> Response:
     db.session.add(new_order)
     db.session.flush()
 
+    add_items_of_order(new_order.order_id, item_ids_and_counts=payload["items"])
+
     response: Response = make_response({"id": new_order.order_id})
     db.session.commit()
     return response
+
+
+def add_items_of_order(
+    order_id: int, item_ids_and_counts: list[dict[str, int]]
+) -> None:
+    for item_id_and_count in item_ids_and_counts:
+        db.session.add(
+            ItemOfOrder(
+                order_id=order_id,
+                item_id=item_id_and_count["id"],
+                count=item_id_and_count["count"],
+            )
+        )
+    db.session.commit()
 
 
 def get_uid_from_jwt(jwt: str) -> int | None:
