@@ -18,24 +18,38 @@ order_bp = Blueprint("order", __name__)
 @route_with_doc(order_bp, "/orders", methods=["POST"])
 def create_order_from_user_shopping_cart() -> Response:
     payload: dict[str, Any] | None = request.get_json(silent=True)
-    jwt: str = request.cookies["jwt"]
-    id_of_current_user: int | None = get_uid_from_jwt(jwt)
+    id_of_current_user: int | None = get_uid_from_jwt(request.cookies["jwt"])
 
     fields_and_values: dict[str, Any] = flatten_order_payload(payload) | {
-        "user_id": id_of_current_user,
         # default values of statuses
         "order_status": OrderStatus.CHECKING,
         "delivery_status": DeliveryStatus.PENDING,
     }
+    order_id: int = add_order_of_user(id_of_current_user, fields_and_values)
+    add_items_of_order(order_id, item_ids_and_counts=payload["items"])
+
+    response: Response = make_response({"id": order_id})
+    return response
+
+
+def add_order_of_user(user_id: int, fields_and_values: dict[str, Any]) -> int:
+    """Adds a new order of the user specified by `user_id`.
+
+    Args:
+        user_id: The id of the user which the new order belongs to.
+        fields_and_values: All the fields that are necessary for the record of
+            table "order" with user_id excluded.
+
+    Returns:
+        The id of the new order.
+    """
     new_order = Order(**fields_and_values)
+    new_order.user_id = user_id
     db.session.add(new_order)
     db.session.flush()
-
-    add_items_of_order(new_order.order_id, item_ids_and_counts=payload["items"])
-
-    response: Response = make_response({"id": new_order.order_id})
+    order_id: int = new_order.order_id
     db.session.commit()
-    return response
+    return order_id
 
 
 def add_items_of_order(
