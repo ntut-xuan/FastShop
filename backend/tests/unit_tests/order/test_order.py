@@ -28,9 +28,6 @@ class TestPostOrdersRoute:
             "date": 1672737308,
             "delivery_info": {
                 "address": "No. 1, Sec. 3, Zhongxiao E. Rd., Da'an Dist., Taipei City 106344 , Taiwan (R.O.C.)",
-                "email": "test@test.com",
-                "firstname": "Han-Xuan",
-                "lastname": "Huang",
                 "phone_number": "0921474836",
             },
             "items": [],
@@ -51,11 +48,6 @@ class TestPostOrdersRoute:
             assert order.user_id == 1
             assert order.date == order_payload["date"]
             assert order.note == order_payload["note"]
-            assert order.delivery_email == order_payload["delivery_info"]["email"]
-            assert (
-                order.delivery_firstname == order_payload["delivery_info"]["firstname"]
-            )
-            assert order.delivery_lastname == order_payload["delivery_info"]["lastname"]
             assert order.delivery_address == order_payload["delivery_info"]["address"]
             assert order.phone == order_payload["delivery_info"]["phone_number"]
 

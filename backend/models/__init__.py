@@ -95,9 +95,6 @@ class Order(db.Model):  # type: ignore[name-defined]
         db.Enum(DeliveryStatus, validate_strings=True), nullable=False
     )
     delivery_address = db.Column(db.Text, nullable=False)
-    delivery_firstname = db.Column(db.String(100), nullable=False)
-    delivery_lastname = db.Column(db.String(100), nullable=False)
-    delivery_email = db.Column(db.String(100), nullable=False)
     note = db.Column(db.Text)
     phone = db.Column(db.String(10), nullable=False)
 

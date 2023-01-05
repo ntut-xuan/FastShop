@@ -80,9 +80,6 @@ def flatten_order_payload(payload: dict[str, Any]) -> dict[str, Any]:
     flat_payload: dict[str, Any] = {
         "date": payload["date"],
         "note": payload["note"],
-        "delivery_email": payload["delivery_info"]["email"],
-        "delivery_firstname": payload["delivery_info"]["firstname"],
-        "delivery_lastname": payload["delivery_info"]["lastname"],
         "delivery_address": payload["delivery_info"]["address"],
         "phone": payload["delivery_info"]["phone_number"],
     }
