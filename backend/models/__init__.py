@@ -1,3 +1,5 @@
+import enum
+
 from database import db
 
 
@@ -49,3 +51,65 @@ class TagOfItem(db.Model):  # type: ignore[name-defined]
     tag_id = db.Column(
         db.ForeignKey(Tag.id, ondelete="CASCADE", onupdate="CASCADE"), primary_key=True
     )
+
+
+class ShoppingCart(db.Model):  # type: ignore[name-defined]
+    user_id = db.Column(
+        db.ForeignKey(User.uid, ondelete="CASCADE", onupdate="CASCADE"),
+        primary_key=True,
+    )
+    item_id = db.Column(
+        db.ForeignKey(Item.id, ondelete="CASCADE", onupdate="CASCADE"),
+        primary_key=True,
+    )
+    count = db.Column(db.Integer, nullable=False)
+
+    __table_args__ = (db.CheckConstraint(count > 0),)
+
+
+@enum.unique
+class OrderStatus(enum.Enum):
+    CANCEL = enum.auto()
+    CHECKING = enum.auto()
+    OK = enum.auto()
+
+
+@enum.unique
+class DeliveryStatus(enum.Enum):
+    DELIVERED = enum.auto()
+    DELIVERING = enum.auto()
+    PENDING = enum.auto()
+    SKIP = enum.auto()
+
+
+class Order(db.Model):  # type: ignore[name-defined]
+    order_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(
+        db.ForeignKey(User.uid, ondelete="CASCADE", onupdate="CASCADE"), nullable=False
+    )
+    date = db.Column(db.Integer, nullable=False)
+    order_status = db.Column(
+        db.Enum(OrderStatus, validate_strings=True), nullable=False
+    )
+    delivery_status = db.Column(
+        db.Enum(DeliveryStatus, validate_strings=True), nullable=False
+    )
+    delivery_address = db.Column(db.Text, nullable=False)
+    note = db.Column(db.Text)
+    phone = db.Column(db.String(10), nullable=False)
+
+
+class ItemOfOrder(db.Model):  # type: ignore[name-defined]
+    """The records in the ShoppingCart are moved to this table when a new order is made from the cart."""
+
+    order_id = db.Column(
+        db.ForeignKey(Order.order_id, ondelete="CASCADE", onupdate="CASCADE"),
+        primary_key=True,
+    )
+    item_id = db.Column(
+        db.ForeignKey(Item.id, ondelete="CASCADE", onupdate="CASCADE"),
+        primary_key=True,
+    )
+    count = db.Column(db.Integer, nullable=False)
+
+    __table_args__ = (db.CheckConstraint(count > 0),)
