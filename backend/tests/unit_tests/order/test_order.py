@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from http import HTTPStatus
 from typing import TYPE_CHECKING, Any
 
 import pytest
@@ -93,3 +94,11 @@ class TestPostOrdersRoute:
             item: Row = items[0]
             assert item.item_id == item_id_and_count["id"]
             assert item.count == item_id_and_count["count"]
+
+    def test_when_not_logged_in_should_respond_unauthorized_with_message(
+        self, client: FlaskClient, order_payload: dict[str, Any]
+    ) -> None:
+        response: TestResponse = client.post("/orders", json=order_payload)
+
+        assert response.status_code == HTTPStatus.UNAUTHORIZED
+        assert response.get_json(silent=True) == {"message": "Unauthorized."}

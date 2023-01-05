@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any
 
 from flask import Blueprint, current_app, make_response, request
 
-from auth.util import HS256JWTCodec
+from auth.util import HS256JWTCodec, verify_login_or_return_401
 from database import db
 from models import DeliveryStatus, ItemOfOrder, Order, OrderStatus, User
 from util import route_with_doc
@@ -16,6 +16,7 @@ order_bp = Blueprint("order", __name__)
 
 
 @route_with_doc(order_bp, "/orders", methods=["POST"])
+@verify_login_or_return_401
 def create_order_from_user_shopping_cart() -> Response:
     payload: dict[str, Any] | None = request.get_json(silent=True)
     id_of_current_user: int | None = get_uid_from_jwt(request.cookies["jwt"])
