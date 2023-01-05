@@ -145,6 +145,15 @@ class TestPostOrdersRoute:
         assert response.status_code == HTTPStatus.BAD_REQUEST
         assert response.get_json(silent=True) == {"message": WRONG_DATA_FORMAT}
 
+    def test_with_extra_key_should_respond_OK(
+        self, logged_in_client: FlaskClient, order_payload: dict[str, Any]
+    ) -> None:
+        order_payload["extra_key"] = "extra"
+
+        response: TestResponse = logged_in_client.post("/orders", json=order_payload)
+
+        assert response.status_code == HTTPStatus.OK
+
     def test_when_payload_has_incorrect_data_type_should_respond_unprocessable_entity_with_message(
         self, logged_in_client: FlaskClient, order_payload: dict[str, Any]
     ) -> None:
