@@ -18,23 +18,31 @@ order_bp = Blueprint("order", __name__)
 @route_with_doc(order_bp, "/orders", methods=["POST"])
 def create_order_from_user_shopping_cart() -> Response:
     payload: dict[str, Any] | None = request.get_json(silent=True)
-    jwt_token: str = request.cookies["jwt"]
-    jwt_codec = HS256JWTCodec(current_app.config["jwt_key"])
-    jwt_payload: dict[str, Any] = jwt_codec.decode(jwt_token)
-    id_of_current_user: int | None = db.session.execute(
-        db.select(User.uid).where(User.email == jwt_payload["data"]["e-mail"])
-    ).scalar_one_or_none()
-    fields: dict[str, Any] = flatten_order_payload(payload) | {
+    jwt: str = request.cookies["jwt"]
+    id_of_current_user: int | None = get_uid_from_jwt(jwt)
+
+    fields_and_values: dict[str, Any] = flatten_order_payload(payload) | {
         "user_id": id_of_current_user,
+        # default values of statuses
         "order_status": OrderStatus.CHECKING,
         "delivery_status": DeliveryStatus.PENDING,
     }
-    new_order = Order(**fields)
+    new_order = Order(**fields_and_values)
     db.session.add(new_order)
     db.session.flush()
-    payload = {"id": new_order.order_id}
+
+    response: Response = make_response({"id": new_order.order_id})
     db.session.commit()
-    return make_response(payload)
+    return response
+
+
+def get_uid_from_jwt(jwt: str) -> int | None:
+    jwt_codec = HS256JWTCodec(current_app.config["jwt_key"])
+    jwt_payload: dict[str, Any] = jwt_codec.decode(jwt)
+    uid: int | None = db.session.execute(
+        db.select(User.uid).where(User.email == jwt_payload["data"]["e-mail"])
+    ).scalar_one_or_none()
+    return uid
 
 
 def flatten_order_payload(payload: dict[str, Any]) -> dict[str, Any]:
