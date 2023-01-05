@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from http import HTTPStatus
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Final
 
 import pytest
 
@@ -94,3 +94,31 @@ class TestPostOrdersRoute:
 
         assert response.status_code == HTTPStatus.UNAUTHORIZED
         assert response.get_json(silent=True) == {"message": "Unauthorized."}
+
+    def test_with_unavailable_item_count_should_respond_forbidden_with_message(
+        self, logged_in_client: FlaskClient, order_payload: dict[str, Any]
+    ) -> None:
+        unavailable_item_count: Final = 100
+        item_id_and_count: dict[str, int] = {"id": 1, "count": unavailable_item_count}
+        order_payload["items"] = [item_id_and_count]
+
+        response: TestResponse = logged_in_client.post("/orders", json=order_payload)
+
+        assert response.status_code == HTTPStatus.FORBIDDEN
+        assert response.get_json(silent=True) == {
+            "message": "Exists unavailable item in the order."
+        }
+
+    def test_with_non_existent_item_id_should_respond_forbidden_with_message(
+        self, logged_in_client: FlaskClient, order_payload: dict[str, Any]
+    ) -> None:
+        non_existent_item_id: Final = 100
+        item_id_and_count: dict[str, int] = {"id": non_existent_item_id, "count": 1}
+        order_payload["items"] = [item_id_and_count]
+
+        response: TestResponse = logged_in_client.post("/orders", json=order_payload)
+
+        assert response.status_code == HTTPStatus.FORBIDDEN
+        assert response.get_json(silent=True) == {
+            "message": "Exists unavailable item in the order."
+        }

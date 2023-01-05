@@ -1,14 +1,21 @@
 from __future__ import annotations
 
+from http import HTTPStatus
 from typing import TYPE_CHECKING, Any
 
 from flask import Blueprint, current_app, make_response, request
 
 from auth.util import HS256JWTCodec, verify_login_or_return_401
 from database import db
-from order.util import add_items_of_order, add_order_of_user, flatten_order_payload
+from order.util import (
+    add_items_of_order,
+    add_order_of_user,
+    has_non_existent_item,
+    has_unavailable_count_of_item,
+    flatten_order_payload,
+)
 from models import DeliveryStatus, OrderStatus, User
-from util import route_with_doc
+from util import make_single_message_response, route_with_doc
 
 if TYPE_CHECKING:
     from flask import Response
@@ -22,13 +29,21 @@ def create_order_from_user_shopping_cart() -> Response:
     payload: dict[str, Any] | None = request.get_json(silent=True)
     id_of_current_user: int | None = get_uid_from_jwt(request.cookies["jwt"])
 
+    item_ids_and_counts: dict[str, Any] = payload["items"]
+    if has_non_existent_item(item_ids_and_counts) or has_unavailable_count_of_item(
+        item_ids_and_counts
+    ):
+        return make_single_message_response(
+            HTTPStatus.FORBIDDEN, "Exists unavailable item in the order."
+        )
+
     fields_and_values: dict[str, Any] = flatten_order_payload(payload) | {
         # default values of statuses
         "order_status": OrderStatus.CHECKING,
         "delivery_status": DeliveryStatus.PENDING,
     }
     order_id: int = add_order_of_user(id_of_current_user, fields_and_values)
-    add_items_of_order(order_id, item_ids_and_counts=payload["items"])
+    add_items_of_order(order_id, item_ids_and_counts)
 
     response: Response = make_response({"id": order_id})
     return response

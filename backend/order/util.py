@@ -34,8 +34,21 @@ def add_order_of_user(user_id: int, fields_and_values: dict[str, Any]) -> int:
     return order_id
 
 
+def has_non_existent_item(item_ids_and_counts: list[dict[str, int]]) -> None:
+    """Returns whether any of the values of key `id`s does not exist in the `item` table."""
+    specified_item_ids: list[int] = set(
+        item_id_and_count["id"] for item_id_and_count in item_ids_and_counts
+    )
+    existent_specified_items: list[Item] = (
+        db.session.execute(db.select(Item).where(Item.id.in_(specified_item_ids)))
+        .scalars()
+        .all()
+    )
+    return len(existent_specified_items) != len(specified_item_ids)
+
+
 def has_unavailable_count_of_item(item_ids_and_counts: list[dict[str, int]]) -> bool:
-    """Returns whether there exist any count of item that is larger than the count in the "item" table."""
+    """Returns whether there exist any count of item that is larger than the count in the `item` table."""
     id_to_count: dict[int, int] = {}
     for item_id_and_count in item_ids_and_counts:
         id_to_count[item_id_and_count["id"]] = item_id_and_count["count"]
