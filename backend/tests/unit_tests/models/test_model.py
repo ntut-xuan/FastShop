@@ -204,6 +204,9 @@ class TestOrder:
                     user_id=1,
                     date=1000000,
                     delivery_address="No. 1, Sec. 3, Zhongxiao E. Rd., Da'an Dist., Taipei City 106344 , Taiwan (R.O.C.)",
+                    delivery_firstname="Han-Xuan",
+                    delivery_lastname="Huang",
+                    delivery_email="test@test.com",
                     note="xxx",
                     phone="0123456789",
                 )
@@ -230,6 +233,9 @@ class TestOrder:
                     user_id=1,
                     date=1000000,
                     delivery_address="No. 1, Sec. 3, Zhongxiao E. Rd., Da'an Dist., Taipei City 106344 , Taiwan (R.O.C.)",
+                    delivery_firstname="Han-Xuan",
+                    delivery_lastname="Huang",
+                    delivery_email="test@test.com",
                     note="xxx",
                     phone="0123456789",
                 )
@@ -250,6 +256,9 @@ class TestOrder:
                     user_id=1,
                     date=1000000,
                     delivery_address="No. 1, Sec. 3, Zhongxiao E. Rd., Da'an Dist., Taipei City 106344 , Taiwan (R.O.C.)",
+                    delivery_firstname="Han-Xuan",
+                    delivery_lastname="Huang",
+                    delivery_email="test@test.com",
                     note="xxx",
                     phone="0123456789",
                 )
@@ -264,7 +273,8 @@ class TestItemOfOrder:
             # fmt: off
             db.session.add(Item(id=1, name="apple", count=10, description="This is an apple.", original=30, discount=25, avatar="xx-S0m3-aVA7aR-0f-a991e-xx"))
             db.session.add(Order(order_id=1, user_id=1, order_status=OrderStatus.OK, delivery_status=DeliveryStatus.DELIVERED, date=1000000,
-                            delivery_address="No. 1, Sec. 3, Zhongxiao E. Rd., Da'an Dist., Taipei City 106344 , Taiwan (R.O.C.)", note="xxx", phone="0123456789"))
+                            delivery_address="No. 1, Sec. 3, Zhongxiao E. Rd., Da'an Dist., Taipei City 106344 , Taiwan (R.O.C.)", delivery_email="test@test.com",
+                            delivery_firstname="Han-Xuan", delivery_lastname="Huang", note="xxx", phone="0123456789"))
             # fmt: on
             db.session.commit()
 
