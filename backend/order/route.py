@@ -27,9 +27,13 @@ order_bp = Blueprint("order", __name__)
 @verify_login_or_return_401
 def create_order_from_user_shopping_cart() -> Response:
     payload: dict[str, Any] | None = request.get_json(silent=True)
+    assert payload is not None  # TODO: handle missing payload
     id_of_current_user: int | None = get_uid_from_jwt(request.cookies["jwt"])
+    assert (
+        id_of_current_user is not None
+    )  # `verify_login_or_return_401` has validated the user
 
-    item_ids_and_counts: dict[str, Any] = payload["items"]
+    item_ids_and_counts: list[dict[str, Any]] = payload["items"]
     if has_non_existent_item(item_ids_and_counts) or has_unavailable_count_of_item(
         item_ids_and_counts
     ):
