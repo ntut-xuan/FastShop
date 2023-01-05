@@ -28,7 +28,7 @@ order_bp = Blueprint("order", __name__)
 
 @route_with_doc(order_bp, "/orders", methods=["POST"])
 @verify_login_or_return_401
-def create_order_from_user_shopping_cart() -> Response:
+def create_order_for_current_user() -> Response:
     id_of_current_user: int | None = get_uid_from_jwt(request.cookies["jwt"])
     # `verify_login_or_return_401` has already checked
     assert id_of_current_user is not None
@@ -36,6 +36,7 @@ def create_order_from_user_shopping_cart() -> Response:
     payload: dict[str, Any] | None = request.get_json(silent=True)
     if payload is None:
         return make_single_message_response(HTTPStatus.BAD_REQUEST, WRONG_DATA_FORMAT)
+
     item_ids_and_counts: list[dict[str, Any]] = payload["items"]
     if has_non_existent_item(item_ids_and_counts) or has_unavailable_count_of_item(
         item_ids_and_counts
@@ -51,8 +52,9 @@ def create_order_from_user_shopping_cart() -> Response:
     fields_and_values: dict[str, Any] = default_statues
     try:
         fields_and_values |= flatten_order_payload(payload)
-    except KeyError:
+    except KeyError:  # missing key
         return make_single_message_response(HTTPStatus.BAD_REQUEST, WRONG_DATA_FORMAT)
+
     try:
         PayloadTypeChecker.Order(**fields_and_values)
     except ValidationError:
