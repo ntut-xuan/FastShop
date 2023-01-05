@@ -4,6 +4,7 @@ from http import HTTPStatus
 from typing import TYPE_CHECKING, Any
 
 from flask import Blueprint, current_app, make_response, request
+from sqlalchemy.exc import IntegrityError
 
 from auth.util import HS256JWTCodec, verify_login_or_return_401
 from database import db
@@ -15,6 +16,7 @@ from order.util import (
     flatten_order_payload,
 )
 from models import DeliveryStatus, OrderStatus, User
+from response_message import WRONG_DATA_FORMAT
 from util import make_single_message_response, route_with_doc
 
 if TYPE_CHECKING:
@@ -26,13 +28,14 @@ order_bp = Blueprint("order", __name__)
 @route_with_doc(order_bp, "/orders", methods=["POST"])
 @verify_login_or_return_401
 def create_order_from_user_shopping_cart() -> Response:
-    payload: dict[str, Any] | None = request.get_json(silent=True)
-    assert payload is not None  # TODO: handle missing payload
     id_of_current_user: int | None = get_uid_from_jwt(request.cookies["jwt"])
     assert (
         id_of_current_user is not None
-    )  # `verify_login_or_return_401` has validated the user
+    )  # `verify_login_or_return_401` already checked
 
+    payload: dict[str, Any] | None = request.get_json(silent=True)
+    if payload is None:
+        return make_single_message_response(HTTPStatus.BAD_REQUEST, WRONG_DATA_FORMAT)
     item_ids_and_counts: list[dict[str, Any]] = payload["items"]
     if has_non_existent_item(item_ids_and_counts) or has_unavailable_count_of_item(
         item_ids_and_counts
@@ -41,16 +44,19 @@ def create_order_from_user_shopping_cart() -> Response:
             HTTPStatus.FORBIDDEN, "Exists unavailable item in the order."
         )
 
-    fields_and_values: dict[str, Any] = flatten_order_payload(payload) | {
-        # default values of statuses
+    default_statues: dict[str, Any] = {
         "order_status": OrderStatus.CHECKING,
         "delivery_status": DeliveryStatus.PENDING,
     }
+    fields_and_values: dict[str, Any] = default_statues
+    try:
+        fields_and_values |= flatten_order_payload(payload)
+    except KeyError:
+        return make_single_message_response(HTTPStatus.BAD_REQUEST, WRONG_DATA_FORMAT)
+
     order_id: int = add_order_of_user(id_of_current_user, fields_and_values)
     add_items_of_order(order_id, item_ids_and_counts)
-
-    response: Response = make_response({"id": order_id})
-    return response
+    return make_response({"id": order_id})
 
 
 def get_uid_from_jwt(jwt: str) -> int | None:
