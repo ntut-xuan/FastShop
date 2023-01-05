@@ -95,10 +95,13 @@ class TestPostOrdersRoute:
         assert response.status_code == HTTPStatus.UNAUTHORIZED
         assert response.get_json(silent=True) == {"message": "Unauthorized."}
 
+    @pytest.mark.parametrize(argnames="unavailable_item_count", argvalues=(-1, 100))
     def test_with_unavailable_item_count_should_respond_forbidden_with_message(
-        self, logged_in_client: FlaskClient, order_payload: dict[str, Any]
+        self,
+        logged_in_client: FlaskClient,
+        order_payload: dict[str, Any],
+        unavailable_item_count: int,
     ) -> None:
-        unavailable_item_count: Final = 100
         item_id_and_count: dict[str, int] = {"id": 1, "count": unavailable_item_count}
         order_payload["items"] = [item_id_and_count]
 

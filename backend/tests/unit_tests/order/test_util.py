@@ -41,26 +41,36 @@ def insert_test_data(app: Flask) -> None:
         db.session.commit()
 
 
-def test_has_unavailable_count_of_item_with_counts_smaller_than_available_should_return_false(
-    app: Flask,
-) -> None:
-    item_ids_and_counts: list[dict[str, int]] = [
-        {"id": 1, "count": 3},
-        {"id": 2, "count": 1},
-    ]
+class TestHasAvailableCountOfItem:
+    def test_with_counts_smaller_than_available_should_return_false(
+        self, app: Flask
+    ) -> None:
+        item_ids_and_counts: list[dict[str, int]] = [
+            {"id": 1, "count": 3},
+            {"id": 2, "count": 1},
+        ]
 
-    with app.app_context():
-        assert not has_unavailable_count_of_item(item_ids_and_counts)
+        with app.app_context():
+            assert not has_unavailable_count_of_item(item_ids_and_counts)
 
+    def test_with_count_larger_than_available_should_return_true(
+        self, app: Flask
+    ) -> None:
+        count_larger_than_available: int = 100
+        item_ids_and_counts: list[dict[str, int]] = [
+            {"id": 1, "count": 3},
+            {"id": 2, "count": count_larger_than_available},
+        ]
 
-def test_has_unavailable_count_of_item_with_count_larger_than_available_should_return_true(
-    app: Flask,
-) -> None:
-    count_larger_than_available: int = 100
-    item_ids_and_counts: list[dict[str, int]] = [
-        {"id": 1, "count": 3},
-        {"id": 2, "count": count_larger_than_available},
-    ]
+        with app.app_context():
+            assert has_unavailable_count_of_item(item_ids_and_counts)
 
-    with app.app_context():
-        assert has_unavailable_count_of_item(item_ids_and_counts)
+    def test_with_negative_count_should_return_true(self, app: Flask) -> None:
+        negative_count: int = -1
+        item_ids_and_counts: list[dict[str, int]] = [
+            {"id": 1, "count": 3},
+            {"id": 2, "count": negative_count},
+        ]
+
+        with app.app_context():
+            assert has_unavailable_count_of_item(item_ids_and_counts)

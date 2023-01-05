@@ -57,7 +57,10 @@ def has_unavailable_count_of_item(item_ids_and_counts: list[dict[str, int]]) -> 
         .scalars()
         .all()
     )
-    return any(id_to_count[item.id] > item.count for item in specified_items)
+    return any(
+        id_to_count[item.id] > item.count or id_to_count[item.id] < 0
+        for item in specified_items
+    )
 
 
 def add_items_of_order(
