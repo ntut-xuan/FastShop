@@ -29,7 +29,7 @@ order_bp = Blueprint("order", __name__)
 @route_with_doc(order_bp, "/orders", methods=["POST"])
 @verify_login_or_return_401
 def create_order_for_current_user() -> Response:
-    id_of_current_user: int | None = get_uid_from_jwt(request.cookies["jwt"])
+    id_of_current_user: int | None = _get_uid_from_jwt(request.cookies["jwt"])
     # `verify_login_or_return_401` has already checked
     assert id_of_current_user is not None
 
@@ -67,19 +67,10 @@ def create_order_for_current_user() -> Response:
     return make_response({"id": order_id})
 
 
-def get_uid_from_jwt(jwt: str) -> int | None:
-    jwt_codec = HS256JWTCodec(current_app.config["jwt_key"])
-    jwt_payload: dict[str, Any] = jwt_codec.decode(jwt)
-    uid: int | None = db.session.execute(
-        db.select(User.uid).where(User.email == jwt_payload["data"]["e-mail"])
-    ).scalar_one_or_none()
-    return uid
-
-
 @route_with_doc(order_bp, "/orders", methods=["GET"])
 @verify_login_or_return_401
 def fetch_all_the_order() -> Response:
-    uid: int | None = get_uid_from_jwt(request.cookies["jwt"])
+    uid: int | None = _get_uid_from_jwt(request.cookies["jwt"])
     # `verify_login_or_return_401` has already checked that the jwt is valid
     assert uid is not None
 
@@ -90,15 +81,6 @@ def fetch_all_the_order() -> Response:
         "result": [_get_response_payload_of_order(order) for order in orders],
     }
     return make_response(payload)
-
-
-def _get_orders_of_user(user_id: int) -> list[Order]:
-    orders_of_user: list[Order] = (  # temp var for type casting, otherwise it's Any
-        db.session.execute(db.select(Order).where(Order.user_id == user_id))
-        .scalars()
-        .all()
-    )
-    return orders_of_user
 
 
 @route_with_doc(order_bp, "/orders/<int:id>", methods=["DELETE"])
@@ -121,7 +103,7 @@ def delete_order(id: int) -> Response:
 @route_with_doc(order_bp, "/orders/<int:id>", methods=["GET"])
 @verify_login_or_return_401
 def fetch_the_order_with_specific_id(id: int) -> Response:
-    uid: int | None = get_uid_from_jwt(request.cookies["jwt"])
+    uid: int | None = _get_uid_from_jwt(request.cookies["jwt"])
     # `verify_login_or_return_401` has already checked that the jwt is valid
     assert uid is not None
 
@@ -132,6 +114,24 @@ def fetch_the_order_with_specific_id(id: int) -> Response:
         )
 
     return make_response(_get_response_payload_of_order(order))
+
+
+def _get_uid_from_jwt(jwt: str) -> int | None:
+    jwt_codec = HS256JWTCodec(current_app.config["jwt_key"])
+    jwt_payload: dict[str, Any] = jwt_codec.decode(jwt)
+    uid: int | None = db.session.execute(
+        db.select(User.uid).where(User.email == jwt_payload["data"]["e-mail"])
+    ).scalar_one_or_none()
+    return uid
+
+
+def _get_orders_of_user(user_id: int) -> list[Order]:
+    orders_of_user: list[Order] = (  # temp var for type casting, otherwise it's Any
+        db.session.execute(db.select(Order).where(Order.user_id == user_id))
+        .scalars()
+        .all()
+    )
+    return orders_of_user
 
 
 def _get_response_payload_of_order(order: Order) -> dict[str, Any]:
