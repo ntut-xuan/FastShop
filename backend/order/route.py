@@ -98,10 +98,16 @@ def delete_order(id: int) -> Response:
 
 
 @route_with_doc(order_bp, "/orders/<int:id>", methods=["GET"])
+@verify_login_or_return_401
 def fetch_the_order_with_specific_id(id: int) -> Response:
-    order: Order | None = db.session.get(Order, id)  # type: ignore[attr-defined]
     uid: int | None = get_uid_from_jwt(request.cookies["jwt"])
+    # `verify_login_or_return_401` has already checked that the user is valid
+    assert uid is not None
     current_user: User | None = db.session.get(User, uid)  # type: ignore[attr-defined]
+    assert current_user is not None
+
+    order: Order | None = db.session.get(Order, id)  # type: ignore[attr-defined]
+
     order_with_items_payload: dict[str, Any] = {
         "id": order.order_id,
         "status": order.order_status.name,

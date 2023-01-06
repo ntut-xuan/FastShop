@@ -309,3 +309,11 @@ class TestGetOrdersByIdRoute:
 
         assert response.status_code == HTTPStatus.OK
         assert response.get_json(silent=True) == expected_payload
+
+    def test_when_not_logged_in_should_respond_unauthorized_with_message(
+        self, client: FlaskClient
+    ) -> None:
+        response: TestResponse = client.get("/orders/1")
+
+        assert response.status_code == HTTPStatus.UNAUTHORIZED
+        assert response.get_json(silent=True) == {"message": "Unauthorized."}
