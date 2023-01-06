@@ -317,3 +317,15 @@ class TestGetOrdersByIdRoute:
 
         assert response.status_code == HTTPStatus.UNAUTHORIZED
         assert response.get_json(silent=True) == {"message": "Unauthorized."}
+
+    def test_with_absent_order_id_should_respond_forbidden_with_message(
+        self, logged_in_client: FlaskClient
+    ) -> None:
+        absent_order_id: Final = 100
+
+        response: TestResponse = logged_in_client.get(f"/orders/{absent_order_id}")
+
+        assert response.status_code == HTTPStatus.FORBIDDEN
+        assert response.get_json(silent=True) == {
+            "message": "The specific ID of the order is absent."
+        }

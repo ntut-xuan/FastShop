@@ -107,6 +107,10 @@ def fetch_the_order_with_specific_id(id: int) -> Response:
     assert current_user is not None
 
     order: Order | None = db.session.get(Order, id)  # type: ignore[attr-defined]
+    if order is None:
+        return make_single_message_response(
+            HTTPStatus.FORBIDDEN, "The specific ID of the order is absent."
+        )
 
     order_with_items_payload: dict[str, Any] = {
         "id": order.order_id,
