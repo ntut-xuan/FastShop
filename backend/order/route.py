@@ -80,34 +80,15 @@ def get_uid_from_jwt(jwt: str) -> int | None:
 @verify_login_or_return_401
 def fetch_all_the_order() -> Response:
     uid: int | None = get_uid_from_jwt(request.cookies["jwt"])
-    # `verify_login_or_return_401` has already checked that the user is valid
+    # `verify_login_or_return_401` has already checked that the jwt is valid
     assert uid is not None
-    current_user: User | None = db.session.get(User, uid)  # type: ignore[attr-defined]
-    assert current_user is not None
 
     orders: list[Order] = _get_orders_of_user(uid)
 
-    payload: dict[str, Any] = {"count": len(orders), "result": []}
-    for order in orders:
-        payload["result"].append(
-            {
-                "id": order.order_id,
-                "status": order.order_status.name,
-                "delivery_status": order.delivery_status.name,
-                "detail": {
-                    "date": order.date,
-                    "delivery_info": {
-                        "address": order.delivery_address,
-                        "email": current_user.email,
-                        "firstname": current_user.firstname,
-                        "lastname": current_user.lastname,
-                        "phone_number": order.phone,
-                    },
-                    "items": _get_items_of_order(order.order_id),
-                    "note": order.note,
-                },
-            }
-        )
+    payload: dict[str, Any] = {
+        "count": len(orders),
+        "result": [_get_response_payload_of_order(order) for order in orders],
+    }
     return make_response(payload)
 
 
@@ -141,10 +122,8 @@ def delete_order(id: int) -> Response:
 @verify_login_or_return_401
 def fetch_the_order_with_specific_id(id: int) -> Response:
     uid: int | None = get_uid_from_jwt(request.cookies["jwt"])
-    # `verify_login_or_return_401` has already checked that the user is valid
+    # `verify_login_or_return_401` has already checked that the jwt is valid
     assert uid is not None
-    current_user: User | None = db.session.get(User, uid)  # type: ignore[attr-defined]
-    assert current_user is not None
 
     order: Order | None = db.session.get(Order, id)  # type: ignore[attr-defined]
     if order is None:
@@ -152,7 +131,13 @@ def fetch_the_order_with_specific_id(id: int) -> Response:
             HTTPStatus.FORBIDDEN, "The specific ID of the order is absent."
         )
 
-    order_with_items_payload: dict[str, Any] = {
+    return make_response(_get_response_payload_of_order(order))
+
+
+def _get_response_payload_of_order(order: Order) -> dict[str, Any]:
+    user: User | None = db.session.get(User, order.user_id)  # type: ignore[attr-defined]
+    assert user is not None  # foreign key constraint should keep this True
+    return {
         "id": order.order_id,
         "status": order.order_status.name,
         "delivery_status": order.delivery_status.name,
@@ -160,17 +145,15 @@ def fetch_the_order_with_specific_id(id: int) -> Response:
             "date": order.date,
             "delivery_info": {
                 "address": order.delivery_address,
-                "email": current_user.email,
-                "firstname": current_user.firstname,
-                "lastname": current_user.lastname,
+                "email": user.email,
+                "firstname": user.firstname,
+                "lastname": user.lastname,
                 "phone_number": order.phone,
             },
             "items": _get_items_of_order(order.order_id),
             "note": order.note,
         },
     }
-
-    return make_response(order_with_items_payload)
 
 
 def _get_items_of_order(order_id: int) -> list[dict[str, int]]:
