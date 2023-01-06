@@ -16,7 +16,7 @@ from order.util import (
     has_unavailable_count_of_item,
     flatten_order_payload,
 )
-from models import DeliveryStatus, Order, OrderStatus, User
+from models import DeliveryStatus, ItemOfOrder, Order, OrderStatus, User
 from response_message import INVALID_DATA, WRONG_DATA_FORMAT
 from util import make_single_message_response, route_with_doc
 
@@ -98,5 +98,37 @@ def delete_order(id: int) -> Response:
 
 
 @route_with_doc(order_bp, "/orders/<int:id>", methods=["GET"])
-def fetch_the_order_with_specific_id(id: int):
-    pass  # pragma: no cover
+def fetch_the_order_with_specific_id(id: int) -> Response:
+    order: Order | None = db.session.get(Order, id)  # type: ignore[attr-defined]
+    uid: int | None = get_uid_from_jwt(request.cookies["jwt"])
+    current_user: User | None = db.session.get(User, uid)  # type: ignore[attr-defined]
+    order_with_items_payload: dict[str, Any] = {
+        "id": order.order_id,
+        "status": order.order_status.name,
+        "delivery_status": order.delivery_status.name,
+        "detail": {
+            "date": order.date,
+            "delivery_info": {
+                "address": order.delivery_address,
+                "email": current_user.email,
+                "firstname": current_user.firstname,
+                "lastname": current_user.lastname,
+                "phone_number": order.phone,
+            },
+            "items": _get_items_of_order(order.order_id),
+            "note": order.note,
+        },
+    }
+
+    return make_response(order_with_items_payload)
+
+
+def _get_items_of_order(order_id: int) -> list[dict[str, int]]:
+    items_of_order: list[ItemOfOrder] = (
+        db.session.execute(
+            db.select(ItemOfOrder).where(ItemOfOrder.order_id == order_id)
+        )
+        .scalars()
+        .all()
+    )
+    return [{"id": item.item_id, "count": item.count} for item in items_of_order]
