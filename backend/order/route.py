@@ -77,8 +77,45 @@ def get_uid_from_jwt(jwt: str) -> int | None:
 
 
 @route_with_doc(order_bp, "/orders", methods=["GET"])
-def fetch_all_the_order():
-    pass  # pragma: no cover
+def fetch_all_the_order() -> Response:
+    uid: int | None = get_uid_from_jwt(request.cookies["jwt"])
+    # `verify_login_or_return_401` has already checked that the user is valid
+    assert uid is not None
+    current_user: User | None = db.session.get(User, uid)  # type: ignore[attr-defined]
+    assert current_user is not None
+
+    orders: list[Order] = _get_orders_of_user(uid)
+
+    payload: dict[str, Any] = {"count": len(orders), "result": []}
+    for order in orders:
+        payload["result"].append(
+            {
+                "id": order.order_id,
+                "status": order.order_status.name,
+                "delivery_status": order.delivery_status.name,
+                "detail": {
+                    "date": order.date,
+                    "delivery_info": {
+                        "address": order.delivery_address,
+                        "email": current_user.email,
+                        "firstname": current_user.firstname,
+                        "lastname": current_user.lastname,
+                        "phone_number": order.phone,
+                    },
+                    "items": _get_items_of_order(order.order_id),
+                    "note": order.note,
+                },
+            }
+        )
+    return make_response(payload)
+
+
+def _get_orders_of_user(user_id: int) -> list[Order]:
+    return (
+        db.session.execute(db.select(Order).where(Order.user_id == user_id))
+        .scalars()
+        .all()
+    )
 
 
 @route_with_doc(order_bp, "/orders/<int:id>", methods=["DELETE"])

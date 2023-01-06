@@ -329,3 +329,88 @@ class TestGetOrdersByIdRoute:
         assert response.get_json(silent=True) == {
             "message": "The specific ID of the order is absent."
         }
+
+
+class TestGetOrdersRoute:
+    @pytest.fixture(autouse=True)
+    def insert_test_data(self, app: Flask) -> None:
+        with app.app_context():
+            db.session.add(Item(id=1, name="apple", count=10, description="This is an apple.", original=30, discount=25, avatar="xx-S0m3-aVA7aR-0f-a991e-xx"))  # fmt: skip
+            db.session.add(Item(id=2, name="tilapia", count=5, description="This is an tilapia.", original=50, discount=45, avatar="xx-S0m3-aVA7aR-0f-ti1a9iA-xx"))  # fmt: skip
+            db.session.add(
+                Order(
+                    order_id=1,
+                    user_id=1,
+                    date=1672737308,
+                    order_status=OrderStatus.OK,
+                    delivery_status=DeliveryStatus.PENDING,
+                    delivery_address="somewhere",
+                    note="some note",
+                    phone="0123456789",
+                )
+            )
+            db.session.add(
+                Order(
+                    order_id=2,
+                    user_id=1,
+                    date=1672737310,
+                    order_status=OrderStatus.CHECKING,
+                    delivery_status=DeliveryStatus.PENDING,
+                    delivery_address="some other where",
+                    note="some other note",
+                    phone="0987654321",
+                )
+            )
+            db.session.flush()  # flush first so ItemOfOrder has the foreign key
+            db.session.add(ItemOfOrder(order_id=1, item_id=1, count=2))
+            db.session.add(ItemOfOrder(order_id=1, item_id=2, count=1))
+            db.session.add(ItemOfOrder(order_id=2, item_id=1, count=4))
+            db.session.commit()
+
+    def test_when_having_multiple_orders_and_items_should_respond_correct_payload(
+        self, logged_in_client: FlaskClient
+    ) -> None:
+        expected_payload: dict[str, Any] = {
+            "count": 2,
+            "result": [
+                {
+                    "delivery_status": "PENDING",
+                    "detail": {
+                        "date": 1672737308,
+                        "delivery_info": {
+                            "address": "somewhere",
+                            "email": "test@email.com",
+                            "firstname": "Han-Xuan",
+                            "lastname": "Huang",
+                            "phone_number": "0123456789",
+                        },
+                        "items": [{"count": 2, "id": 1}, {"count": 1, "id": 2}],
+                        "note": "some note",
+                    },
+                    "id": 1,
+                    "status": "OK",
+                },
+                {
+                    "delivery_status": "PENDING",
+                    "detail": {
+                        "date": 1672737310,
+                        "delivery_info": {
+                            "address": "some other where",
+                            "email": "test@email.com",
+                            "firstname": "Han-Xuan",
+                            "lastname": "Huang",
+                            "phone_number": "0987654321",
+                        },
+                        "items": [{"count": 4, "id": 1}],
+                        "note": "some other note",
+                    },
+                    "id": 2,
+                    "status": "CHECKING",
+                },
+            ],
+        }
+
+        response: TestResponse = logged_in_client.get("/orders")
+
+        assert response.status_code == HTTPStatus.OK
+        assert response.get_json(silent=True) == expected_payload
