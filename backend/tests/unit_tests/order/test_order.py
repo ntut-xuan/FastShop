@@ -163,3 +163,37 @@ class TestPostOrdersRoute:
 
         assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
         assert response.get_json(silent=True) == {"message": INVALID_DATA}
+
+
+class TestDeleteOrdersByIdRoute:
+    @pytest.fixture(autouse=True)
+    def insert_test_data(self, app: Flask) -> None:
+        with app.app_context():
+            # fmt: off
+            db.session.add(Item(id=1, name="apple", count=10, description="This is an apple.", original=30, discount=25, avatar="xx-S0m3-aVA7aR-0f-a991e-xx"))
+            db.session.add(Order(order_id=1, user_id=1, date=1672737308, order_status=OrderStatus.OK, delivery_status=DeliveryStatus.DELIVERING, delivery_address="somewhere", note="some note", phone="0123456789"))
+            db.session.flush()  # flush first so ItemOfOrder has the foreign key
+            db.session.add(ItemOfOrder(order_id=1, item_id=1, count=2))
+            # fmt: on
+            db.session.commit()
+
+    def test_with_existing_order_id_should_response_ok_with_message(
+        self, logged_in_client: FlaskClient
+    ) -> None:
+        existing_order_id: Final = 1
+
+        response: TestResponse = logged_in_client.delete(f"/orders/{existing_order_id}")
+
+        assert response.status_code == HTTPStatus.OK
+        assert response.get_json(silent=True) == {"message": "OK"}
+
+    def test_with_existing_order_id_should_delete_the_order(
+        self, app: Flask, logged_in_client: FlaskClient
+    ) -> None:
+        existing_order_id: Final = 1
+
+        logged_in_client.delete(f"/orders/{existing_order_id}")
+
+        with app.app_context():
+            order: Order | None = db.session.get(Order, existing_order_id)  # type: ignore[attr-defined]
+            assert order is None

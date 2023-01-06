@@ -16,7 +16,7 @@ from order.util import (
     has_unavailable_count_of_item,
     flatten_order_payload,
 )
-from models import DeliveryStatus, OrderStatus, User
+from models import DeliveryStatus, Order, OrderStatus, User
 from response_message import INVALID_DATA, WRONG_DATA_FORMAT
 from util import make_single_message_response, route_with_doc
 
@@ -82,8 +82,11 @@ def fetch_all_the_order():
 
 
 @route_with_doc(order_bp, "/orders/<int:id>", methods=["DELETE"])
-def delete_order(id: int):
-    pass  # pragma: no cover
+def delete_order(id: int) -> Response:
+    order: Order | None = db.session.get(Order, id)  # type: ignore[attr-defined]
+    db.session.delete(order)
+    db.session.commit()
+    return make_single_message_response(HTTPStatus.OK)
 
 
 @route_with_doc(order_bp, "/orders/<int:id>", methods=["GET"])
