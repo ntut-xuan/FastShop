@@ -85,6 +85,7 @@ def fetch_all_the_order():
 @verify_login_or_return_401
 def delete_order(id: int) -> Response:
     order: Order | None = db.session.get(Order, id)  # type: ignore[attr-defined]
+    assert order is not None  # TODO: respond some info
 
     if order.delivery_status in {DeliveryStatus.DELIVERING, DeliveryStatus.DELIVERED}:
         return make_single_message_response(
