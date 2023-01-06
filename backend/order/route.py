@@ -77,6 +77,7 @@ def get_uid_from_jwt(jwt: str) -> int | None:
 
 
 @route_with_doc(order_bp, "/orders", methods=["GET"])
+@verify_login_or_return_401
 def fetch_all_the_order() -> Response:
     uid: int | None = get_uid_from_jwt(request.cookies["jwt"])
     # `verify_login_or_return_401` has already checked that the user is valid
