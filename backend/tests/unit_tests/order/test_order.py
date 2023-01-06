@@ -415,6 +415,39 @@ class TestGetOrdersRoute:
         assert response.status_code == HTTPStatus.OK
         assert response.get_json(silent=True) == expected_payload
 
+    def test_when_has_order_with_no_item_should_respond_correct_payload(
+        self, app: Flask, logged_in_client: FlaskClient
+    ) -> None:
+        id_of_order_that_has_no_item: Final = 20
+        with app.app_context():
+            db.session.add(
+                Order(
+                    order_id=id_of_order_that_has_no_item,
+                    user_id=1,
+                    date=1672737310,
+                    order_status=OrderStatus.OK,
+                    delivery_status=DeliveryStatus.DELIVERING,
+                    delivery_address="some other where",
+                    note="some other note",
+                    phone="0987654321",
+                )
+            )
+            db.session.commit()
+
+        response: TestResponse = logged_in_client.get("/orders")
+
+        response_payload: dict[str, Any] | None = response.get_json(silent=True)
+        assert response_payload is not None
+        payloads_of_order_that_has_no_item: list[dict[str, Any]] = list(
+            filter(  # find the order that we're testing on since there are other orders
+                lambda x: x["id"] == id_of_order_that_has_no_item,
+                [payload_of_order for payload_of_order in response_payload["result"]],
+            )
+        )
+        assert len(payloads_of_order_that_has_no_item) == 1
+        (payload_of_order_that_has_no_item,) = payloads_of_order_that_has_no_item
+        assert not payload_of_order_that_has_no_item["detail"]["items"]
+
     def test_when_not_logged_in_should_respond_unauthorized_with_message(
         self, client: FlaskClient
     ) -> None:
