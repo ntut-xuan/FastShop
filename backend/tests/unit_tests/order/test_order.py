@@ -171,7 +171,7 @@ class TestDeleteOrdersByIdRoute:
         with app.app_context():
             # fmt: off
             db.session.add(Item(id=1, name="apple", count=10, description="This is an apple.", original=30, discount=25, avatar="xx-S0m3-aVA7aR-0f-a991e-xx"))
-            db.session.add(Order(order_id=1, user_id=1, date=1672737308, order_status=OrderStatus.OK, delivery_status=DeliveryStatus.DELIVERING, delivery_address="somewhere", note="some note", phone="0123456789"))
+            db.session.add(Order(order_id=1, user_id=1, date=1672737308, order_status=OrderStatus.OK, delivery_status=DeliveryStatus.PENDING, delivery_address="somewhere", note="some note", phone="0123456789"))
             db.session.flush()  # flush first so ItemOfOrder has the foreign key
             db.session.add(ItemOfOrder(order_id=1, item_id=1, count=2))
             # fmt: on
@@ -216,3 +216,37 @@ class TestDeleteOrdersByIdRoute:
                 .all()
             )
             assert len(items_of_order) == 0
+
+    @pytest.mark.parametrize(
+        argnames="undeletable_delivery_status",
+        argvalues=(DeliveryStatus.DELIVERING, DeliveryStatus.DELIVERED),
+    )
+    def test_with_order_in_undeletable_delivery_status_should_respond_forbidden_with_message(
+        self,
+        app: Flask,
+        logged_in_client: FlaskClient,
+        undeletable_delivery_status: DeliveryStatus,
+    ) -> None:
+        with app.app_context():
+            db.session.add(
+                Order(
+                    order_id=2,
+                    user_id=1,
+                    date=1672737308,
+                    order_status=OrderStatus.OK,
+                    delivery_status=undeletable_delivery_status,
+                    delivery_address="somewhere",
+                    note="some note",
+                    phone="0123456789",
+                )
+            )
+            db.session.flush()  # flush first so ItemOfOrder has the foreign key
+            db.session.add(ItemOfOrder(order_id=2, item_id=1, count=2))
+            db.session.commit()
+
+        response: TestResponse = logged_in_client.delete(f"/orders/2")
+
+        assert response.status_code == HTTPStatus.FORBIDDEN
+        assert response.get_json(silent=True) == {
+            "message": "The order is not possible to be deleted since the order is now delivering or has been delivered."
+        }

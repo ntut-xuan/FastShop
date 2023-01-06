@@ -84,6 +84,13 @@ def fetch_all_the_order():
 @route_with_doc(order_bp, "/orders/<int:id>", methods=["DELETE"])
 def delete_order(id: int) -> Response:
     order: Order | None = db.session.get(Order, id)  # type: ignore[attr-defined]
+
+    if order.delivery_status in {DeliveryStatus.DELIVERING, DeliveryStatus.DELIVERED}:
+        return make_single_message_response(
+            HTTPStatus.FORBIDDEN,
+            "The order is not possible to be deleted since the order is now delivering or has been delivered.",
+        )
+
     db.session.delete(order)
     db.session.commit()
     return make_single_message_response(HTTPStatus.OK)
