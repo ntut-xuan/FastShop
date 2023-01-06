@@ -187,7 +187,7 @@ class TestDeleteOrdersByIdRoute:
         assert response.status_code == HTTPStatus.OK
         assert response.get_json(silent=True) == {"message": "OK"}
 
-    def test_with_existing_order_id_should_delete_the_order(
+    def test_with_existing_order_id_should_delete_the_order_from_database(
         self, app: Flask, logged_in_client: FlaskClient
     ) -> None:
         existing_order_id: Final = 1
@@ -197,3 +197,22 @@ class TestDeleteOrdersByIdRoute:
         with app.app_context():
             order: Order | None = db.session.get(Order, existing_order_id)  # type: ignore[attr-defined]
             assert order is None
+
+    def test_with_existing_order_id_should_delete_the_item_of_order_from_database(
+        self, app: Flask, logged_in_client: FlaskClient
+    ) -> None:
+        existing_order_id: Final = 1
+
+        logged_in_client.delete(f"/orders/{existing_order_id}")
+
+        with app.app_context():
+            items_of_order: list[ItemOfOrder] = (
+                db.session.execute(
+                    db.select(ItemOfOrder).where(
+                        ItemOfOrder.order_id == existing_order_id
+                    )
+                )
+                .scalars()
+                .all()
+            )
+            assert len(items_of_order) == 0
