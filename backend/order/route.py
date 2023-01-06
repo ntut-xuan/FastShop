@@ -82,6 +82,7 @@ def fetch_all_the_order():
 
 
 @route_with_doc(order_bp, "/orders/<int:id>", methods=["DELETE"])
+@verify_login_or_return_401
 def delete_order(id: int) -> Response:
     order: Order | None = db.session.get(Order, id)  # type: ignore[attr-defined]
 

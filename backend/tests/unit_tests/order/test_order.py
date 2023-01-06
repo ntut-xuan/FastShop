@@ -217,6 +217,14 @@ class TestDeleteOrdersByIdRoute:
             )
             assert len(items_of_order) == 0
 
+    def test_when_not_logged_in_should_respond_unauthorized_with_message(
+        self, client: FlaskClient
+    ) -> None:
+        response: TestResponse = client.delete("/orders/1")
+
+        assert response.status_code == HTTPStatus.UNAUTHORIZED
+        assert response.get_json(silent=True) == {"message": "Unauthorized."}
+
     @pytest.mark.parametrize(
         argnames="undeletable_delivery_status",
         argvalues=(DeliveryStatus.DELIVERING, DeliveryStatus.DELIVERED),
