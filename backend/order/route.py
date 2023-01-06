@@ -112,11 +112,12 @@ def fetch_all_the_order() -> Response:
 
 
 def _get_orders_of_user(user_id: int) -> list[Order]:
-    return (
+    orders_of_user: list[Order] = (  # temp var for type casting, otherwise it's Any
         db.session.execute(db.select(Order).where(Order.user_id == user_id))
         .scalars()
         .all()
     )
+    return orders_of_user
 
 
 @route_with_doc(order_bp, "/orders/<int:id>", methods=["DELETE"])
