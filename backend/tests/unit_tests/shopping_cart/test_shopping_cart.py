@@ -40,6 +40,15 @@ def setup_item(app: Flask) -> None:
                     "discount": 45,
                     "avatar": "xx-S0m3-aVA7aR-0f-ti1a9iA-xx",
                 },
+                {
+                    "id": 3,
+                    "name": "tomato",
+                    "count": 45,
+                    "description": "This is a tomato.",
+                    "original": 40,
+                    "discount": 35,
+                    "avatar": "xx-S0m3-aVA7aR-0f-t0nnat0-xx",
+                },
             ],
         )
         db.session.execute(
@@ -119,6 +128,68 @@ class TestGetShoppingCart:
             response: TestResponse = client.get("shopping_cart")
 
             assert response.status_code == HTTPStatus.UNAUTHORIZED
+
+
+class TestPostShoppingCartItem:
+    def test_with_logged_in_client_should_return_http_status_code_ok(
+        self, app: Flask, logged_in_client: FlaskClient, setup_item: None
+    ):
+        request_payload = {"count": 5, "id": 3}
+        with app.app_context():
+
+            response: TestResponse = logged_in_client.post(
+                "shopping_cart/item", json=request_payload
+            )
+
+            assert response.status_code == HTTPStatus.OK
+
+    def test_with_not_logged_in_client_should_return_http_status_code_unauthorized(
+        self, app: Flask, client: FlaskClient, setup_item: None
+    ):
+        request_payload = {"count": 5, "id": 3}
+        with app.app_context():
+
+            response: TestResponse = client.post(
+                "shopping_cart/item", json=request_payload
+            )
+
+            assert response.status_code == HTTPStatus.UNAUTHORIZED
+
+    def test_with_invalid_payload_should_return_http_status_code_bad_request(
+        self, app: Flask, logged_in_client: FlaskClient, setup_item: None
+    ):
+        request_payload = {"xuan": "idiot"}
+        with app.app_context():
+
+            response: TestResponse = logged_in_client.post(
+                "shopping_cart/item", json=request_payload
+            )
+
+            assert response.status_code == HTTPStatus.BAD_REQUEST
+
+    def test_with_invalid_data_type_should_return_http_status_code_unprocessable_entity(
+        self, app: Flask, logged_in_client: FlaskClient, setup_item: None
+    ):
+        request_payload = {"id": 3, "count": "10"}
+        with app.app_context():
+
+            response: TestResponse = logged_in_client.post(
+                "shopping_cart/item", json=request_payload
+            )
+
+            assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+
+    def test_with_item_already_exists_in_cart_should_return_forbidden(
+        self, app: Flask, logged_in_client: FlaskClient, setup_item: None
+    ):
+        request_payload = {"id": 2, "count": 10}
+        with app.app_context():
+
+            response: TestResponse = logged_in_client.post(
+                "shopping_cart/item", json=request_payload
+            )
+
+            assert response.status_code == HTTPStatus.FORBIDDEN
 
 
 def _get_cookies(cookie_jar: CookieJar | None) -> tuple[Cookie, ...]:

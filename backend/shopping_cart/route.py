@@ -1,11 +1,16 @@
 from typing import TYPE_CHECKING, Any, cast
 
+from http import HTTPStatus
 from flask import Blueprint, current_app, make_response, request
 
 from auth.util import HS256JWTCodec, verify_login_or_return_401
 from database import db
 from models import Item, ShoppingCart, User
-from util import route_with_doc
+from pydantic import StrictInt
+from pydantic.dataclasses import dataclass
+from sqlalchemy.exc import IntegrityError
+from util import route_with_doc, make_single_message_response
+from response_message import INVALID_DATA, WRONG_DATA_FORMAT
 
 if TYPE_CHECKING:
     from sqlalchemy.engine.row import Row
@@ -54,8 +59,38 @@ def get_the_shopping_cart():
 
 
 @route_with_doc(shopping_cart_bp, "/shopping_cart/item", methods=["POST"])
+@verify_login_or_return_401
 def add_one_item_to_the_shopping_cart():
-    pass  # pragma: no cover.
+    jwt_token: str = request.cookies.get("jwt")
+    user_id: int = fetch_user_id_from_jwt_token(jwt_token)
+    payload: dict[str, Any] | None = request.get_json(silent=True)
+
+    try:
+
+        @dataclass
+        class Validator:
+            count: StrictInt
+            id: StrictInt
+
+        Validator(**payload)
+    except ValueError:
+        return make_single_message_response(
+            HTTPStatus.UNPROCESSABLE_ENTITY, INVALID_DATA
+        )
+    except TypeError:
+        return make_single_message_response(HTTPStatus.BAD_REQUEST, WRONG_DATA_FORMAT)
+
+    try:
+        db.session.execute(
+            db.insert(ShoppingCart),
+            [{"user_id": user_id, "count": payload["count"], "item_id": payload["id"]}],
+        )
+    except IntegrityError:
+        return make_single_message_response(
+            HTTPStatus.FORBIDDEN, "The item already exists in cart."
+        )
+
+    return make_single_message_response(HTTPStatus.OK)
 
 
 @route_with_doc(shopping_cart_bp, "/shopping_cart/item", methods=["PUT"])
