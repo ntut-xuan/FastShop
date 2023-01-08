@@ -6,14 +6,34 @@ VALUES (
     'Han-Xuan',
     'Huang',
     0,
-    1666604387  -- 2022-10-24
+    1024963200  -- 2002-06-25 00:00:00
   ),
   (
     'other@email.com',
     -- other
-    '82a5cfd03cdcb713c8d7dfce41e6f0a92f6dc560e6dda56c11eb1a207aaa7689b07a1de30967fc040f8b0ef0672c1c2ad96fcacb95fb995f52ae5d657c094547',
+    'e25ac3845f8cbe12801a2dfa5a89d4c55dc47900f3b6edc9a9ee590f3c2b9312f665d0039c93828b7b58f33950bc817a0955a9c5000a8d3e280569f08745ca68',
     'Xuan',
     'Uriah',
     0,
-    1666604387  -- 2022-10-24
+    1024963200  -- 2002-06-25 00:00:00
   );
+
+INSERT INTO `item` (name,count,description,original,discount,avatar) VALUES
+	 ('apple',10,'This is an apple.',30,25,'xx-S0m3-aVA7aR-0f-a991e-xx'),
+	 ('tilapia',3,'This is a tilapia.',50,45,'xx-S0m3-aVA7aR-0f-ti1a9iA-xx');
+
+INSERT INTO `tag` (name) VALUES
+	 ('seafood'),
+	 ('fruit'),
+	 ('grocery');
+
+INSERT INTO `tag_of_item` (item_id,tag_id) VALUES
+	 (1,1),
+	 (1,3),
+	 (2,2),
+	 (2,3);
+
+INSERT INTO `shopping_cart` (user_id,item_id,count) VALUES
+	 (1,1,5),
+	 (1,2,3),
+	 (2,2,3);
