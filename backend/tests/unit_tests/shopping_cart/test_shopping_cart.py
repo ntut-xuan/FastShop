@@ -111,7 +111,7 @@ class TestGetShoppingCart:
             response_payload: dict[str, Any] | None = response.json
             assert response_payload == excepted_response
 
-    def test_with_not_logged_in_client_should_raise_unauthorized(
+    def test_with_not_logged_in_client_should_return_http_status_code_unauthorized(
         self, app: Flask, client: FlaskClient, setup_item: None
     ):
         with app.app_context():
