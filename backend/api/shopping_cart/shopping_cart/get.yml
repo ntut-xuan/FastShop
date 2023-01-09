@@ -10,14 +10,6 @@ responses:
       application/json:
         schema:
           $ref: '#/definitions/shopping_cart_response'
-  401:
-    description: Unauthorized.
-    content:
-      application/json:
-        schema:
-          $ref: "#/definitions/message"
-        example:
-          message: Unauthorized.
 
 definitions:
   shopping_cart_response:
