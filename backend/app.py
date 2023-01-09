@@ -5,14 +5,14 @@ from typing import Any, Final, Mapping
 from flasgger import Swagger
 from flask import Flask
 
-from auth.route import auth_bp
-from database import create_db_command, db
-from item.route import item_bp
-from order.route import order_bp
-from shopping_cart.route import shopping_cart_bp
-from static.route import static_bp
-from tag.route import tag_bp
-from user.route import user_bp
+from src.auth.route import auth_bp
+from src.database import create_db_command, db
+from src.item.route import item_bp
+from src.order.route import order_bp
+from src.shopping_cart.route import shopping_cart_bp
+from src.static.route import static_bp
+from src.tag.route import tag_bp
+from src.user.route import user_bp
 from util import fetch_page
 
 
@@ -65,5 +65,28 @@ def _init_swagger(app: Flask) -> None:
     swagger_config[
         "jquery_js"
     ] = f"//unpkg.com/jquery@{JQUERY_VERSION}/dist/jquery.min.js"
+
+    swagger_config["specs"] = [
+        {
+            "version": "0.3.0",
+            "uiversion": 3,
+            "title": "FastShop Admin API",
+            "name": "v1",
+            "endpoint": "v1_admin_spec",
+            "description": "This is a FastShop Admin API based on the OpenAPI 3.0 specification.",
+            "route": "/v1/admin/spec",
+            "rule_filter": lambda rule: rule.rule.startswith("/"),
+        },
+        {
+            "version": "0.3.0",
+            "uiversion": 3,
+            "title": "FastShop User API",
+            "name": "v1",
+            "endpoint": "v1_user_spec",
+            "description": "This is a FastShop User API based on the OpenAPI 3.0 specification.",
+            "route": "/v1/user/spec",
+            "rule_filter": lambda rule: rule.rule.startswith("/api/user/"),
+        },
+    ]
 
     Swagger(app)

@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from static.exception import ImageNotExistError
-from static.util import (
+from src.static.exception import ImageNotExistError
+from src.static.util import (
     delete_image,
     get_file_path_by_image_uuid,
     get_image_byte,

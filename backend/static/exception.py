@@ -1,2 +1,0 @@
-class ImageNotExistError(FileNotFoundError):
-    pass
