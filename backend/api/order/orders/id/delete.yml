@@ -33,7 +33,10 @@ responses:
         example:
           message: Unauthorized.
   403:
-    description: The order is not possible to be deleted since the order is now delivering or has been delivered.
+    description:
+      "The specific order is absent or is not possible to be deleted since the order is now delivering or has been delivered. Their corresponding message is:\n\n
+      - Absent: `The specific ID of the order is absent.`\n\n
+      - Not deletable: `The order is not possible to be deleted since the order is now delivering or has been delivered.`"
     content:
       application/json:
         schema:
