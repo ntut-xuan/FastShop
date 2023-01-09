@@ -98,7 +98,7 @@ def validate_item_exists_or_return_forbidden(
 
         if item == None:
             return make_single_message_response(
-                HTTPStatus.FORBIDDEN, "Item with specific ID is not exists."
+                HTTPStatus.FORBIDDEN, "Item with specific ID is already exists."
             )
 
         return func(*args, **kwargs)
