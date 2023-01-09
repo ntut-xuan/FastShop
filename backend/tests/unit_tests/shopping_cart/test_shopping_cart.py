@@ -8,6 +8,7 @@ import pytest
 from database import db
 from models import Item, ShoppingCart, Tag, TagOfItem
 from shopping_cart.route import fetch_user_id_from_jwt_token
+from sqlalchemy import func
 
 if TYPE_CHECKING:
     from http.cookiejar import Cookie, CookieJar
@@ -131,7 +132,7 @@ class TestGetShoppingCart:
 
 
 class TestPostShoppingCartItem:
-    def test_with_logged_in_client_should_return_http_status_code_ok(
+    def test_with_logged_in_client_should_add_item_to_cart(
         self, app: Flask, logged_in_client: FlaskClient, setup_item: None
     ):
         request_payload = {"count": 5, "id": 3}
@@ -142,6 +143,13 @@ class TestPostShoppingCartItem:
             )
 
             assert response.status_code == HTTPStatus.OK
+            item_count = db.session.execute(
+                db.select([func.count()]).where(
+                    ShoppingCart.user_id == 1,  # The user with test@mail.com UID is 1.
+                    ShoppingCart.item_id == 3,
+                )
+            ).scalar()
+            assert item_count == 1
 
     def test_with_not_logged_in_client_should_return_http_status_code_unauthorized(
         self, app: Flask, client: FlaskClient, setup_item: None
@@ -179,13 +187,149 @@ class TestPostShoppingCartItem:
 
             assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
-    def test_with_item_already_exists_in_cart_should_return_forbidden(
+    def test_with_item_already_exists_in_cart_should_return_http_status_code_forbidden(
         self, app: Flask, logged_in_client: FlaskClient, setup_item: None
     ):
         request_payload = {"id": 2, "count": 10}
         with app.app_context():
 
             response: TestResponse = logged_in_client.post(
+                "shopping_cart/item", json=request_payload
+            )
+
+            assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_with_not_exits_item_id_should_return_http_status_code_forbidden(
+        self, app: Flask, logged_in_client: FlaskClient, setup_item: None
+    ):
+        request_payload = {"id": 47, "count": 10}
+        with app.app_context():
+
+            response: TestResponse = logged_in_client.post(
+                "shopping_cart/item", json=request_payload
+            )
+
+            assert response.status_code == HTTPStatus.FORBIDDEN
+
+
+class TestDeleteShoppingCart:
+    def test_with_logged_in_client_should_absent_the_shopping_cart(
+        self, app: Flask, logged_in_client: FlaskClient, setup_item: None
+    ):
+        with app.app_context():
+
+            response: TestResponse = logged_in_client.delete("/shopping_cart")
+
+            assert response.status_code == HTTPStatus.OK
+            item_count = db.session.execute(
+                db.select([func.count()]).where(
+                    ShoppingCart.user_id == 1
+                )  # The user with test@mail.com UID is 1.
+            ).scalar()
+            assert item_count == 0
+
+    def test_with_logged_in_client_should_raise_http_status_code_unauthorized(
+        self, app: Flask, client: FlaskClient, setup_item: None
+    ):
+        with app.app_context():
+
+            response: TestResponse = client.delete("/shopping_cart")
+
+            assert response.status_code == HTTPStatus.UNAUTHORIZED
+
+
+class TestPutShoppingCartItem:
+    def test_with_logged_in_client_should_update_item_in_cart(
+        self, app: Flask, logged_in_client: FlaskClient, setup_item: None
+    ):
+        request_payload = {"count": 5, "id": 2}
+        with app.app_context():
+
+            response: TestResponse = logged_in_client.put(
+                "/shopping_cart/item", json=request_payload
+            )
+
+            assert response.status_code == HTTPStatus.OK
+            items_count: int = (
+                db.session.execute(
+                    db.select(ShoppingCart.count).where(
+                        ShoppingCart.user_id
+                        == 1,  # The user with test@mail.com UID is 1.
+                        ShoppingCart.item_id == 2,
+                    )
+                )
+                .scalars()
+                .one()
+            )
+            assert items_count == 5
+
+    def test_with_not_logged_in_client_should_return_http_status_code_unauthorized(
+        self, app: Flask, client: FlaskClient, setup_item: None
+    ):
+        request_payload = {"count": 5, "id": 2}
+        with app.app_context():
+
+            response: TestResponse = client.put(
+                "/shopping_cart/item", json=request_payload
+            )
+
+            assert response.status_code == HTTPStatus.UNAUTHORIZED
+
+    def test_with_wrong_format_payload_should_return_http_status_code_bad_request(
+        self, app: Flask, logged_in_client: FlaskClient, setup_item: None
+    ):
+        request_payload = {"xuan": "idiot"}
+        with app.app_context():
+
+            response: TestResponse = logged_in_client.put(
+                "/shopping_cart/item", json=request_payload
+            )
+
+            assert response.status_code == HTTPStatus.BAD_REQUEST
+
+    def test_with_invalid_data_type_payload_should_return_http_status_code_unprocessable_entity(
+        self, app: Flask, logged_in_client: FlaskClient, setup_item: None
+    ):
+        request_payload = {"count": "5", "id": 2}
+        with app.app_context():
+
+            response: TestResponse = logged_in_client.put(
+                "/shopping_cart/item", json=request_payload
+            )
+
+            assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+
+    def test_with_not_exists_in_cart_item_payload_should_return_http_status_code_unprocessable_entity(
+        self, app: Flask, logged_in_client: FlaskClient, setup_item: None
+    ):
+        request_payload = {"count": 5, "id": 3}
+        with app.app_context():
+
+            response: TestResponse = logged_in_client.put(
+                "/shopping_cart/item", json=request_payload
+            )
+
+            assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+
+    def test_with_negative_count_item_payload_should_return_http_status_code_unprocessable_entity(
+        self, app: Flask, logged_in_client: FlaskClient, setup_item: None
+    ):
+        request_payload = {"count": -5, "id": 2}
+        with app.app_context():
+
+            response: TestResponse = logged_in_client.put(
+                "/shopping_cart/item", json=request_payload
+            )
+
+            assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+
+    def test_with_not_exits_item_id_should_return_http_status_code_forbidden(
+        self, app: Flask, logged_in_client: FlaskClient, setup_item: None
+    ):
+        request_payload = {"id": 47, "count": 10}
+        with app.app_context():
+
+            response: TestResponse = logged_in_client.put(
                 "shopping_cart/item", json=request_payload
             )
 
