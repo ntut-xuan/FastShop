@@ -87,11 +87,18 @@ def update_one_item_to_the_shopping_cart():
     user_id: int = fetch_user_id_from_jwt_token(jwt_token)
     payload: dict[str, Any] | None = request.get_json(silent=True)
 
-    shopping_cart: ShoppingCart = ShoppingCart.query.filter_by(
-        user_id=user_id, item_id=payload["id"]
-    ).first()
-    shopping_cart.count = payload["count"]
-    db.session.commit()
+    if payload["count"] > 0:
+        shopping_cart: ShoppingCart = ShoppingCart.query.filter_by(
+            user_id=user_id, item_id=payload["id"]
+        ).first()
+        shopping_cart.count = payload["count"]
+        db.session.commit()
+    else:
+        db.session.execute(
+            db.delete(ShoppingCart).where(
+                ShoppingCart.user_id == user_id, ShoppingCart.item_id == payload["id"]
+            )
+        )
 
     return make_single_message_response(HTTPStatus.OK)
 

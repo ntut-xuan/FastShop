@@ -263,6 +263,26 @@ class TestPutShoppingCartItem:
             )
             assert items_count == 5
 
+    def test_set_item_count_to_zero_with_logged_in_client_should_remove_item_in_cart(
+        self, app: Flask, logged_in_client: FlaskClient, setup_item: None
+    ):
+        request_payload = {"count": 0, "id": 2}
+        with app.app_context():
+
+            response: TestResponse = logged_in_client.put(
+                "/shopping_cart/item", json=request_payload
+            )
+
+            assert response.status_code == HTTPStatus.OK
+            removed_item: ShoppingCart | None = ShoppingCart.query.filter_by(
+                item_id=2, user_id=1
+            ).first()
+            not_removed_item: ShoppingCart | None = ShoppingCart.query.filter_by(
+                item_id=1, user_id=1
+            ).first()
+            assert removed_item is None
+            assert not_removed_item is not None
+
     def test_with_not_logged_in_client_should_return_http_status_code_unauthorized(
         self, app: Flask, client: FlaskClient, setup_item: None
     ):
