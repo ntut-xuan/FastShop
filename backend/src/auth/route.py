@@ -136,7 +136,8 @@ def logout_route() -> Response:
 
 
 def _is_correct_email_and_password(email: str, password: str) -> bool:
-    return is_registered(email) and is_correct_password(email, password)
+    result: bool = is_registered(email) and is_correct_password(email, password)
+    return result
 
 
 def _has_required_columns(data: Mapping, required_columns: Iterable) -> bool:
@@ -144,7 +145,10 @@ def _has_required_columns(data: Mapping, required_columns: Iterable) -> bool:
 
 
 def _has_valid_register_data_format(data: Mapping[str, Any]) -> bool:
-    return is_valid_birthday(data["birthday"]) and is_valid_email(data["e-mail"])
+    result: bool = is_valid_birthday(data["birthday"]) and is_valid_email(
+        data["e-mail"]
+    )
+    return result
 
 
 def _set_jwt_cookie_to_response(
