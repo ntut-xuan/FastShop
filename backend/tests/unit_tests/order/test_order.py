@@ -225,6 +225,18 @@ class TestDeleteOrdersByIdRoute:
         assert response.status_code == HTTPStatus.UNAUTHORIZED
         assert response.get_json(silent=True) == {"message": "Unauthorized."}
 
+    def test_with_absent_order_id_should_respond_forbidden_with_message(
+        self, app: Flask, logged_in_client: FlaskClient
+    ) -> None:
+        absent_order_id = 100
+
+        response: TestResponse = logged_in_client.delete(f"/orders/{absent_order_id}")
+
+        assert response.status_code == HTTPStatus.FORBIDDEN
+        assert response.get_json(silent=True) == {
+            "message": "The specific ID of order is absent."
+        }
+
     @pytest.mark.parametrize(
         argnames="undeletable_delivery_status",
         argvalues=(DeliveryStatus.DELIVERING, DeliveryStatus.DELIVERED),
