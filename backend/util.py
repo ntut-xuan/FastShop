@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING
 from flasgger import swag_from
 from flask import current_app, make_response
 
+from config import API_DIRECTORY_PATH
+
 if TYPE_CHECKING:
     from http import HTTPStatus
 
@@ -41,7 +43,7 @@ def route_with_doc(bp: Blueprint, rule: str, methods: list[str]):
     def wrapper(func):
         for method in methods:
             swag_from(
-                f"../api/{bp.name}{doc_path}/{method.lower()}.yml",
+                f"{API_DIRECTORY_PATH}/{bp.name}{doc_path}/{method.lower()}.yml",
                 methods=[method],
             )(func)
         return bp.route(rule, methods=methods)(func)
