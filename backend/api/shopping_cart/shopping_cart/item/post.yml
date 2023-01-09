@@ -54,7 +54,7 @@ responses:
     description:
       "The possible situations that cause `403`:\n\n
         - Item with the specific ID already exists in the shopping cart.\n\n
-        - Item with the specific ID already exists.\n\n
+        - Item with the specific ID does not exists.\n\n
       The route will respond the failed message with respect to the situation."
     content:
       application/json:
