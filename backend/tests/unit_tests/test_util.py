@@ -143,4 +143,4 @@ class TestRouteWithDocDecorator:
 def test_api_direcotry_should_exists() -> None:
     is_api_directory_exists = Path(API_DIRECTORY_PATH).exists()
 
-    assert is_api_directory_exists == True
+    assert is_api_directory_exists
