@@ -21,6 +21,8 @@ def validate_count_should_positive_or_return_unprocessable_entity(
     def wrapper(*args, **kwargs) -> Response | T:
         payload: dict[str, Any] | None = request.get_json(silent=True)
 
+        assert payload is not None
+
         if payload["count"] < 0:
             return make_single_message_response(
                 HTTPStatus.UNPROCESSABLE_ENTITY, str("Count should be positive.")
@@ -37,6 +39,8 @@ def validate_format_or_return_bad_request(
     @wraps(func)
     def wrapper(*args, **kwargs) -> Response | T:
         payload: dict[str, Any] | None = request.get_json(silent=True)
+
+        assert payload is not None
 
         @dataclass
         class Validator:
@@ -62,6 +66,8 @@ def validate_data_type_or_return_unprocessable_entity(
     def wrapper(*args, **kwargs) -> Response | T:
         payload: dict[str, Any] | None = request.get_json(silent=True)
 
+        assert payload is not None
+
         @dataclass
         class Validator:
             count: StrictInt
@@ -85,6 +91,9 @@ def validate_item_exists_or_return_forbidden(
     @wraps(func)
     def wrapper(*args, **kwargs) -> Response | T:
         payload: dict[str, Any] | None = request.get_json(silent=True)
+
+        assert payload is not None
+
         item: Item | None = Item.query.filter_by(id=payload["id"]).first()
 
         if item == None:
@@ -103,9 +112,12 @@ def validate_item_exists_in_user_cart_or_return_forbidden(
     @wraps(func)
     def wrapper(*args, **kwargs) -> Response | T:
         payload: dict[str, Any] | None = request.get_json(silent=True)
-        jwt_token: str = request.cookies.get("jwt")
-        user_id = fetch_user_id_from_jwt_token(jwt_token)
+        jwt_token: str | None = request.cookies.get("jwt")
 
+        assert payload is not None
+        assert jwt_token is not None
+
+        user_id = fetch_user_id_from_jwt_token(jwt_token)
         item: Item = ShoppingCart.query.filter_by(
             item_id=payload["id"], user_id=user_id
         ).first()
@@ -126,9 +138,12 @@ def validate_item_not_exists_in_user_cart_or_return_forbidden(
     @wraps(func)
     def wrapper(*args, **kwargs) -> Response | T:
         payload: dict[str, Any] | None = request.get_json(silent=True)
-        jwt_token: str = request.cookies.get("jwt")
-        user_id = fetch_user_id_from_jwt_token(jwt_token)
+        jwt_token: str | None = request.cookies.get("jwt")
 
+        assert payload is not None
+        assert jwt_token is not None
+
+        user_id = fetch_user_id_from_jwt_token(jwt_token)
         item: Item = ShoppingCart.query.filter_by(
             item_id=payload["id"], user_id=user_id
         ).first()
