@@ -113,11 +113,11 @@ class TestPostOrdersRoute:
             "message": "Exists unavailable item in the order."
         }
 
-    def test_with_non_existent_item_id_should_respond_forbidden_with_message(
+    def test_with_absent_item_id_should_respond_forbidden_with_message(
         self, logged_in_client: FlaskClient, order_payload: dict[str, Any]
     ) -> None:
-        non_existent_item_id: Final = 100
-        item_id_and_count: dict[str, int] = {"id": non_existent_item_id, "count": 1}
+        absent_item_id: Final = 100
+        item_id_and_count: dict[str, int] = {"id": absent_item_id, "count": 1}
         order_payload["items"] = [item_id_and_count]
 
         response: TestResponse = logged_in_client.post("/orders", json=order_payload)
@@ -226,7 +226,7 @@ class TestDeleteOrdersByIdRoute:
         assert response.get_json(silent=True) == {"message": "Unauthorized."}
 
     def test_with_absent_order_id_should_respond_forbidden_with_message(
-        self, app: Flask, logged_in_client: FlaskClient
+        self, logged_in_client: FlaskClient
     ) -> None:
         absent_order_id = 100
 
