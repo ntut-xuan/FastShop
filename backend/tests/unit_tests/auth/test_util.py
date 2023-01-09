@@ -9,8 +9,8 @@ import pytest
 from flask import Response
 from werkzeug.datastructures import MultiDict
 
-from auth.exception import EmailAlreadyRegisteredError, UserNotFoundError
-from auth.util import (
+from src.auth.exception import EmailAlreadyRegisteredError, UserNotFoundError
+from src.auth.util import (
     Gender,
     HS256JWTCodec,
     UserProfile,
@@ -22,8 +22,8 @@ from auth.util import (
     register,
     verify_login_or_return_401,
 )
-from database import db
-from models import User
+from src.database import db
+from src.models import User
 
 if TYPE_CHECKING:
     from flask import Flask
@@ -249,7 +249,7 @@ class TestVerifyLoginDecoratorWithMockRequest:
         self, app: Flask, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         monkey_request_object = self.MonkeyRequestWithCookie("a.b.c")
-        monkeypatch.setattr("auth.util.request", monkey_request_object)
+        monkeypatch.setattr("src.auth.util.request", monkey_request_object)
         with app.app_context():
 
             decorator_return_value = verify_login_or_return_401(self.dummy_func)()
@@ -262,7 +262,7 @@ class TestVerifyLoginDecoratorWithMockRequest:
     ) -> None:
         jwt_token: str = HS256JWTCodec(app.config["jwt_key"]).encode(payload)
         monkey_request_object = self.MonkeyRequestWithCookie(jwt_token)
-        monkeypatch.setattr("auth.util.request", monkey_request_object)
+        monkeypatch.setattr("src.auth.util.request", monkey_request_object)
         with app.app_context():
 
             decorator_return_value = verify_login_or_return_401(self.dummy_func)()
@@ -273,7 +273,7 @@ class TestVerifyLoginDecoratorWithMockRequest:
         self, app: Flask, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         monkey_request_object = self.MonkeyRequestWithCookie(None)
-        monkeypatch.setattr("auth.util.request", monkey_request_object)
+        monkeypatch.setattr("src.auth.util.request", monkey_request_object)
         with app.app_context():
 
             decorator_return_value = verify_login_or_return_401(self.dummy_func)()

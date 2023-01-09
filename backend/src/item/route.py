@@ -6,10 +6,10 @@ from typing import TYPE_CHECKING, Any, Iterable
 from flask import Blueprint, make_response, request
 from pydantic import ValidationError
 
-from auth.util import verify_login_or_return_401
-from database import db
-from item.util import PayloadTypeChecker, flatten_item_payload
-from models import Item, Tag, TagOfItem
+from src.auth.util import verify_login_or_return_401
+from src.database import db
+from src.item.util import PayloadTypeChecker, flatten_item_payload
+from src.models import Item, Tag, TagOfItem
 from util import fetch_page, make_single_message_response, route_with_doc
 
 if TYPE_CHECKING:

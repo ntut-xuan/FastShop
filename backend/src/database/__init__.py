@@ -13,7 +13,7 @@ db: Final[SQLAlchemy] = SQLAlchemy()
 
 # For SQLAlchemy.create_all to know what to create.
 # NOTE: imports after the creation of "db" to resolve circular import
-from models import User
+from src.models import User
 
 
 # SQLite does not work with foreign key by default.
