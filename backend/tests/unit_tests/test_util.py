@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 from http import HTTPStatus
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
 from flask import Blueprint
 
+from config import API_DIRECTORY_PATH
 from util import SingleMessageStatus, fetch_page, route_with_doc
 
 if TYPE_CHECKING:
@@ -61,7 +63,9 @@ class TestRouteWithDocDecorator:
     def test_should_map_no_param_rule_to_doc_path(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        expect_path = self.ExpectedDocPathFunctor("../api/test/some/rule/get.yml")
+        expect_path = self.ExpectedDocPathFunctor(
+            API_DIRECTORY_PATH + "/test/some/rule/get.yml"
+        )
         monkeypatch.setattr("util.swag_from", expect_path)
 
         route_with_doc(Blueprint("test", __name__), "/some/rule", methods=["GET"])(
@@ -72,7 +76,7 @@ class TestRouteWithDocDecorator:
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         expect_path = self.ExpectedDocPathFunctor(
-            "../api/test/some/param1/rule/param2/get.yml"
+            API_DIRECTORY_PATH + "/test/some/param1/rule/param2/get.yml"
         )
         monkeypatch.setattr("util.swag_from", expect_path)
 
@@ -84,7 +88,7 @@ class TestRouteWithDocDecorator:
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         expect_path = self.ExpectedDocPathFunctor(
-            "../api/test/some/param1/rule/param2/get.yml"
+            API_DIRECTORY_PATH + "/test/some/param1/rule/param2/get.yml"
         )
         monkeypatch.setattr("util.swag_from", expect_path)
 
@@ -98,7 +102,8 @@ class TestRouteWithDocDecorator:
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         expect_path = self.ExpectedDocPathFunctor(
-            "../api/test/some/has_type/rule/no_type/and/has_type/more/no_type/get.yml"
+            API_DIRECTORY_PATH
+            + "/test/some/has_type/rule/no_type/and/has_type/more/no_type/get.yml"
         )
         monkeypatch.setattr("util.swag_from", expect_path)
 
@@ -133,3 +138,9 @@ class TestRouteWithDocDecorator:
         test_bp.route = self.RulePassedToRouteShouldNotChangeFunctor(rule)  # type: ignore[assignment]
 
         route_with_doc(test_bp, rule, methods=["GET"])(self.dummy_func)
+
+
+def test_api_direcotry_should_exists() -> None:
+    is_api_directory_exists = Path(API_DIRECTORY_PATH).exists()
+
+    assert is_api_directory_exists == True
