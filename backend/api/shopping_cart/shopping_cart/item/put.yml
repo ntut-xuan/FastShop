@@ -43,15 +43,15 @@ responses:
   403:
     description:
       "The possible situations that cause `403`:\n\n
-        - Item with specific ID is not exist in shopping cart. \n\n
-        - Item with specific ID is not exists. \n\n
+        - Item with the specific ID does not exist in the shopping cart.\n\n
+        - Item with the specific ID does not exist.\n\n
       The route will respond the failed message with respect to the situation."
     content:
       application/json:
         schema:
           $ref: '#/definitions/message'
         example:
-          message: Item with specific ID is not exist in shopping cart.
+          message: Item with the specific ID does not exist in the shopping cart.
   422:
     description: The posted data has the correct format, but the data is invalid.
     content:
