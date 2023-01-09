@@ -66,27 +66,4 @@ def _init_swagger(app: Flask) -> None:
         "jquery_js"
     ] = f"//unpkg.com/jquery@{JQUERY_VERSION}/dist/jquery.min.js"
 
-    swagger_config["specs"] = [
-        {
-            "version": "0.3.0",
-            "uiversion": 3,
-            "title": "FastShop Admin API",
-            "name": "v1",
-            "endpoint": "v1_admin_spec",
-            "description": "This is a FastShop Admin API based on the OpenAPI 3.0 specification.",
-            "route": "/v1/admin/spec",
-            "rule_filter": lambda rule: rule.rule.startswith("/"),
-        },
-        {
-            "version": "0.3.0",
-            "uiversion": 3,
-            "title": "FastShop User API",
-            "name": "v1",
-            "endpoint": "v1_user_spec",
-            "description": "This is a FastShop User API based on the OpenAPI 3.0 specification.",
-            "route": "/v1/user/spec",
-            "rule_filter": lambda rule: rule.rule.startswith("/api/user/"),
-        },
-    ]
-
     Swagger(app)
