@@ -1,3 +1,4 @@
+from pathlib import Path
 from secrets import token_hex
 from urllib.parse import quote
 
@@ -7,6 +8,7 @@ SQLALCHEMY_DATABASE_URI: str = (
         password=quote("@fsa2022")
     )
 )
+API_DIRECTORY_PATH = str(Path(__file__).parent.resolve(strict=True)) + "/api/"
 STATIC_RESOURCE_PATH = "/var/fastshop/image"
 SWAGGER = {
     "title": "FastShop API",

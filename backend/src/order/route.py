@@ -6,9 +6,10 @@ from typing import TYPE_CHECKING, Any
 from flask import Blueprint, current_app, make_response, request
 from pydantic import ValidationError
 
-from auth.util import HS256JWTCodec, verify_login_or_return_401
-from database import db
-from order.util import (
+from response_message import INVALID_DATA, WRONG_DATA_FORMAT
+from src.auth.util import HS256JWTCodec, verify_login_or_return_401
+from src.database import db
+from src.order.util import (
     PayloadTypeChecker,
     add_items_of_order,
     add_order_of_user,
@@ -16,8 +17,7 @@ from order.util import (
     has_unavailable_count_of_item,
     flatten_order_payload,
 )
-from models import DeliveryStatus, ItemOfOrder, Order, OrderStatus, User
-from response_message import INVALID_DATA, WRONG_DATA_FORMAT
+from src.models import DeliveryStatus, ItemOfOrder, Order, OrderStatus, User
 from util import make_single_message_response, route_with_doc
 
 if TYPE_CHECKING:

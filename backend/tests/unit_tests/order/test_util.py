@@ -4,9 +4,9 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from database import db
-from order.util import has_unavailable_count_of_item
-from models import Item
+from src.database import db
+from src.order.util import has_unavailable_count_of_item
+from src.models import Item
 
 if TYPE_CHECKING:
     from flask import Flask

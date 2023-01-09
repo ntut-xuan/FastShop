@@ -25,6 +25,14 @@ responses:
             type: int
         example:
           id: 5
+  400:
+    description: The data has the wrong format and the server can't understand it.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: The data has the wrong format and the server can't understand it.
   401:
     description: Unauthorized.
     content:
@@ -34,13 +42,24 @@ responses:
         example:
           message: Unauthorized.
   403:
-    description: Exists unavailable item in the order.
+    description:
+      "The specific item is absent or is unavailable (not enough count). Their corresponding message is:\n\n
+      - Absent: `The specific ID of the item is absent.`\n\n
+      - Unavailable: `Exists unavailable item in the order.`"
     content:
       application/json:
         schema:
           $ref: '#/definitions/message'
         example:
           message: Exists unavailable item in the order.
+  422:
+    description: The posted data has the correct format, but the data is invalid.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: The posted data has the correct format, but the data is invalid.
 
 definitions:
   order_payload:

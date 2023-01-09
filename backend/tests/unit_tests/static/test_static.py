@@ -9,7 +9,7 @@ from uuid import UUID
 import pytest
 
 from response_message import ABSENT_IMAGE_WITH_SPECIFIC_UUID, INVALID_UUID
-from static.util import (
+from src.static.util import (
     get_image_byte,
     get_image_byte_data_from_base64_content,
     has_image_with_specific_uuid,

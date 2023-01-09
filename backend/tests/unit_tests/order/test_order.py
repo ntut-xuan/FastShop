@@ -5,9 +5,9 @@ from typing import TYPE_CHECKING, Any, Final
 
 import pytest
 
-from database import db
-from models import DeliveryStatus, Item, ItemOfOrder, Order, OrderStatus
 from response_message import INVALID_DATA, WRONG_DATA_FORMAT
+from src.database import db
+from src.models import DeliveryStatus, Item, ItemOfOrder, Order, OrderStatus
 
 if TYPE_CHECKING:
     from flask import Flask

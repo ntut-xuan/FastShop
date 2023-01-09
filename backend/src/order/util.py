@@ -2,8 +2,8 @@ from typing import TYPE_CHECKING, Any
 
 from pydantic import Field, StrictInt, StrictStr
 
-from database import db
-from models import DeliveryStatus, Item, ItemOfOrder, Order, OrderStatus
+from src.database import db
+from src.models import DeliveryStatus, Item, ItemOfOrder, Order, OrderStatus
 
 if TYPE_CHECKING:
     from dataclasses import dataclass

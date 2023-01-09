@@ -1,6 +1,6 @@
 import enum
 
-from database import db
+from src.database import db
 
 
 class User(db.Model):  # type: ignore[name-defined]
