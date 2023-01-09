@@ -51,7 +51,7 @@ responses:
         schema:
           $ref: '#/definitions/message'
         example:
-          message: The specific ID of item is absent in shopping cart.
+          message: Item with specific ID is not exist in shopping cart.
   422:
     description: The posted data has the correct format, but the data is invalid.
     content:
