@@ -41,21 +41,19 @@ responses:
         example:
           message: Unauthorized.
   403:
-    description: The specific ID of item is absent in shopping cart.
+    description:
+      "The possible situations that cause `403`:\n\n
+        - Item with the specific ID does not exist in the shopping cart.\n\n
+        - Item with the specific ID does not exist.\n\n
+      The route will respond the failed message with respect to the situation."
     content:
       application/json:
         schema:
           $ref: '#/definitions/message'
         example:
-          message: The specific ID of item is absent in shopping cart.
+          message: Item with the specific ID does not exist in the shopping cart.
   422:
-    description:
-      "The possible situations that cause `422`:\n\n
-        - The ID of the payload is absent in items.\n\n
-        - The data type of ID is invalid.\n\n
-        - The count of the payload is negative.\n\n
-       The route will respond the failed message with respect to the situation.
-      "
+    description: The posted data has the correct format, but the data is invalid.
     content:
       application/json:
         schema:

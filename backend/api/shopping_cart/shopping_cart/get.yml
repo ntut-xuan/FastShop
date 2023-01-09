@@ -10,6 +10,14 @@ responses:
       application/json:
         schema:
           $ref: '#/definitions/shopping_cart_response'
+  401:
+    description: Unauthorized.
+    content:
+      application/json:
+        schema:
+          $ref: "#/definitions/message"
+        example:
+          message: Unauthorized.
 
 definitions:
   shopping_cart_response:
@@ -18,7 +26,7 @@ definitions:
       price:
         description: The total price of the shopping cart.
         type: integer
-        example: 200
+        example: 480
       count:
         description: The count of items in the shopping cart.
         type: integer
@@ -34,8 +42,8 @@ definitions:
               type: integer
         example:
         - id: 3
-          price: 4
+          price: 40
           count: 5
         - id: 5
-          price: 4
+          price: 40
           count: 7
