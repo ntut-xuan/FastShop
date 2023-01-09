@@ -309,7 +309,7 @@ class TestPutShoppingCartItem:
                 "/shopping_cart/item", json=request_payload
             )
 
-            assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+            assert response.status_code == HTTPStatus.FORBIDDEN
 
     def test_with_negative_count_item_payload_should_return_http_status_code_unprocessable_entity(
         self, app: Flask, logged_in_client: FlaskClient, setup_item: None

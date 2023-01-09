@@ -1,36 +1,26 @@
-from typing import TYPE_CHECKING, Any, cast
-
 from http import HTTPStatus
-from flask import Blueprint, current_app, make_response, request
+from typing import TYPE_CHECKING, Any
 
-from auth.util import HS256JWTCodec, verify_login_or_return_401
+from flask import Blueprint, make_response, request
+
+from auth.util import verify_login_or_return_401
 from database import db
-from flask import Response
-from models import Item, ShoppingCart, User
-from pydantic import BaseModel, StrictInt
-from pydantic.dataclasses import dataclass
-from sqlalchemy.sql import exists
-from sqlalchemy.exc import IntegrityError
+from models import Item, ShoppingCart
+from shopping_cart.util import fetch_user_id_from_jwt_token
+from shopping_cart.validator import (
+    validate_count_should_positive_or_return_unprocessable_entity,
+    validate_data_type_or_return_unprocessable_entity,
+    validate_format_or_return_bad_request,
+    validate_item_exists_in_user_cart_or_return_forbidden,
+    validate_item_exists_or_return_forbidden,
+    validate_item_not_exists_in_user_cart_or_return_forbidden,
+)
 from util import route_with_doc, make_single_message_response
-from response_message import INVALID_DATA, WRONG_DATA_FORMAT
 
 if TYPE_CHECKING:
     from sqlalchemy.engine.row import Row
 
 shopping_cart_bp = Blueprint("shopping_cart", __name__)
-
-
-class ItemNotExistError(ValueError):
-    pass
-
-
-def fetch_user_id_from_jwt_token(jwt_token: str) -> int:
-    jwt_codec = HS256JWTCodec(current_app.config["jwt_key"])
-    jwt_payload: dict[str, Any] = jwt_codec.decode(jwt_token)
-    user: User = db.session.execute(
-        db.select(User.uid).where(User.email == jwt_payload["data"]["e-mail"])
-    ).fetchone()
-    return cast(int, user.uid)
 
 
 @route_with_doc(shopping_cart_bp, "/shopping_cart", methods=["GET"])
@@ -66,47 +56,40 @@ def get_the_shopping_cart():
 
 @route_with_doc(shopping_cart_bp, "/shopping_cart/item", methods=["POST"])
 @verify_login_or_return_401
+@validate_format_or_return_bad_request
+@validate_data_type_or_return_unprocessable_entity
+@validate_count_should_positive_or_return_unprocessable_entity
+@validate_item_exists_or_return_forbidden
+@validate_item_not_exists_in_user_cart_or_return_forbidden
 def add_one_item_to_the_shopping_cart():
     jwt_token: str = request.cookies.get("jwt")
     user_id: int = fetch_user_id_from_jwt_token(jwt_token)
     payload: dict[str, Any] | None = request.get_json(silent=True)
 
-    validate_response: Response = _validate_shopping_cart_payload(payload)
-    if validate_response.status_code != HTTPStatus.OK:
-        return validate_response
-
-    try:
-        db.session.execute(
-            db.insert(ShoppingCart),
-            [{"user_id": user_id, "count": payload["count"], "item_id": payload["id"]}],
-        )
-    except IntegrityError:
-        return make_single_message_response(
-            HTTPStatus.FORBIDDEN, "The item already exists in cart."
-        )
+    shopping_cart = ShoppingCart(
+        user_id=user_id, count=payload["count"], item_id=payload["id"]
+    )
+    db.session.add(shopping_cart)
+    db.session.commit()
 
     return make_single_message_response(HTTPStatus.OK)
 
 
 @route_with_doc(shopping_cart_bp, "/shopping_cart/item", methods=["PUT"])
 @verify_login_or_return_401
+@validate_format_or_return_bad_request
+@validate_data_type_or_return_unprocessable_entity
+@validate_count_should_positive_or_return_unprocessable_entity
+@validate_item_exists_or_return_forbidden
+@validate_item_exists_in_user_cart_or_return_forbidden
 def update_one_item_to_the_shopping_cart():
     jwt_token: str = request.cookies.get("jwt")
     user_id: int = fetch_user_id_from_jwt_token(jwt_token)
     payload: dict[str, Any] | None = request.get_json(silent=True)
 
-    validate_response: Response = _validate_shopping_cart_payload(payload)
-    if validate_response.status_code != HTTPStatus.OK:
-        return validate_response
-
-    shopping_cart: ShoppingCart | None = ShoppingCart.query.filter_by(
+    shopping_cart: ShoppingCart = ShoppingCart.query.filter_by(
         user_id=user_id, item_id=payload["id"]
     ).first()
-    if shopping_cart == None:
-        return make_single_message_response(
-            HTTPStatus.UNPROCESSABLE_ENTITY, "The ID of the payload is absent in items."
-        )
-
     shopping_cart.count = payload["count"]
     db.session.commit()
 
@@ -120,40 +103,5 @@ def delete_the_shopping_cart():
     user_id: int = fetch_user_id_from_jwt_token(jwt_token)
 
     db.session.execute(db.delete(ShoppingCart).where(ShoppingCart.user_id == user_id))
-
-    return make_single_message_response(HTTPStatus.OK)
-
-
-def _validate_shopping_cart_payload(payload: dict[str, Any]):
-    """
-    Validate the payload with validator, except won't raise any error if payload is valid.
-    """
-
-    @dataclass
-    class Validator:
-        count: StrictInt
-        id: StrictInt
-
-    def validate_count(count):
-        if count < 0:
-            raise ValueError("Count should be positive.")
-
-    def validate_item_is_exists(item_id):
-        item: Item | None = Item.query.filter_by(id=item_id).first()
-        if item == None:
-            raise ItemNotExistError("Item with specific ID is not exists.")
-
-    try:
-        Validator(**payload)
-        validate_count(payload["count"])
-        validate_item_is_exists(payload["id"])
-    except ItemNotExistError as error:
-        return make_single_message_response(HTTPStatus.FORBIDDEN, str(error))
-    except ValueError:
-        return make_single_message_response(
-            HTTPStatus.UNPROCESSABLE_ENTITY, INVALID_DATA
-        )
-    except TypeError:
-        return make_single_message_response(HTTPStatus.BAD_REQUEST, WRONG_DATA_FORMAT)
 
     return make_single_message_response(HTTPStatus.OK)
