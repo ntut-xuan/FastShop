@@ -41,7 +41,7 @@ def route_with_doc(bp: Blueprint, rule: str, methods: list[str]):
     def wrapper(func):
         for method in methods:
             swag_from(
-                f"../api/{bp.name}{doc_path}/{method.lower()}.yml",
+                f"../../api/{bp.name}{doc_path}/{method.lower()}.yml",
                 methods=[method],
             )(func)
         return bp.route(rule, methods=methods)(func)
