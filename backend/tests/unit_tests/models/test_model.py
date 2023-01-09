@@ -6,8 +6,8 @@ import pytest
 from sqlalchemy.exc import DatabaseError, StatementError
 from sqlalchemy.sql.expression import Select
 
-from database import db
-from models import (
+from src.database import db
+from src.models import (
     DeliveryStatus,
     Item,
     ItemOfOrder,

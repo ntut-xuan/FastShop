@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING, Any, cast
 
 import pytest
 
-from database import db
-from models import Item, Tag, TagOfItem
+from src.database import db
+from src.models import Item, Tag, TagOfItem
 from response_message import INVALID_DATA, WRONG_DATA_FORMAT
 
 if TYPE_CHECKING:

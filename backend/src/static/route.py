@@ -6,13 +6,13 @@ from uuid import uuid4
 
 from flask import Blueprint, make_response, request, send_file
 
-from auth.util import verify_login_or_return_401
+from src.auth.util import verify_login_or_return_401
 from response_message import (
     ABSENT_IMAGE_WITH_SPECIFIC_UUID,
     INVALID_UUID,
     WRONG_DATA_FORMAT,
 )
-from static.util import (
+from src.static.util import (
     delete_image,
     get_file_path_by_image_uuid,
     get_image_byte_data_from_base64_content,

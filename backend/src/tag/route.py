@@ -5,9 +5,9 @@ from typing import TYPE_CHECKING, Any
 
 from flask import Blueprint, make_response, request
 
-from auth.util import verify_login_or_return_401
-from database import db
-from models import Item, Tag, TagOfItem
+from src.auth.util import verify_login_or_return_401
+from src.database import db
+from src.models import Item, Tag, TagOfItem
 from response_message import INVALID_DATA, WRONG_DATA_FORMAT
 from util import make_single_message_response, route_with_doc
 

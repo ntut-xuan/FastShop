@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING, Any
 
 import pytest
 
-from database import db
-from models import Item, Tag, TagOfItem
+from src.database import db
+from src.models import Item, Tag, TagOfItem
 
 if TYPE_CHECKING:
     from flask import Flask

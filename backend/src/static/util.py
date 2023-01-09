@@ -4,7 +4,7 @@ from pathlib import Path
 
 from flask import current_app
 
-from static.exception import ImageNotExistError
+from src.static.exception import ImageNotExistError
 
 
 def has_image_with_specific_uuid(image_uuid: str) -> bool:

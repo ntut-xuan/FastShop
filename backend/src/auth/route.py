@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING, Any, Iterable, Mapping, cast
 
 from flask import Blueprint, Response, current_app, make_response, request
 
-from auth.exception import EmailAlreadyRegisteredError
-from auth.util import (
+from src.auth.exception import EmailAlreadyRegisteredError
+from src.auth.util import (
     BIRTHDAY_FORMAT,
     HS256JWTCodec,
     UserProfile,

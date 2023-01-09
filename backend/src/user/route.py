@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any
 
 from flask import Blueprint, current_app, make_response, request
 
-from auth.util import (
+from src.auth.util import (
     BIRTHDAY_FORMAT,
     HS256JWTCodec,
     verify_login_or_redirect_login_page,
