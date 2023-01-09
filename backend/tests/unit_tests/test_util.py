@@ -140,7 +140,7 @@ class TestRouteWithDocDecorator:
         route_with_doc(test_bp, rule, methods=["GET"])(self.dummy_func)
 
 
-def test_api_direcotry_should_exists() -> None:
+def test_api_directory_should_exists() -> None:
     is_api_directory_exists = Path(API_DIRECTORY_PATH).exists()
 
     assert is_api_directory_exists
