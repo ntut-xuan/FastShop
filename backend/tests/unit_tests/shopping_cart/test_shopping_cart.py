@@ -5,9 +5,9 @@ from typing import TYPE_CHECKING, Any
 
 import pytest
 
-from database import db
-from models import Item, ShoppingCart, Tag, TagOfItem
-from shopping_cart.route import fetch_user_id_from_jwt_token
+from src.database import db
+from src.models import Item, ShoppingCart, Tag, TagOfItem
+from src.shopping_cart.route import fetch_user_id_from_jwt_token
 from sqlalchemy import func
 
 if TYPE_CHECKING:

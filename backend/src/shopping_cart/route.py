@@ -3,11 +3,11 @@ from typing import TYPE_CHECKING, Any
 
 from flask import Blueprint, make_response, request
 
-from auth.util import verify_login_or_return_401
-from database import db
-from models import Item, ShoppingCart
-from shopping_cart.util import fetch_user_id_from_jwt_token
-from shopping_cart.validator import (
+from src.auth.util import verify_login_or_return_401
+from src.database import db
+from src.models import Item, ShoppingCart
+from src.shopping_cart.util import fetch_user_id_from_jwt_token
+from src.shopping_cart.validator import (
     validate_count_should_positive_or_return_unprocessable_entity,
     validate_data_type_or_return_unprocessable_entity,
     validate_format_or_return_bad_request,

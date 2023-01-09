@@ -6,9 +6,9 @@ from flask import Response, request
 from pydantic import StrictInt
 from pydantic.dataclasses import dataclass
 
-from models import Item, ShoppingCart
 from response_message import INVALID_DATA, WRONG_DATA_FORMAT
-from shopping_cart.util import fetch_user_id_from_jwt_token
+from src.models import Item, ShoppingCart
+from src.shopping_cart.util import fetch_user_id_from_jwt_token
 from util import make_single_message_response
 
 T = TypeVar("T")

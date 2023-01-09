@@ -2,9 +2,9 @@ from typing import Any, cast
 
 from flask import current_app
 
-from auth.util import HS256JWTCodec
-from database import db
-from models import User
+from src.auth.util import HS256JWTCodec
+from src.database import db
+from src.models import User
 
 
 def fetch_user_id_from_jwt_token(jwt_token: str) -> int:
