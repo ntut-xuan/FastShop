@@ -4,14 +4,15 @@ from http import HTTPStatus
 from typing import TYPE_CHECKING, Any
 
 import pytest
+from sqlalchemy import func
 
 from src.database import db
 from src.models import Item, ShoppingCart, Tag, TagOfItem
 from src.shopping_cart.route import fetch_user_id_from_jwt_token
-from sqlalchemy import func
 
 if TYPE_CHECKING:
     from http.cookiejar import Cookie, CookieJar
+
     from flask import Flask
     from flask.testing import FlaskClient
     from werkzeug.test import TestResponse

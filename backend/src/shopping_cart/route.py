@@ -15,7 +15,7 @@ from src.shopping_cart.validator import (
     validate_item_exists_or_return_forbidden,
     validate_item_not_exists_in_user_cart_or_return_forbidden,
 )
-from util import route_with_doc, make_single_message_response
+from util import make_single_message_response, route_with_doc
 
 if TYPE_CHECKING:
     from sqlalchemy.engine.row import Row
