@@ -83,7 +83,9 @@ class NevigationBar extends React.Component {
                         </div>
                         <AuthenticationComponent username={username} login={login} />
                         <div className={clickable_text}>
-                            <p className="relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">購物車</p>
+                            <a href="/cart">
+                                <p className="relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">購物車</p>
+                            </a>
                         </div>
                     </div>
                 </div>

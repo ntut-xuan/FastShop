@@ -171,9 +171,13 @@ var NevigationBar = function (_React$Component2) {
                             "div",
                             { className: clickable_text },
                             React.createElement(
-                                "p",
-                                { className: "relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]" },
-                                "\u8CFC\u7269\u8ECA"
+                                "a",
+                                { href: "/cart" },
+                                React.createElement(
+                                    "p",
+                                    { className: "relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]" },
+                                    "\u8CFC\u7269\u8ECA"
+                                )
                             )
                         )
                     )
