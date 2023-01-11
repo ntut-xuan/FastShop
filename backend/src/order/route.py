@@ -3,11 +3,15 @@ from __future__ import annotations
 from http import HTTPStatus
 from typing import TYPE_CHECKING, Any
 
-from flask import Blueprint, current_app, make_response, request
+from flask import Blueprint, current_app, make_response, redirect, request
 from pydantic import ValidationError
 
 from response_message import INVALID_DATA, WRONG_DATA_FORMAT
-from src.auth.util import HS256JWTCodec, verify_login_or_return_401
+from src.auth.util import (
+    HS256JWTCodec,
+    verify_login_or_redirect_login_page,
+    verify_login_or_return_401,
+)
 from src.database import db
 from src.order.util import (
     PayloadTypeChecker,
@@ -18,7 +22,7 @@ from src.order.util import (
     flatten_order_payload,
 )
 from src.models import DeliveryStatus, ItemOfOrder, Order, OrderStatus, User
-from util import make_single_message_response, route_with_doc
+from util import fetch_page, make_single_message_response, route_with_doc
 
 if TYPE_CHECKING:
     from flask import Response
@@ -117,6 +121,25 @@ def fetch_the_order_with_specific_id(id: int) -> Response:
         )
 
     return make_response(_get_response_payload_of_order(order))
+
+
+@order_bp.route("/order_confirmation", methods=["GET"])
+@verify_login_or_redirect_login_page
+def order_confrimation() -> str:
+    return fetch_page("order_confirmation")
+
+
+@order_bp.route("/order_detail/<int:order_id>", methods=["GET"])
+@verify_login_or_redirect_login_page
+def order_detail(order_id) -> str:
+    uid: int | None = _get_uid_from_jwt(request.cookies["jwt"])
+    assert uid is not None
+
+    order: Order | None = Order.query.filter_by(order_id=order_id, user_id=uid).first()
+    if order == None:
+        return redirect("/")
+
+    return fetch_page("order_detail")
 
 
 def _get_uid_from_jwt(jwt: str) -> int | None:

@@ -3,7 +3,10 @@ from typing import TYPE_CHECKING, Any
 
 from flask import Blueprint, make_response, request
 
-from src.auth.util import verify_login_or_return_401
+from src.auth.util import (
+    verify_login_or_redirect_login_page,
+    verify_login_or_return_401,
+)
 from src.database import db
 from src.models import Item, ShoppingCart
 from src.shopping_cart.util import fetch_user_id_from_jwt_token
@@ -15,7 +18,7 @@ from src.shopping_cart.validator import (
     validate_item_exists_or_return_forbidden,
     validate_item_not_exists_in_user_cart_or_return_forbidden,
 )
-from util import make_single_message_response, route_with_doc
+from util import make_single_message_response, route_with_doc, fetch_page
 
 if TYPE_CHECKING:
     from sqlalchemy.engine.row import Row
@@ -114,3 +117,9 @@ def delete_the_shopping_cart():
     db.session.commit()
 
     return make_single_message_response(HTTPStatus.OK)
+
+
+@shopping_cart_bp.route("/cart", methods=["GET"])
+@verify_login_or_redirect_login_page
+def shopping_cart_page_route() -> str:
+    return fetch_page("shopping_cart")
