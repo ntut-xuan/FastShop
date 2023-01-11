@@ -121,7 +121,7 @@ def validate_item_exists_in_user_cart_or_return_forbidden(
         item: Item = ShoppingCart.query.filter_by(
             item_id=payload["id"], user_id=user_id
         ).first()
-        if item == None:
+        if item is None:
             return make_single_message_response(
                 HTTPStatus.FORBIDDEN,
                 "Item with specific ID is not exist in shopping cart.",
