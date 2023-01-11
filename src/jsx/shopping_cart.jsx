@@ -55,7 +55,7 @@ class Item extends React.Component {
         })
     }
     componentDidMount(){
-        let {id, avatar, item_name, count, price, refresh_sum} = this.state
+        let {refresh_sum} = this.state
         refresh_sum()
     }
     render(){

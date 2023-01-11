@@ -82,13 +82,7 @@ var Item = function (_React$Component) {
     }, {
         key: "componentDidMount",
         value: function componentDidMount() {
-            var _state = this.state,
-                id = _state.id,
-                avatar = _state.avatar,
-                item_name = _state.item_name,
-                count = _state.count,
-                price = _state.price,
-                refresh_sum = _state.refresh_sum;
+            var refresh_sum = this.state.refresh_sum;
 
             refresh_sum();
         }
@@ -97,13 +91,13 @@ var Item = function (_React$Component) {
         value: function render() {
             var _this2 = this;
 
-            var _state2 = this.state,
-                id = _state2.id,
-                avatar = _state2.avatar,
-                item_name = _state2.item_name,
-                count = _state2.count,
-                price = _state2.price,
-                refresh_sum = _state2.refresh_sum;
+            var _state = this.state,
+                id = _state.id,
+                avatar = _state.avatar,
+                item_name = _state.item_name,
+                count = _state.count,
+                price = _state.price,
+                refresh_sum = _state.refresh_sum;
 
             return React.createElement(
                 "div",
@@ -247,9 +241,9 @@ var MainPlatform = function (_React$Component2) {
     }, {
         key: "render",
         value: function render() {
-            var _state3 = this.state,
-                item_list = _state3.item_list,
-                total = _state3.total;
+            var _state2 = this.state,
+                item_list = _state2.item_list,
+                total = _state2.total;
 
             var item_object_list = [];
             for (var i = 0; i < item_list.length; i++) {
