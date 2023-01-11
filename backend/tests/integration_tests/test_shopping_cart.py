@@ -1,23 +1,23 @@
 from tests.unit_tests.shopping_cart.test_route import (
-    TestDeleteShoppingCart,
-    TestGetShoppingCart,
-    TestPostShoppingCartItem,
-    TestPutShoppingCartItem,
+    TestDeleteShoppingCartRoute,
+    TestGetShoppingCartRoute,
+    TestPostShoppingCartItemRoute,
+    TestPutShoppingCartItemRoute,
     setup_item,
 )
 
 
-class TestDeleteShoppingCartWithMariaDB(TestDeleteShoppingCart):
+class TestDeleteShoppingCartWithMariaDB(TestDeleteShoppingCartRoute):
     pass
 
 
-class TestGetShoppingCartWithMariaDB(TestGetShoppingCart):
+class TestGetShoppingCartWithMariaDB(TestGetShoppingCartRoute):
     pass
 
 
-class TestPostShoppingCartItemWithMariaDB(TestPostShoppingCartItem):
+class TestPostShoppingCartItemWithMariaDB(TestPostShoppingCartItemRoute):
     pass
 
 
-class TestPutShoppingCartItemWithMariaDB(TestPutShoppingCartItem):
+class TestPutShoppingCartItemWithMariaDB(TestPutShoppingCartItemRoute):
     pass
