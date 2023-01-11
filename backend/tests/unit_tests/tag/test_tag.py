@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING, Any, cast
 
 import pytest
 
-from database import db
-from models import Item, Tag, TagOfItem
+from src.database import db
+from src.models import Item, Tag, TagOfItem
 from response_message import INVALID_DATA, WRONG_DATA_FORMAT
 
 if TYPE_CHECKING:
@@ -73,10 +73,10 @@ class TestPostTagsRoute:
         assert tag is not None
 
     @pytest.mark.parametrize(
-        argnames=("payload",),
+        argnames="payload",
         argvalues=(
-            (None,),  # missing payload
-            ({"should be name": "xxx"},),  # missing key "name"
+            None,  # missing payload
+            {"should be name": "xxx"},  # missing key "name"
         ),
     )
     def test_with_wrong_data_format_should_respond_bad_request_with_message(
@@ -229,10 +229,10 @@ class TestPutTagsByIdRoute:
         assert response.get_json(silent=True) == {"message": "Unauthorized."}
 
     @pytest.mark.parametrize(
-        argnames=("payload",),
+        argnames="payload",
         argvalues=(
-            (None,),  # missing payload
-            ({"should be name": "xxx"},),  # missing key "name"
+            None,  # missing payload
+            {"should be name": "xxx"},  # missing key "name"
         ),
     )
     def test_with_wrong_data_format_should_respond_bad_request_with_message(

@@ -6,9 +6,9 @@ from typing import TYPE_CHECKING, Any
 
 import pytest
 
-from auth.util import Gender, HS256JWTCodec
-from database import db
-from models import User
+from src.auth.util import Gender, HS256JWTCodec
+from src.database import db
+from src.models import User
 from tests.util import assert_not_raise
 
 if TYPE_CHECKING:
@@ -120,8 +120,7 @@ class TestLoginRoute:
         }
 
     def test_get_should_response_content_of_login_html(
-        self,
-        client: FlaskClient,
+        self, client: FlaskClient
     ) -> None:
         resp: TestResponse = client.get("/login")
 
@@ -169,8 +168,7 @@ class TestLoginRoute:
         )
 
     def test_post_with_invalid_data_should_have_code_bad_request(
-        self,
-        client: FlaskClient,
+        self, client: FlaskClient
     ) -> None:
         invalid_data: dict[str, str] = {"uriah": "garbage"}
 
@@ -179,8 +177,7 @@ class TestLoginRoute:
         assert resp.status_code == HTTPStatus.BAD_REQUEST
 
     def test_post_with_invalid_data_should_response_failed_message_in_json(
-        self,
-        client: FlaskClient,
+        self, client: FlaskClient
     ) -> None:
         invalid_data: dict[str, str] = {"uriah": "garbage"}
 
@@ -194,8 +191,7 @@ class TestLoginRoute:
         )
 
     def test_post_with_invalid_email_should_have_code_unprocessable_entity(
-        self,
-        client: FlaskClient,
+        self, client: FlaskClient
     ) -> None:
         invalid_email: str = "t109590031@ntut@org@tw"
         data: dict[str, str] = {"e-mail": invalid_email, "password": "12345678"}
@@ -205,8 +201,7 @@ class TestLoginRoute:
         assert resp.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
     def test_post_with_invalid_email_should_response_failed_message_in_json(
-        self,
-        client: FlaskClient,
+        self, client: FlaskClient
     ) -> None:
         invalid_email: str = "t109590031@ntut@org@tw"
         data: dict[str, str] = {"e-mail": invalid_email, "password": "12345678"}
@@ -221,9 +216,7 @@ class TestLoginRoute:
         )
 
     def test_post_with_existing_email_and_password_should_exist_jwt_cookie(
-        self,
-        client: FlaskClient,
-        new_data: dict[str, Any],
+        self, client: FlaskClient, new_data: dict[str, Any]
     ) -> None:
         client.post("/login", json=new_data)
 
@@ -232,10 +225,7 @@ class TestLoginRoute:
             (jwt_cookie,) = tuple(filter(lambda x: x.name == "jwt", cookies))
 
     def test_post_with_correct_data_should_have_correct_jwt_token_attribute(
-        self,
-        app: Flask,
-        client: FlaskClient,
-        new_data: dict[str, Any],
+        self, app: Flask, client: FlaskClient, new_data: dict[str, Any]
     ) -> None:
         codec = HS256JWTCodec(app.config["jwt_key"])
 
@@ -265,10 +255,7 @@ class TestVerifyJWT:
         }
 
     def test_post_with_valid_jwt_cookie_should_have_code_http_ok(
-        self,
-        app: Flask,
-        client: FlaskClient,
-        payload: dict[str, Any],
+        self, app: Flask, client: FlaskClient, payload: dict[str, Any]
     ) -> None:
         jwt_token: str = HS256JWTCodec(app.config["jwt_key"]).encode(payload)
         client.set_cookie("localhost", "jwt", jwt_token)
@@ -278,10 +265,7 @@ class TestVerifyJWT:
         assert resp.status_code == HTTPStatus.OK
 
     def test_post_with_valid_jwt_cookie_should_return_payload_in_json(
-        self,
-        app: Flask,
-        client: FlaskClient,
-        payload: dict[str, Any],
+        self, app: Flask, client: FlaskClient, payload: dict[str, Any]
     ) -> None:
         jwt_token: str = HS256JWTCodec(app.config["jwt_key"]).encode(payload)
         client.set_cookie("localhost", "jwt", jwt_token)
@@ -292,16 +276,14 @@ class TestVerifyJWT:
         assert resp.json["data"] == payload  # type: ignore[index]
 
     def test_post_with_absent_jwt_cookie_should_have_code_http_unauthorized(
-        self,
-        client: FlaskClient,
+        self, client: FlaskClient
     ) -> None:
         resp: TestResponse = client.post("/verify_jwt")
 
         assert resp.status_code == HTTPStatus.UNAUTHORIZED
 
     def test_post_with_absent_jwt_cookie_should_return_failed_message_in_json(
-        self,
-        client: FlaskClient,
+        self, client: FlaskClient
     ) -> None:
         resp: TestResponse = client.post("/verify_jwt")
 
@@ -312,8 +294,7 @@ class TestVerifyJWT:
         )
 
     def test_post_with_invalid_jwt_cookie_should_have_code_http_unprocessable_entity(
-        self,
-        client: FlaskClient,
+        self, client: FlaskClient
     ) -> None:
         client.set_cookie("localhost", "jwt", "aaa.bbb.ccc")
 
@@ -322,8 +303,7 @@ class TestVerifyJWT:
         assert resp.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
     def test_post_with_invalid_jwt_cookie_should_return_failed_message_in_json(
-        self,
-        client: FlaskClient,
+        self, client: FlaskClient
     ) -> None:
         client.set_cookie("localhost", "jwt", "aaa.bbb.ccc")
 
@@ -337,10 +317,7 @@ class TestVerifyJWT:
 
 
 class TestLogoutRoute:
-    def test_if_jwt_exist_should_return_ok(
-        self,
-        client: FlaskClient,
-    ) -> None:
+    def test_if_jwt_exist_should_return_ok(self, client: FlaskClient) -> None:
         client.set_cookie("localhost", "jwt", "aaa.bbb.ccc")
 
         resp: TestResponse = client.post("/logout")
@@ -348,8 +325,7 @@ class TestLogoutRoute:
         assert resp.status_code == HTTPStatus.OK
 
     def test_if_jwt_exist_should_let_jwt_token_absent(
-        self,
-        client: FlaskClient,
+        self, client: FlaskClient
     ) -> None:
         client.set_cookie("localhost", "jwt", "aaa.bbb.ccc")
 
@@ -358,10 +334,7 @@ class TestLogoutRoute:
         cookies: tuple[Cookie, ...] = _get_cookies(client.cookie_jar)
         assert not cookies
 
-    def test_if_jwt_absent_should_return_ok(
-        self,
-        client: FlaskClient,
-    ) -> None:
+    def test_if_jwt_absent_should_return_ok(self, client: FlaskClient) -> None:
         resp: TestResponse = client.post("/logout")
 
         assert resp.status_code == HTTPStatus.OK

@@ -1,0 +1,108 @@
+Create an order that contains several items and information for delivery.
+---
+tags:
+  - order
+
+description:
+  "Create an order that contains several items and information for delivery.\n\n
+  Return the ID of the order if the order is created successfully.\n\n
+  Return `4XX` HTTP status code if the order is created faulty."
+
+requestBody:
+  content:
+    application/json:
+      schema:
+        $ref: '#/definitions/order_payload'
+  required: true
+
+responses:
+  200:
+    description: OK
+    content:
+      application/json:
+        schema:
+          id:
+            type: int
+        example:
+          id: 5
+  400:
+    description: The data has the wrong format and the server can't understand it.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: The data has the wrong format and the server can't understand it.
+  401:
+    description: Unauthorized.
+    content:
+      application/json:
+        schema:
+          $ref: "#/definitions/message"
+        example:
+          message: Unauthorized.
+  403:
+    description:
+      "The specific item is absent or is unavailable (not enough count). Their corresponding message is:\n\n
+      - Absent: `The specific ID of the item is absent.`\n\n
+      - Unavailable: `Exists unavailable item in the order.`"
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: Exists unavailable item in the order.
+  422:
+    description: The posted data has the correct format, but the data is invalid.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: The posted data has the correct format, but the data is invalid.
+
+definitions:
+  order_payload:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+            count:
+              type: integer
+      date:
+        type: integer
+      note:
+        type: string
+      delivery_info:
+        type: object
+        properties:
+          firstname:
+            type: string
+          lastname:
+            type: string
+          email:
+            type: string
+          phone_number:
+            type: string
+          address:
+            type: string
+    example:
+      items:
+        - id: 3
+          count: 5
+        - id: 5
+          count: 7
+      note: "No Iansui"
+      date: 1672737308
+      delivery_info:
+        firstname: Han-Xuan
+        lastname: Huang
+        email: test@test.com
+        phone_number: 0921474836
+        address: No. 1, Sec. 3, Zhongxiao E. Rd., Da'an Dist., Taipei City 106344 , Taiwan (R.O.C.)
+

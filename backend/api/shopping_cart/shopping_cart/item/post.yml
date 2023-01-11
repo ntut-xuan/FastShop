@@ -1,0 +1,72 @@
+Add one item to the shopping cart.
+---
+tags:
+  - shopping_cart
+
+description:
+  "Add one item to the shopping cart.\n\n
+   Return `4XX` if the data is invalid or the user is unauthorized."
+
+requestBody:
+  content:
+    application/json:
+      schema:
+          $ref: '#/definitions/shopping_cart_item_payload'
+  required: true
+
+definitions:
+  shopping_cart_item_payload:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 3
+      count:
+        type: integer
+        example: 5
+
+responses:
+  200:
+    description: OK
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: OK
+  400:
+    description: The data has the wrong format and the server can't understand it.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: The data has the wrong format and the server can't understand it.
+  401:
+    description: Unauthorized.
+    content:
+      application/json:
+        schema:
+          $ref: "#/definitions/message"
+        example:
+          message: Unauthorized.
+  403:
+    description:
+      "The possible situations that cause `403`:\n\n
+        - Item with the specific ID already exists in the shopping cart.\n\n
+        - Item with the specific ID does not exists.\n\n
+      The route will respond the failed message with respect to the situation."
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: Item with the specific ID already exists in the shopping cart.
+  422:
+    description: The posted data has the correct format, but the data is invalid.
+    content:
+      application/json:
+        schema:
+          $ref: '#/definitions/message'
+        example:
+          message: The posted data has the correct format, but the data is invalid.

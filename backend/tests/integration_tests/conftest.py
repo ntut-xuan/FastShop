@@ -7,7 +7,7 @@ from urllib.parse import quote
 import pytest
 
 from app import create_app
-from database import create_db, db
+from src.database import create_db, db
 from tests.util import executescript
 
 if TYPE_CHECKING:
