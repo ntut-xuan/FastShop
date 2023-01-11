@@ -58,25 +58,11 @@ var NevigationBar = function (_React$Component2) {
         var _this2 = _possibleConstructorReturn(this, (NevigationBar.__proto__ || Object.getPrototypeOf(NevigationBar)).call(this, props));
 
         _this2.state = { login: false, username: null };
-        _this2.nav_extend_on = _this2.nav_extend_on.bind(_this2);
-        _this2.nav_extend_off = _this2.nav_extend_off.bind(_this2);
         _this2.check_jwt_verify = _this2.check_jwt_verify.bind(_this2);
         return _this2;
     }
 
     _createClass(NevigationBar, [{
-        key: "nav_extend_on",
-        value: function nav_extend_on() {
-            document.getElementById("nav_extend_main").classList.remove("h-0");
-            document.getElementById("nav_extend_main").classList.add("h-80");
-        }
-    }, {
-        key: "nav_extend_off",
-        value: function nav_extend_off() {
-            document.getElementById("nav_extend_main").classList.remove("h-80");
-            document.getElementById("nav_extend_main").classList.add("h-0");
-        }
-    }, {
         key: "check_jwt_verify",
         value: function check_jwt_verify() {
             $.ajax({
@@ -127,7 +113,7 @@ var NevigationBar = function (_React$Component2) {
                             { href: "/items_list" },
                             React.createElement(
                                 "div",
-                                { className: clickable_text, onMouseOver: this.nav_extend_on, onMouseOut: this.nav_extend_off },
+                                { className: clickable_text },
                                 React.createElement(
                                     "p",
                                     { className: "relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]" },

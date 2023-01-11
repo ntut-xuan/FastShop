@@ -191,8 +191,14 @@ var MainPlatform = function (_React$Component2) {
                 dataType: "json",
                 contentType: "application/json",
                 success: function success(data) {
-                    success_swal("訂單創立成功").then(function () {
-                        window.location.href = "/profile";
+                    $.ajax({
+                        url: "/shopping_cart",
+                        type: "DELETE",
+                        success: function success(data) {
+                            success_swal("訂單創立成功").then(function () {
+                                window.location.href = "/profile";
+                            });
+                        }
                     });
                 }
             });

@@ -29,17 +29,7 @@ class NevigationBar extends React.Component {
     constructor(props){
         super(props);
         this.state = {login: false, username: null}
-        this.nav_extend_on = this.nav_extend_on.bind(this);
-        this.nav_extend_off = this.nav_extend_off.bind(this);
         this.check_jwt_verify = this.check_jwt_verify.bind(this)
-    }
-    nav_extend_on(){
-        document.getElementById("nav_extend_main").classList.remove("h-0")
-        document.getElementById("nav_extend_main").classList.add("h-80")
-    }
-    nav_extend_off(){
-        document.getElementById("nav_extend_main").classList.remove("h-80")
-        document.getElementById("nav_extend_main").classList.add("h-0")
     }
     check_jwt_verify(){
         $.ajax({
@@ -66,8 +56,8 @@ class NevigationBar extends React.Component {
                             </div>
                         </a>
                         <a href="/items_list">
-                            <div className={clickable_text} onMouseOver={this.nav_extend_on} onMouseOut={this.nav_extend_off}>
-                                <p className="relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">所有商品</p>
+                            <div className={clickable_text}>
+                            <p className="relative top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">所有商品</p>
                             </div>
                         </a>
                         <div className={clickable_text}>

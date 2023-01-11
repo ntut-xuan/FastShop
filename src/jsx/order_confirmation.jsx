@@ -118,7 +118,13 @@ class MainPlatform extends React.Component {
             dataType: "json",
             contentType: "application/json",
             success: function(data){
-                success_swal("訂單創立成功").then(() => {window.location.href = "/profile"})
+                $.ajax({
+                    url: "/shopping_cart",
+                    type: "DELETE",
+                    success: function(data){
+                        success_swal("訂單創立成功").then(() => {window.location.href = "/profile"})
+                    }
+                })
             },
         })
     }

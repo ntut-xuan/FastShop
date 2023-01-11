@@ -6,27 +6,140 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var MainPlatform = function (_React$Component) {
-    _inherits(MainPlatform, _React$Component);
+var OrderRow = function (_React$Component) {
+    _inherits(OrderRow, _React$Component);
+
+    function OrderRow(props) {
+        _classCallCheck(this, OrderRow);
+
+        var _this = _possibleConstructorReturn(this, (OrderRow.__proto__ || Object.getPrototypeOf(OrderRow)).call(this, props));
+
+        _this.state = {
+            id: props.id,
+            date: props.date,
+            avatars: props.avatars,
+            status_code: props.status_code
+        };
+        return _this;
+    }
+
+    _createClass(OrderRow, [{
+        key: "status_code_to_zhtw",
+        value: function status_code_to_zhtw(status_code) {
+            if (status_code == "CHECKING") {
+                return "確認中";
+            } else if (status_code == "OK") {
+                return "訂單完成";
+            } else if (status_code == "CANCEL") {
+                return "訂單取消";
+            }
+        }
+    }, {
+        key: "render",
+        value: function render() {
+            var _state = this.state,
+                id = _state.id,
+                date = _state.date,
+                avatars = _state.avatars,
+                status_code = _state.status_code;
+
+            var avatars_object_list = [];
+            for (var i = 0; i < avatars.length; i++) {
+                avatars_object_list.push(React.createElement("img", { className: "w-16 h-16", src: "/static/images/".concat(avatars[i]) }));
+            }
+            return React.createElement(
+                "div",
+                { className: "w-full h-fit border-2 flex flex-row text-center px-6 gap-5 hover:bg-gray-200 hover:duration-300" },
+                React.createElement(
+                    "div",
+                    { className: "w-fit py-5" },
+                    React.createElement(
+                        "div",
+                        { className: "h-full py-5 pr-5 border-r-2" },
+                        React.createElement(
+                            "p",
+                            { className: "text-center my-auto whitespace-nowrap" },
+                            " ",
+                            id,
+                            " "
+                        )
+                    )
+                ),
+                React.createElement(
+                    "div",
+                    { className: "w-fit py-5" },
+                    React.createElement(
+                        "div",
+                        { className: "h-full py-5 pr-5 border-r-2" },
+                        React.createElement(
+                            "p",
+                            { className: "text-center my-auto whitespace-nowrap" },
+                            " ",
+                            new Date(date * 1000).toLocaleString('zh-tw', { timeZone: 'Asia/Taipei' }),
+                            " "
+                        )
+                    )
+                ),
+                React.createElement(
+                    "div",
+                    { className: "w-full py-5" },
+                    React.createElement(
+                        "div",
+                        { className: "h-full pr-5 border-r-2 flex flex-row gap-3" },
+                        avatars_object_list
+                    )
+                ),
+                React.createElement(
+                    "div",
+                    { className: "w-fit py-5" },
+                    React.createElement(
+                        "div",
+                        { className: "h-full py-5 pr-5 border-r-2" },
+                        React.createElement(
+                            "p",
+                            { className: "text-center my-auto whitespace-nowrap" },
+                            " ",
+                            this.status_code_to_zhtw(status_code),
+                            " "
+                        )
+                    )
+                )
+            );
+        }
+    }]);
+
+    return OrderRow;
+}(React.Component);
+
+var MainPlatform = function (_React$Component2) {
+    _inherits(MainPlatform, _React$Component2);
 
     function MainPlatform(props) {
         _classCallCheck(this, MainPlatform);
 
-        var _this = _possibleConstructorReturn(this, (MainPlatform.__proto__ || Object.getPrototypeOf(MainPlatform)).call(this, props));
+        var _this2 = _possibleConstructorReturn(this, (MainPlatform.__proto__ || Object.getPrototypeOf(MainPlatform)).call(this, props));
 
-        _this.state = {
+        _this2.state = {
             firstname: "",
             lastname: "",
             birthday: "",
             gender: -1,
-            email: ""
+            email: "",
+            orders: undefined,
+            order_total: 0,
+            order_item_total: 0,
+            order_cost_total: 0,
+            order_id_to_order_map: undefined,
+            item_id_to_item_avatar: undefined
         };
-        return _this;
+        _this2.order_row_array = _this2.order_row_array.bind(_this2);
+        return _this2;
     }
 
     _createClass(MainPlatform, [{
         key: "componentDidMount",
         value: function componentDidMount() {
+            var id_price_map = new Map();
             $.ajax({
                 url: "/user",
                 method: "GET",
@@ -37,6 +150,46 @@ var MainPlatform = function (_React$Component) {
                         birthday: data["birthday"],
                         gender: data["gender"],
                         email: data["e-mail"]
+                    });
+                }.bind(this)
+            });
+            $.ajax({
+                url: "/items",
+                methods: "GET",
+                success: function (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        id_price_map.set(data[i]["id"], data[i]["price"]["discount"]);
+                    }
+                    var item_id_to_item_avatar = new Map();
+                    for (var _i = 0; _i < data.length; _i++) {
+                        item_id_to_item_avatar.set(data[_i]["id"], data[_i]["avatar"]);
+                    }
+                    this.setState({ item_id_to_item_avatar: item_id_to_item_avatar });
+                }.bind(this)
+            });
+            $.ajax({
+                url: "/orders",
+                methods: "GET",
+                success: function (data) {
+                    var order_total = data["count"];
+                    var order_item_total = 0;
+                    var order_cost_total = 0;
+                    for (var i = 0; i < data["result"].length; i++) {
+                        for (var j = 0; j < data["result"][i]["detail"]["items"].length; j++) {
+                            order_item_total += data["result"][i]["detail"]["items"][j]["count"];
+                            order_cost_total += data["result"][i]["detail"]["items"][j]["count"] * id_price_map.get(data["result"][i]["detail"]["items"][j]["id"]);
+                        }
+                    }
+                    var order_id_to_order_map = new Map();
+                    for (var _i2 = 0; _i2 < data["result"].length; _i2++) {
+                        order_id_to_order_map.set(data["result"][_i2]["id"], data["result"][_i2]);
+                    }
+                    this.setState({
+                        orders: data["result"],
+                        order_total: order_total,
+                        order_item_total: order_item_total,
+                        order_cost_total: order_cost_total,
+                        order_id_to_order_map: order_id_to_order_map
                     });
                 }.bind(this)
             });
@@ -61,17 +214,53 @@ var MainPlatform = function (_React$Component) {
             });
         }
     }, {
+        key: "order_of_avatars",
+        value: function order_of_avatars(order_id) {
+            var avatars = [];
+            var _state2 = this.state,
+                order_id_to_order_map = _state2.order_id_to_order_map,
+                item_id_to_item_avatar = _state2.item_id_to_item_avatar;
+
+            var order = order_id_to_order_map.get(order_id);
+            var order_items = order["detail"]["items"];
+            for (var i = 0; i < order_items.length; i++) {
+                avatars.push(item_id_to_item_avatar.get(order_items[i]["id"]));
+            }
+            return avatars;
+        }
+    }, {
+        key: "order_row_array",
+        value: function order_row_array() {
+            var orders = this.state.orders;
+
+            var order_row_array = [];
+
+            if (orders == undefined) {
+                return undefined;
+            }
+
+            for (var i = 0; i < orders.length; i++) {
+                var order_id = orders[i]["id"];
+                order_row_array.push(React.createElement(OrderRow, { id: order_id, date: orders[i]["detail"]["date"], avatars: this.order_of_avatars(order_id), status_code: orders[i]["status"] }));
+            }
+            return order_row_array;
+        }
+    }, {
         key: "render",
         value: function render() {
-            var _this2 = this;
+            var _this3 = this;
 
-            var _state = this.state,
-                firstname = _state.firstname,
-                lastname = _state.lastname,
-                birthday = _state.birthday,
-                gender = _state.gender,
-                email = _state.email;
+            var _state3 = this.state,
+                firstname = _state3.firstname,
+                lastname = _state3.lastname,
+                birthday = _state3.birthday,
+                gender = _state3.gender,
+                email = _state3.email,
+                order_total = _state3.order_total,
+                order_item_total = _state3.order_item_total,
+                order_cost_total = _state3.order_cost_total;
 
+            var order_row_object_array = this.order_row_array();
             return React.createElement(
                 "div",
                 { className: "md:w-[90%] xl:w-[80%] md:h-[80vh] xl:h-[90vh] mx-auto flex flex-row border-2 my-20 rounded-md bg-gray-100" },
@@ -125,7 +314,7 @@ var MainPlatform = function (_React$Component) {
                             React.createElement(
                                 "button",
                                 { className: "relative p-3 text-center w-full rounded-md bg-orange-200", onClick: function onClick() {
-                                        return _this2.logout();
+                                        return _this3.logout();
                                     } },
                                 " \u767B\u51FA "
                             )
@@ -147,7 +336,7 @@ var MainPlatform = function (_React$Component) {
                                 React.createElement(
                                     "p",
                                     { className: "text-center font-bold text-amber-500 px-5" },
-                                    "9999"
+                                    order_total
                                 )
                             ),
                             React.createElement(
@@ -169,7 +358,7 @@ var MainPlatform = function (_React$Component) {
                                 React.createElement(
                                     "p",
                                     { className: "text-center font-bold text-teal-500 px-5" },
-                                    "9999"
+                                    order_item_total
                                 )
                             ),
                             React.createElement(
@@ -191,7 +380,8 @@ var MainPlatform = function (_React$Component) {
                                 React.createElement(
                                     "p",
                                     { className: "text-center font-bold px-5 text-blue-500" },
-                                    "774653$"
+                                    order_cost_total,
+                                    "$"
                                 )
                             ),
                             React.createElement(
@@ -216,59 +406,7 @@ var MainPlatform = function (_React$Component) {
                         React.createElement(
                             "div",
                             { className: "overflow-y-auto md:h-[20vh] xl:h-[40vh] gap-5 flex flex-col" },
-                            React.createElement(
-                                "div",
-                                { className: "w-full h-fit border-2 flex flex-row text-center px-6 gap-5 hover:bg-gray-200 hover:duration-300" },
-                                React.createElement(
-                                    "div",
-                                    { className: "w-fit py-5" },
-                                    React.createElement(
-                                        "div",
-                                        { className: "h-full py-5 pr-5 border-r-2" },
-                                        React.createElement(
-                                            "p",
-                                            { className: "text-center my-auto whitespace-nowrap" },
-                                            " 33458762 "
-                                        )
-                                    )
-                                ),
-                                React.createElement(
-                                    "div",
-                                    { className: "w-fit py-5" },
-                                    React.createElement(
-                                        "div",
-                                        { className: "h-full py-5 pr-5 border-r-2" },
-                                        React.createElement(
-                                            "p",
-                                            { className: "text-center my-auto whitespace-nowrap" },
-                                            " 2022-12-28 16:54:00 "
-                                        )
-                                    )
-                                ),
-                                React.createElement(
-                                    "div",
-                                    { className: "w-full py-5" },
-                                    React.createElement(
-                                        "div",
-                                        { className: "h-full pr-5 border-r-2 flex flex-row gap-3" },
-                                        React.createElement("img", { className: "w-16 h-16", src: "/static/images/0ac00df4-9908-42a4-a915-ea1252065a77" }),
-                                        React.createElement("img", { className: "w-16 h-16", src: "/static/images/85bc9958-6a0e-4d6a-9a53-cb4ba2b0c3e3" })
-                                    )
-                                ),
-                                React.createElement(
-                                    "div",
-                                    { className: "w-fit py-5" },
-                                    React.createElement(
-                                        "div",
-                                        { className: "h-full py-5 pr-5 border-r-2" },
-                                        React.createElement(
-                                            "p",
-                                            { className: "text-center my-auto whitespace-nowrap" },
-                                            " \u5DF2\u7D50\u55AE "
-                                        )
-                                    )
-                                )
-                            )
+                            order_row_object_array
                         )
                     )
                 )
@@ -279,8 +417,8 @@ var MainPlatform = function (_React$Component) {
     return MainPlatform;
 }(React.Component);
 
-var App = function (_React$Component2) {
-    _inherits(App, _React$Component2);
+var App = function (_React$Component3) {
+    _inherits(App, _React$Component3);
 
     function App() {
         _classCallCheck(this, App);
