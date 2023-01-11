@@ -78,7 +78,7 @@ def setup_item(app: Flask) -> None:
         db.session.commit()
 
 
-class TestGetShoppingCart:
+class TestGetShoppingCartRoute:
     def test_with_logged_in_client_should_respond_excepted_response(
         self, logged_in_client: FlaskClient, setup_item: None
     ) -> None:
@@ -112,7 +112,7 @@ class TestGetShoppingCart:
         assert response.status_code == HTTPStatus.UNAUTHORIZED
 
 
-class TestPostShoppingCartItem:
+class TestPostShoppingCartItemRoute:
     def test_with_logged_in_client_should_add_item_to_cart(
         self, app: Flask, logged_in_client: FlaskClient, setup_item: None
     ) -> None:
@@ -186,7 +186,7 @@ class TestPostShoppingCartItem:
         assert response.status_code == HTTPStatus.FORBIDDEN
 
 
-class TestDeleteShoppingCart:
+class TestDeleteShoppingCartRoute:
     def test_with_logged_in_client_should_absent_the_shopping_cart(
         self, app: Flask, logged_in_client: FlaskClient, setup_item: None
     ) -> None:
@@ -209,7 +209,7 @@ class TestDeleteShoppingCart:
         assert response.status_code == HTTPStatus.UNAUTHORIZED
 
 
-class TestPutShoppingCartItem:
+class TestPutShoppingCartItemRoute:
     def test_with_logged_in_client_should_update_item_in_cart(
         self, app: Flask, logged_in_client: FlaskClient, setup_item: None
     ) -> None:
