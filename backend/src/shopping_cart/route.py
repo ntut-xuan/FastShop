@@ -99,6 +99,7 @@ def update_one_item_to_the_shopping_cart():
                 ShoppingCart.user_id == user_id, ShoppingCart.item_id == payload["id"]
             )
         )
+        db.session.commit()
 
     return make_single_message_response(HTTPStatus.OK)
 
@@ -110,5 +111,6 @@ def delete_the_shopping_cart():
     user_id: int = fetch_user_id_from_jwt_token(jwt_token)
 
     db.session.execute(db.delete(ShoppingCart).where(ShoppingCart.user_id == user_id))
+    db.session.commit()
 
     return make_single_message_response(HTTPStatus.OK)
