@@ -48,59 +48,63 @@ var OrderRow = function (_React$Component) {
                 avatars_object_list.push(React.createElement("img", { className: "w-16 h-16", src: "/static/images/".concat(avatars[i]) }));
             }
             return React.createElement(
-                "div",
-                { className: "w-full h-fit border-2 flex flex-row text-center px-6 gap-5 hover:bg-gray-200 hover:duration-300" },
+                "a",
+                { href: "/order_detail/".concat(id) },
                 React.createElement(
                     "div",
-                    { className: "w-fit py-5" },
+                    { className: "w-full h-fit border-2 flex flex-row text-center px-6 gap-5 hover:bg-gray-200 hover:duration-300" },
                     React.createElement(
                         "div",
-                        { className: "h-full py-5 pr-5 border-r-2" },
+                        { className: "w-fit py-5" },
                         React.createElement(
-                            "p",
-                            { className: "text-center my-auto whitespace-nowrap" },
-                            " ",
-                            id,
-                            " "
+                            "div",
+                            { className: "h-full py-5 pr-5 border-r-2" },
+                            React.createElement(
+                                "p",
+                                { className: "text-center my-auto whitespace-nowrap" },
+                                " ",
+                                id,
+                                " "
+                            )
                         )
-                    )
-                ),
-                React.createElement(
-                    "div",
-                    { className: "w-fit py-5" },
+                    ),
                     React.createElement(
                         "div",
-                        { className: "h-full py-5 pr-5 border-r-2" },
+                        { className: "w-fit py-5" },
                         React.createElement(
-                            "p",
-                            { className: "text-center my-auto whitespace-nowrap" },
-                            " ",
-                            new Date(date * 1000).toLocaleString('zh-tw', { timeZone: 'Asia/Taipei' }),
-                            " "
+                            "div",
+                            { className: "h-full py-5 pr-5 border-r-2" },
+                            React.createElement(
+                                "p",
+                                { className: "text-center my-auto whitespace-nowrap" },
+                                " ",
+                                new Date(date * 1000).toLocaleString('zh-tw', { timeZone: 'Asia/Taipei' }),
+                                " "
+                            )
                         )
-                    )
-                ),
-                React.createElement(
-                    "div",
-                    { className: "w-full py-5" },
+                    ),
                     React.createElement(
                         "div",
-                        { className: "h-full pr-5 border-r-2 flex flex-row gap-3" },
-                        avatars_object_list
-                    )
-                ),
-                React.createElement(
-                    "div",
-                    { className: "w-fit py-5" },
-                    React.createElement(
-                        "div",
-                        { className: "h-full py-5 pr-5 border-r-2" },
+                        { className: "w-full py-5" },
                         React.createElement(
-                            "p",
-                            { className: "text-center my-auto whitespace-nowrap" },
-                            " ",
-                            this.status_code_to_zhtw(status_code),
-                            " "
+                            "div",
+                            { className: "h-full pr-5 border-r-2 flex flex-row gap-3" },
+                            avatars_object_list
+                        )
+                    ),
+                    React.createElement(
+                        "div",
+                        { className: "w-fit py-5" },
+                        React.createElement(
+                            "div",
+                            { className: "h-full py-5 pr-5 border-r-2" },
+                            React.createElement(
+                                "p",
+                                { className: "text-center my-auto whitespace-nowrap" },
+                                " ",
+                                this.status_code_to_zhtw(status_code),
+                                " "
+                            )
                         )
                     )
                 )

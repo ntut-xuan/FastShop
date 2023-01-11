@@ -24,28 +24,30 @@ class OrderRow extends React.Component {
             avatars_object_list.push(<img className="w-16 h-16" src={"/static/images/".concat(avatars[i])}></img>)
         }
         return (
-            <div className="w-full h-fit border-2 flex flex-row text-center px-6 gap-5 hover:bg-gray-200 hover:duration-300">
-                <div className="w-fit py-5">
-                    <div className="h-full py-5 pr-5 border-r-2">
-                        <p className="text-center my-auto whitespace-nowrap"> {id} </p>
+            <a href={"/order_detail/".concat(id)}>
+                <div className="w-full h-fit border-2 flex flex-row text-center px-6 gap-5 hover:bg-gray-200 hover:duration-300">
+                    <div className="w-fit py-5">
+                        <div className="h-full py-5 pr-5 border-r-2">
+                            <p className="text-center my-auto whitespace-nowrap"> {id} </p>
+                        </div>
+                    </div>
+                    <div className="w-fit py-5">
+                        <div className="h-full py-5 pr-5 border-r-2">
+                            <p className="text-center my-auto whitespace-nowrap"> {new Date(date*1000).toLocaleString('zh-tw', { timeZone: 'Asia/Taipei' })} </p>
+                        </div>
+                    </div>
+                    <div className="w-full py-5">
+                        <div className="h-full pr-5 border-r-2 flex flex-row gap-3">
+                            {avatars_object_list}
+                        </div>
+                    </div>
+                    <div className="w-fit py-5">
+                        <div className="h-full py-5 pr-5 border-r-2">
+                            <p className="text-center my-auto whitespace-nowrap"> {this.status_code_to_zhtw(status_code)} </p>
+                        </div>
                     </div>
                 </div>
-                <div className="w-fit py-5">
-                    <div className="h-full py-5 pr-5 border-r-2">
-                        <p className="text-center my-auto whitespace-nowrap"> {new Date(date*1000).toLocaleString('zh-tw', { timeZone: 'Asia/Taipei' })} </p>
-                    </div>
-                </div>
-                <div className="w-full py-5">
-                    <div className="h-full pr-5 border-r-2 flex flex-row gap-3">
-                        {avatars_object_list}
-                    </div>
-                </div>
-                <div className="w-fit py-5">
-                    <div className="h-full py-5 pr-5 border-r-2">
-                        <p className="text-center my-auto whitespace-nowrap"> {this.status_code_to_zhtw(status_code)} </p>
-                    </div>
-                </div>
-            </div>
+            </a>
         )
     }
 }
