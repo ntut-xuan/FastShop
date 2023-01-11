@@ -174,7 +174,7 @@ class TestPostShoppingCartItemRoute:
 
         assert response.status_code == HTTPStatus.FORBIDDEN
 
-    def test_with_not_exits_item_id_should_return_http_status_code_forbidden(
+    def test_with_not_exists_item_id_should_return_http_status_code_forbidden(
         self, logged_in_client: FlaskClient, setup_item: None
     ) -> None:
         request_payload: dict[str, int] = {"id": 47, "count": 10}
@@ -285,7 +285,7 @@ class TestPutShoppingCartItemRoute:
 
         assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
-    def test_with_not_exists_in_cart_item_payload_should_return_http_status_code_unprocessable_entity(
+    def test_with_not_exists_in_cart_item_payload_should_return_http_status_code_forbidden(
         self, logged_in_client: FlaskClient, setup_item: None
     ) -> None:
         request_payload: dict[str, int] = {"count": 5, "id": 3}
@@ -307,7 +307,7 @@ class TestPutShoppingCartItemRoute:
 
         assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
-    def test_with_not_exits_item_id_should_return_http_status_code_forbidden(
+    def test_with_not_exists_item_id_should_return_http_status_code_forbidden(
         self, logged_in_client: FlaskClient, setup_item: None
     ) -> None:
         request_payload: dict[str, int] = {"id": 47, "count": 10}
