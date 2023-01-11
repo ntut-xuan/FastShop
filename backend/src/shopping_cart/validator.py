@@ -96,7 +96,7 @@ def validate_item_exists_or_return_forbidden(
 
         item: Item | None = Item.query.filter_by(id=payload["id"]).first()
 
-        if item == None:
+        if item is not None:
             return make_single_message_response(
                 HTTPStatus.FORBIDDEN, "Item with specific ID does not exists."
             )

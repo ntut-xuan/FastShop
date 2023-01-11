@@ -201,7 +201,7 @@ class TestDeleteShoppingCartRoute:
             ).scalar()
             assert item_count == 0
 
-    def test_with_logged_in_client_should_raise_http_status_code_unauthorized(
+    def test_with_not_logged_in_client_should_raise_http_status_code_unauthorized(
         self, client: FlaskClient, setup_item: None
     ) -> None:
         response: TestResponse = client.delete("/shopping_cart")
