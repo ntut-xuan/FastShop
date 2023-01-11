@@ -8,7 +8,7 @@ function success_swal(title) {
 }
 
 function error_swal(title, text) {
-    Swal.fire({
+    return Swal.fire({
         icon: "error",
         title: title,
         text: text,
@@ -18,7 +18,7 @@ function error_swal(title, text) {
 }
 
 function error_swal_with_confirm_button(title, text) {
-    Swal.fire({
+    return Swal.fire({
         icon: "error",
         title: title,
         text: text,

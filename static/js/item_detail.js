@@ -154,6 +154,70 @@ var MainPlatform = function (_React$Component2) {
             document.getElementById("order_count_input").value = int_value;
         }
     }, {
+        key: "get_count_of_item_from_shopping_cart",
+        value: function get_count_of_item_from_shopping_cart() {
+            var id = parseInt(window.location.pathname.split("/")[2]);
+            var count = 0;
+            $.ajax({
+                url: "/shopping_cart",
+                type: "GET",
+                async: false,
+                success: function success(data) {
+                    for (var i = 0; i < data["count"]; i++) {
+                        if (data["items"][i]["id"] == id) {
+                            count = data["items"][i]["count"];
+                        }
+                    }
+                }
+            });
+            return count;
+        }
+    }, {
+        key: "add_to_cart",
+        value: function add_to_cart() {
+            var id = parseInt(window.location.pathname.split("/")[2]);
+            var count = parseInt(document.getElementById("order_count_input").value);
+            var count_in_shopping_cart = this.get_count_of_item_from_shopping_cart();
+            console.log(count_in_shopping_cart);
+            if (count_in_shopping_cart == 0) {
+                $.ajax({
+                    url: "/shopping_cart/item",
+                    type: "POST",
+                    data: JSON.stringify({ "count": count, "id": id }),
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function success(data) {
+                        success_swal("加入成功");
+                    },
+                    error: function error(xhr, status, _error) {
+                        if (_error == "UNAUTHORIZED") {
+                            error_swal("加入失敗", "請先登入").then(function () {
+                                window.location.href = "/login";
+                            });
+                        }
+                    }
+                });
+            } else {
+                $.ajax({
+                    url: "/shopping_cart/item",
+                    type: "PUT",
+                    data: JSON.stringify({ "count": count + count_in_shopping_cart, "id": id }),
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function success(data) {
+                        success_swal("加入成功");
+                    },
+                    error: function error(xhr, status, _error2) {
+                        if (_error2 == "UNAUTHORIZED") {
+                            error_swal("加入失敗", "請先登入").then(function () {
+                                window.location.href = "/login";
+                            });
+                        }
+                    }
+                });
+            }
+        }
+    }, {
         key: "render",
         value: function render() {
             var _this3 = this;
@@ -243,12 +307,9 @@ var MainPlatform = function (_React$Component2) {
                             { id: "button-set", className: "flex flex-row gap-5 h-fit" },
                             React.createElement(
                                 "button",
-                                { className: "py-2 my-auto w-full h-fit bg-amber-500 rounded-md hover:bg-amber-400 duration-300 text-white font-bold shadow-md disabled:bg-slate-400 disabled:text-slate-100", disabled: true },
-                                " \u76F4\u63A5\u8CFC\u8CB7 "
-                            ),
-                            React.createElement(
-                                "button",
-                                { className: "py-2 my-auto w-full h-fit bg-orange-500 rounded-md hover:bg-orange-400 duration-300 text-white font-bold shadow-md  disabled:bg-slate-400 disabled:text-slate-100", disabled: true },
+                                { className: "py-2 my-auto w-full h-fit bg-orange-500 rounded-md hover:bg-orange-400 duration-300 text-white font-bold shadow-md  disabled:bg-slate-400 disabled:text-slate-100", onClick: function onClick() {
+                                        return _this3.add_to_cart();
+                                    } },
                                 " \u52A0\u5165\u8CFC\u7269\u8ECA "
                             )
                         )

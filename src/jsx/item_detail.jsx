@@ -93,6 +93,62 @@ class MainPlatform extends React.Component {
         int_value = Math.max(int_value - 1, 0)
         document.getElementById("order_count_input").value = int_value;
     }
+    get_count_of_item_from_shopping_cart(){
+        let id = parseInt(window.location.pathname.split("/")[2])
+        let count = 0;
+        $.ajax({
+            url: "/shopping_cart",
+            type: "GET",
+            async: false,
+            success: function(data){
+                for(let i = 0; i < data["count"]; i++){
+                    if(data["items"][i]["id"] == id){
+                        count = data["items"][i]["count"]
+                    }
+                }
+            }
+        })
+        return count;
+    }
+    add_to_cart(){
+        let id = parseInt(window.location.pathname.split("/")[2])
+        let count = parseInt(document.getElementById("order_count_input").value);
+        let count_in_shopping_cart = this.get_count_of_item_from_shopping_cart()
+        console.log(count_in_shopping_cart)
+        if(count_in_shopping_cart == 0){
+            $.ajax({
+                url: "/shopping_cart/item",
+                type: "POST",
+                data: JSON.stringify({"count": count, "id": id}),
+                dataType: "json",
+                contentType: "application/json",
+                success: function(data){
+                    success_swal("加入成功")
+                },
+                error: function(xhr, status, error){
+                    if(error == "UNAUTHORIZED"){
+                        error_swal("加入失敗", "請先登入").then(() => {window.location.href = "/login"});
+                    }
+                }
+            })
+        }else{
+            $.ajax({
+                url: "/shopping_cart/item",
+                type: "PUT",
+                data: JSON.stringify({"count": count + count_in_shopping_cart, "id": id}),
+                dataType: "json",
+                contentType: "application/json",
+                success: function(data){
+                    success_swal("加入成功")
+                },
+                error: function(xhr, status, error){
+                    if(error == "UNAUTHORIZED"){
+                        error_swal("加入失敗", "請先登入").then(() => {window.location.href = "/login"});
+                    }
+                }
+            })
+        }
+    }
     render(){
         let {image_href, name, count, original_price, discount_price, description} = this.state
         return(
@@ -120,8 +176,7 @@ class MainPlatform extends React.Component {
                             </div>
                         </div>
                         <div id="button-set" className="flex flex-row gap-5 h-fit">
-                            <button className="py-2 my-auto w-full h-fit bg-amber-500 rounded-md hover:bg-amber-400 duration-300 text-white font-bold shadow-md disabled:bg-slate-400 disabled:text-slate-100" disabled> 直接購買 </button>
-                            <button className="py-2 my-auto w-full h-fit bg-orange-500 rounded-md hover:bg-orange-400 duration-300 text-white font-bold shadow-md  disabled:bg-slate-400 disabled:text-slate-100" disabled> 加入購物車 </button>
+                            <button className="py-2 my-auto w-full h-fit bg-orange-500 rounded-md hover:bg-orange-400 duration-300 text-white font-bold shadow-md  disabled:bg-slate-400 disabled:text-slate-100" onClick={() => this.add_to_cart()}> 加入購物車 </button>
                         </div>
                     </div>
                 </div>
