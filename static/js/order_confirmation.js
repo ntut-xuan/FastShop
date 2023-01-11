@@ -6,18 +6,213 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var MainPlatform = function (_React$Component) {
-    _inherits(MainPlatform, _React$Component);
+var Item = function (_React$Component) {
+    _inherits(Item, _React$Component);
+
+    function Item(props) {
+        _classCallCheck(this, Item);
+
+        var _this = _possibleConstructorReturn(this, (Item.__proto__ || Object.getPrototypeOf(Item)).call(this, props));
+
+        _this.state = {
+            avatar: props.avatar,
+            item_name: props.item_name,
+            count: props.count,
+            price: props.price
+        };
+        return _this;
+    }
+
+    _createClass(Item, [{
+        key: "render",
+        value: function render() {
+            var _state = this.state,
+                avatar = _state.avatar,
+                item_name = _state.item_name,
+                count = _state.count,
+                price = _state.price;
+
+            return React.createElement(
+                "div",
+                { className: "p-5 flex flex-row gap-5 border-2 shadow-md hover:shadow-xl hover:duration-300 bg-white" },
+                React.createElement("img", { src: "/static/images/".concat(avatar), className: "h-16 w-16 rounded-md" }),
+                React.createElement(
+                    "div",
+                    { className: "flex flex-col gap-3 my-auto w-[60%]" },
+                    React.createElement(
+                        "p",
+                        null,
+                        " ",
+                        item_name,
+                        " "
+                    ),
+                    React.createElement(
+                        "p",
+                        null,
+                        " \u6578\u91CF\uFF1A",
+                        count,
+                        " \u500B"
+                    )
+                ),
+                React.createElement(
+                    "div",
+                    { className: "h-full" },
+                    React.createElement(
+                        "p",
+                        { className: "my-auto" },
+                        count * price,
+                        " MC"
+                    )
+                )
+            );
+        }
+    }]);
+
+    return Item;
+}(React.Component);
+
+var MainPlatform = function (_React$Component2) {
+    _inherits(MainPlatform, _React$Component2);
 
     function MainPlatform(props) {
         _classCallCheck(this, MainPlatform);
 
-        return _possibleConstructorReturn(this, (MainPlatform.__proto__ || Object.getPrototypeOf(MainPlatform)).call(this, props));
+        var _this2 = _possibleConstructorReturn(this, (MainPlatform.__proto__ || Object.getPrototypeOf(MainPlatform)).call(this, props));
+
+        _this2.state = {
+            item_list: [],
+            total: 0,
+            firstname: "",
+            lastname: "",
+            email: ""
+        };
+        _this2.submit_order = _this2.submit_order.bind(_this2);
+        return _this2;
     }
 
     _createClass(MainPlatform, [{
+        key: "fetch_item_list",
+        value: function fetch_item_list() {
+            var _this3 = this;
+
+            var item_list = this.state.item_list;
+
+            $.ajax({
+                url: "/shopping_cart",
+                type: "GET",
+                async: false,
+                success: function success(data) {
+                    var _loop = function _loop(i) {
+                        var id = data["items"][i]["id"];
+                        var count = data["items"][i]["count"];
+                        var price = data["items"][i]["price"];
+                        $.ajax({
+                            url: "/items/".concat(id),
+                            type: "GET",
+                            async: false,
+                            success: function success(item_data) {
+                                var avatar = item_data["avatar"];
+                                var name = item_data["name"];
+                                item_list.push({
+                                    "avatar": avatar,
+                                    "id": id,
+                                    "count": count,
+                                    "price": price,
+                                    "name": name
+                                });
+                            }
+                        });
+                    };
+
+                    for (var i = 0; i < data["count"]; i++) {
+                        _loop(i);
+                    }
+                }
+            }).then(function () {
+                _this3.setState({ item_list: item_list });
+            });
+        }
+    }, {
+        key: "fetch_user_profile",
+        value: function fetch_user_profile() {
+            var firstname = "";
+            var lastname = "";
+            var email = "";
+            $.ajax({
+                url: "/user",
+                type: "GET",
+                async: false,
+                success: function success(data) {
+                    firstname = data["firstname"];
+                    lastname = data["lastname"];
+                    email = data["e-mail"];
+                }
+            });
+            this.setState({ firstname: firstname, lastname: lastname, email: email });
+        }
+    }, {
+        key: "componentDidMount",
+        value: function componentDidMount() {
+            this.fetch_item_list();
+            this.fetch_user_profile();
+        }
+    }, {
+        key: "submit_order",
+        value: function submit_order() {
+            var _state2 = this.state,
+                item_list = _state2.item_list,
+                firstname = _state2.firstname,
+                lastname = _state2.lastname,
+                email = _state2.email;
+
+            var item_list_payload = [];
+            for (var i = 0; i < item_list.length; i++) {
+                item_list_payload.push({
+                    "count": item_list[i]["count"],
+                    "id": item_list[i]["id"]
+                });
+            }
+            payload = {
+                "date": Math.floor(Date.now() / 1000),
+                "delivery_info": {
+                    "address": document.getElementById("address").value,
+                    "email": email,
+                    "firstname": firstname,
+                    "lastname": lastname,
+                    "phone_number": document.getElementById("phone_number").value
+                },
+                "items": item_list_payload,
+                "note": document.getElementById("note").value
+            };
+            $.ajax({
+                url: "/orders",
+                type: "POST",
+                data: JSON.stringify(payload),
+                dataType: "json",
+                contentType: "application/json",
+                success: function success(data) {
+                    success_swal("訂單創立成功").then(function () {
+                        window.location.href = "/profile";
+                    });
+                }
+            });
+        }
+    }, {
         key: "render",
         value: function render() {
+            var _state3 = this.state,
+                item_list = _state3.item_list,
+                firstname = _state3.firstname,
+                lastname = _state3.lastname,
+                email = _state3.email;
+
+            var item_object_list = [];
+            var name = lastname + " " + firstname;
+            var total = 0;
+            for (var i = 0; i < item_list.length; i++) {
+                item_object_list.push(React.createElement(Item, { avatar: item_list[i]["avatar"], item_name: item_list[i]["name"], count: item_list[i]["count"], price: item_list[i]["price"] }));
+                total += item_list[i]["count"] * item_list[i]["price"];
+            }
             return React.createElement(
                 "div",
                 { className: "w-screen h-screen" },
@@ -48,12 +243,16 @@ var MainPlatform = function (_React$Component) {
                                         React.createElement(
                                             "p",
                                             null,
-                                            " \u9EC3\u6F22\u8ED2 "
+                                            " ",
+                                            name,
+                                            " "
                                         ),
                                         React.createElement(
                                             "p",
                                             { className: "font-mono" },
-                                            " sigtunatw@gmail.com "
+                                            " ",
+                                            email,
+                                            " "
                                         )
                                     )
                                 ),
@@ -68,7 +267,7 @@ var MainPlatform = function (_React$Component) {
                                             { className: "w-[20%] text-center my-auto" },
                                             " \u806F\u7D61\u96FB\u8A71 "
                                         ),
-                                        React.createElement("input", { type: "text", className: "border-2 w-[80%] p-1 font-mono", placeholder: "0923456789" })
+                                        React.createElement("input", { id: "phone_number", type: "text", className: "border-2 w-[80%] p-1 font-mono", placeholder: "0923456789" })
                                     ),
                                     React.createElement(
                                         "div",
@@ -78,7 +277,7 @@ var MainPlatform = function (_React$Component) {
                                             { className: "w-[20%] text-center my-auto" },
                                             " \u5730\u5740 "
                                         ),
-                                        React.createElement("input", { type: "text", className: "border-2 w-[80%] p-1", placeholder: "\u81FA\u5317\u5E02\u5927\u5B89\u5340\u5FE0\u5B5D\u6771\u8DEF\u4E00\u6BB5 1 \u865F" })
+                                        React.createElement("input", { id: "address", type: "text", className: "border-2 w-[80%] p-1", placeholder: "\u81FA\u5317\u5E02\u5927\u5B89\u5340\u5FE0\u5B5D\u6771\u8DEF\u4E00\u6BB5 1 \u865F" })
                                     )
                                 )
                             ),
@@ -96,7 +295,7 @@ var MainPlatform = function (_React$Component) {
                                     React.createElement(
                                         "div",
                                         { className: "flex flex-row w-full" },
-                                        React.createElement("textarea", { className: "border-2 p-1 w-full h-[10vh] font-mono resize-none rounded-md" })
+                                        React.createElement("textarea", { id: "note", className: "border-2 p-1 w-full h-[10vh] font-mono resize-none rounded-md" })
                                     )
                                 )
                             ),
@@ -125,7 +324,7 @@ var MainPlatform = function (_React$Component) {
                             ),
                             React.createElement(
                                 "button",
-                                { className: "w-full p-2 bg-green-500 text-white rounded-md" },
+                                { className: "w-full p-2 bg-green-500 text-white rounded-md", onClick: this.submit_order },
                                 "\u7ACB\u5373\u4E0B\u55AE"
                             )
                         )
@@ -144,62 +343,7 @@ var MainPlatform = function (_React$Component) {
                                     { className: "text-2xl" },
                                     " \u8CFC\u7269\u8ECA "
                                 ),
-                                React.createElement(
-                                    "div",
-                                    { className: "p-5 flex flex-row gap-5 border-2 shadow-md hover:shadow-xl hover:duration-300 bg-white" },
-                                    React.createElement("img", { src: "/static/images/0f4b3e89-4736-4ca1-89fe-0cc06be76b9d", className: "h-16 w-16 rounded-md" }),
-                                    React.createElement(
-                                        "div",
-                                        { className: "flex flex-col gap-3 my-auto w-[60%]" },
-                                        React.createElement(
-                                            "p",
-                                            null,
-                                            " \u66AE\u8272\u9ED1\u5203 "
-                                        ),
-                                        React.createElement(
-                                            "p",
-                                            null,
-                                            " \u6578\u91CF\uFF1A3 \u500B"
-                                        )
-                                    ),
-                                    React.createElement(
-                                        "div",
-                                        { className: "h-full" },
-                                        React.createElement(
-                                            "p",
-                                            { className: "my-auto" },
-                                            "8700 MC"
-                                        )
-                                    )
-                                ),
-                                React.createElement(
-                                    "div",
-                                    { className: "p-5 flex flex-row gap-5 border-2 shadow-md hover:shadow-xl hover:duration-300 bg-white" },
-                                    React.createElement("img", { src: "/static/images/19825dda-dd5d-4b86-8308-ce4fad518b55", className: "h-16 w-16 rounded-md" }),
-                                    React.createElement(
-                                        "div",
-                                        { className: "flex flex-col gap-3 my-auto w-[60%]" },
-                                        React.createElement(
-                                            "p",
-                                            null,
-                                            " \u6C34\u661F\u5F4E\u5200 "
-                                        ),
-                                        React.createElement(
-                                            "p",
-                                            null,
-                                            " \u6578\u91CF\uFF1A1 \u500B"
-                                        )
-                                    ),
-                                    React.createElement(
-                                        "div",
-                                        { className: "h-full" },
-                                        React.createElement(
-                                            "p",
-                                            { className: "my-auto" },
-                                            "3000 MC"
-                                        )
-                                    )
-                                ),
+                                item_object_list,
                                 React.createElement("hr", { className: "w-full" }),
                                 React.createElement(
                                     "div",
@@ -215,7 +359,8 @@ var MainPlatform = function (_React$Component) {
                                         React.createElement(
                                             "p",
                                             { className: "w-full text-right" },
-                                            "11900 MC"
+                                            total,
+                                            " MC"
                                         )
                                     ),
                                     React.createElement(
@@ -248,7 +393,8 @@ var MainPlatform = function (_React$Component) {
                                         React.createElement(
                                             "p",
                                             { className: "w-full text-right text-2xl font-bold" },
-                                            "13900 MC"
+                                            total + 2000,
+                                            " MC"
                                         )
                                     )
                                 )
@@ -263,8 +409,8 @@ var MainPlatform = function (_React$Component) {
     return MainPlatform;
 }(React.Component);
 
-var App = function (_React$Component2) {
-    _inherits(App, _React$Component2);
+var App = function (_React$Component3) {
+    _inherits(App, _React$Component3);
 
     function App() {
         _classCallCheck(this, App);
