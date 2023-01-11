@@ -1,4 +1,4 @@
-from tests.unit_tests.shopping_cart.test_shopping_cart import (
+from tests.unit_tests.shopping_cart.test_route import (
     TestDeleteShoppingCart,
     TestGetShoppingCart,
     TestPostShoppingCartItem,
