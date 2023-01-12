@@ -81,12 +81,6 @@ definitions:
       delivery_info:
         type: object
         properties:
-          firstname:
-            type: string
-          lastname:
-            type: string
-          email:
-            type: string
           phone_number:
             type: string
           address:
@@ -100,9 +94,5 @@ definitions:
       note: "No Iansui"
       date: 1672737308
       delivery_info:
-        firstname: Han-Xuan
-        lastname: Huang
-        email: test@test.com
         phone_number: 0921474836
         address: No. 1, Sec. 3, Zhongxiao E. Rd., Da'an Dist., Taipei City 106344 , Taiwan (R.O.C.)
-
