@@ -51,6 +51,7 @@ definitions:
       count:
         description: The count of the items.
         type: integer
+        example: 1
       items:
         type: array
         description: The array contains all the items.
