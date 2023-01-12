@@ -25,7 +25,7 @@ from src.models import DeliveryStatus, ItemOfOrder, Order, OrderStatus, User
 from util import fetch_page, make_single_message_response, route_with_doc
 
 if TYPE_CHECKING:
-    from flask import Response
+    from werkzeug.wrappers.response import Response
 
 order_bp = Blueprint("order", __name__)
 
@@ -125,13 +125,13 @@ def fetch_the_order_with_specific_id(id: int) -> Response:
 
 @order_bp.route("/order_confirmation", methods=["GET"])
 @verify_login_or_redirect_login_page
-def order_confrimation() -> str:
+def order_confirmation() -> str:
     return fetch_page("order_confirmation")
 
 
 @order_bp.route("/order_detail/<int:order_id>", methods=["GET"])
 @verify_login_or_redirect_login_page
-def order_detail(order_id) -> str:
+def order_detail(order_id) -> str | Response:
     uid: int | None = _get_uid_from_jwt(request.cookies["jwt"])
     assert uid is not None
 
