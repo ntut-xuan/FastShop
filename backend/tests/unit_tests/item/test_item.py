@@ -588,20 +588,23 @@ class TestGetItemsRoute:
             "original": 30,
             "discount": 25,
         }
-        excepted_payload: list[dict[str, Any]] = [
-            {
-                "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
-                "count": 10,
-                "description": "This is an apple.",
-                "id": 1,
-                "name": "apple",
-                "price": {
-                    "original": 30,
-                    "discount": 25,
-                },
-                "tags": [],
-            }
-        ]
+        excepted_payload: dict[str, Any] = {
+            "count": 1,
+            "items": [
+                {
+                    "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
+                    "count": 10,
+                    "description": "This is an apple.",
+                    "id": 1,
+                    "name": "apple",
+                    "price": {
+                        "original": 30,
+                        "discount": 25,
+                    },
+                    "tags": [],
+                }
+            ],
+        }
         with app.app_context():
             item = Item(**item_data)
             db.session.add(item)
@@ -616,32 +619,35 @@ class TestGetItemsRoute:
     def test_with_route_should_respond_correct_payload(
         self, client: FlaskClient, setup_item: None
     ) -> None:
-        excepted_payload: list[dict[str, Any]] = [
-            {
-                "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
-                "count": 10,
-                "description": "This is an apple.",
-                "id": 1,
-                "name": "apple",
-                "price": {
-                    "original": 30,
-                    "discount": 25,
+        excepted_payload: dict[str, Any] = {
+            "count": 2,
+            "items": [
+                {
+                    "avatar": "xx-S0m3-aVA7aR-0f-a991e-xx",
+                    "count": 10,
+                    "description": "This is an apple.",
+                    "id": 1,
+                    "name": "apple",
+                    "price": {
+                        "original": 30,
+                        "discount": 25,
+                    },
+                    "tags": [{"id": 1, "name": "fruit"}, {"id": 3, "name": "grocery"}],
                 },
-                "tags": [{"id": 1, "name": "fruit"}, {"id": 3, "name": "grocery"}],
-            },
-            {
-                "avatar": "xx-S0m3-aVA7aR-0f-ti1a9iA-xx",
-                "count": 3,
-                "description": "This is a tilapia.",
-                "id": 2,
-                "name": "tilapia",
-                "price": {
-                    "original": 50,
-                    "discount": 45,
+                {
+                    "avatar": "xx-S0m3-aVA7aR-0f-ti1a9iA-xx",
+                    "count": 3,
+                    "description": "This is a tilapia.",
+                    "id": 2,
+                    "name": "tilapia",
+                    "price": {
+                        "original": 50,
+                        "discount": 45,
+                    },
+                    "tags": [{"id": 2, "name": "fish"}, {"id": 3, "name": "grocery"}],
                 },
-                "tags": [{"id": 2, "name": "fish"}, {"id": 3, "name": "grocery"}],
-            },
-        ]
+            ],
+        }
 
         response: TestResponse = client.get("/items")
 

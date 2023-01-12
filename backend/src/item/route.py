@@ -32,21 +32,24 @@ def fetch_all_items() -> Response:
     )
 
     items: list[Item] = db.session.execute(db.select(Item)).scalars().all()
-    payload: list[dict[str, Any]] = [
-        {
-            "avatar": item.avatar,
-            "count": item.count,
-            "description": item.description,
-            "id": item.id,
-            "name": item.name,
-            "price": {
-                "discount": item.discount,
-                "original": item.original,
-            },
-            "tags": item_id_to_tags.get(item.id, []),
-        }
-        for item in items
-    ]
+    payload: dict[str, Any] = {
+        "count": len(items),
+        "items": [
+            {
+                "avatar": item.avatar,
+                "count": item.count,
+                "description": item.description,
+                "id": item.id,
+                "name": item.name,
+                "price": {
+                    "discount": item.discount,
+                    "original": item.original,
+                },
+                "tags": item_id_to_tags.get(item.id, []),
+            }
+            for item in items
+        ],
+    }
     return make_response(payload)
 
 
