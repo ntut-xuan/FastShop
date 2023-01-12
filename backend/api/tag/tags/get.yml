@@ -17,7 +17,7 @@ definitions:
     properties:
       count:
         type: integer
-        example: 4
+        example: 1
       tags:
         type: array
         description: The array contains all the tags.
