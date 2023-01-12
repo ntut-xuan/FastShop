@@ -165,7 +165,7 @@ class MainPlatform extends React.Component {
                             <p className="md:text-2xl xl:text-4xl font-bold text-blue-500 font-mono"> {total} MC </p>
                         </div>
                         <div className="h-fit">
-                            <button className="w-full p-5 bg-blue-400 text-white rounded-md" onClick={() => {window.location.href = "/order_confrimation"}} >確認訂單</button>
+                            <button className="w-full p-5 bg-blue-400 text-white rounded-md" onClick={() => {window.location.href = "/order_confirmation"}} >確認訂單</button>
                         </div>
                     </div>
                 </div>

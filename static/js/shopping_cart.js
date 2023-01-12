@@ -295,7 +295,7 @@ var MainPlatform = function (_React$Component2) {
                             React.createElement(
                                 "button",
                                 { className: "w-full p-5 bg-blue-400 text-white rounded-md", onClick: function onClick() {
-                                        window.location.href = "/order_confrimation";
+                                        window.location.href = "/order_confirmation";
                                     } },
                                 "\u78BA\u8A8D\u8A02\u55AE"
                             )
