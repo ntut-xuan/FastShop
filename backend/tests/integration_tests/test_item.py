@@ -19,11 +19,11 @@ class TestGetItemsByIdRouteWithMariaDB(TestGetItemsByIdRoute):
     pass
 
 
-class TestGetItemsCountByIdRouteWithTestGetItemsRoute(TestGetItemsCountByIdRoute):
+class TestGetItemsCountByIdRouteWithMariaDB(TestGetItemsCountByIdRoute):
     pass
 
 
-class TestGetItemsRouteTestGetItemsRoute(TestGetItemsRoute):
+class TestGetItemsRouteWithMariaDB(TestGetItemsRoute):
     pass
 
 
