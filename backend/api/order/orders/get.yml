@@ -50,4 +50,50 @@ definitions:
         description: The status of the delivery.
         example: PENDING
       detail:
-        $ref: '#/definitions/order_payload'
+        $ref: '#/definitions/order_payload_with_user_info'
+
+  # The "order_payload" from post can't be reused since we need some extra
+  # properties here.
+  order_payload_with_user_info:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+            count:
+              type: integer
+      date:
+        type: integer
+      note:
+        type: string
+      delivery_info:
+        type: object
+        properties:
+          firstname:
+            type: string
+          lastname:
+            type: string
+          email:
+            type: string
+          phone_number:
+            type: string
+          address:
+            type: string
+    example:
+      items:
+        - id: 3
+          count: 5
+        - id: 5
+          count: 7
+      note: "No Iansui"
+      date: 1672737308
+      delivery_info:
+        firstname: Han-Xuan
+        lastname: Huang
+        email: test@test.com
+        phone_number: 0921474836
+        address: No. 1, Sec. 3, Zhongxiao E. Rd., Da'an Dist., Taipei City 106344 , Taiwan (R.O.C.)
