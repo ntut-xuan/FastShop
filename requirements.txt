@@ -45,4 +45,4 @@ types-PyMySQL==1.0.19
 types-setuptools==65.5.0.3
 typing_extensions==4.3.0
 virtualenv==20.17.0
-Werkzeug==2.2.2
+Werkzeug==2.2.3
