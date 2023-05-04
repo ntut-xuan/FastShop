@@ -6,7 +6,7 @@ coverage==6.5.0
 distlib==0.3.6
 filelock==3.8.0
 flasgger==0.9.5
-Flask==2.2.2
+Flask==2.2.5
 Flask-SQLAlchemy==3.0.2
 freezegun==1.2.2
 greenlet==2.0.1
